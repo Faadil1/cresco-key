@@ -646,8 +646,9 @@ pub mod keys {
     }
 
     /// Execute a payment directly from the Mandate vault when it is inside
-    /// standing authority. The beneficiary signs the intent; the destination
-    /// may be any token account for the configured mint.
+    /// standing authority. The beneficiary signs the intent. For SPL-token
+    /// Solana Pay compatibility, the recipient is a wallet address and the
+    /// transfer destination must be that recipient's canonical ATA.
     pub fn execute_payment_within_mandate(
         ctx: Context<ExecutePaymentWithinMandate>,
         amount: u64,
@@ -677,6 +678,13 @@ pub mod keys {
             KeysError::PeriodAmountExceeded
         );
 
+        require_recipient_ata(
+            ctx.accounts.recipient.key(),
+            ctx.accounts.mint.key(),
+            ctx.accounts.token_program.key(),
+            ctx.accounts.destination_token_account.key(),
+        )?;
+
         transfer_from_vault(
             &ctx.accounts.mandate,
             &ctx.accounts.mint,
@@ -690,9 +698,9 @@ pub mod keys {
         ctx.accounts.asset_rule.spent_this_period = next_spent;
 
         msg!(
-            "PAYMENT_WITHIN_KEY amount={} destination={} nonce={}",
+            "PAYMENT_WITHIN_KEY amount={} recipient={} nonce={}",
             amount,
-            ctx.accounts.destination_token_account.key(),
+            ctx.accounts.recipient.key(),
             expected_nonce
         );
         Ok(())
@@ -700,7 +708,7 @@ pub mod keys {
 
     /// Guardian grants one exact payment action without changing the standing
     /// Mandate. Exactness is stored as explicit program state: mint,
-    /// destination token account, amount, Mandate nonce, and request id.
+    /// Solana Pay recipient wallet, amount, Mandate nonce, and request id.
     pub fn grant_payment_allowance_once(
         ctx: Context<GrantPaymentAllowanceOnce>,
         request_id: [u8; 32],
@@ -728,7 +736,7 @@ pub mod keys {
         allowance.guardian = ctx.accounts.guardian.key();
         allowance.beneficiary = ctx.accounts.charter.beneficiary;
         allowance.mint = ctx.accounts.mint.key();
-        allowance.destination = ctx.accounts.destination_token_account.key();
+        allowance.recipient = ctx.accounts.recipient.key();
         allowance.amount_base_units = amount;
         allowance.request_id = request_id;
         allowance.mandate_nonce = expected_nonce;
@@ -738,9 +746,9 @@ pub mod keys {
         allowance.bump = ctx.bumps.payment_allowance;
 
         msg!(
-            "PAYMENT_ALLOW_ONCE_GRANTED amount={} destination={} nonce={}",
+            "PAYMENT_ALLOW_ONCE_GRANTED amount={} recipient={} nonce={}",
             amount,
-            allowance.destination,
+            allowance.recipient,
             expected_nonce
         );
         Ok(())
@@ -783,8 +791,8 @@ pub mod keys {
         require_exact_payment_action(
             allowance.amount_base_units,
             amount,
-            allowance.destination,
-            ctx.accounts.destination_token_account.key(),
+            allowance.recipient,
+            ctx.accounts.recipient.key(),
         )?;
 
         reset_period_if_needed(&mut ctx.accounts.asset_rule, now);
@@ -795,6 +803,13 @@ pub mod keys {
             .spent_this_period
             .checked_add(amount)
             .ok_or(KeysError::Overflow)?;
+
+        require_recipient_ata(
+            ctx.accounts.recipient.key(),
+            ctx.accounts.mint.key(),
+            ctx.accounts.token_program.key(),
+            ctx.accounts.destination_token_account.key(),
+        )?;
 
         transfer_from_vault(
             &ctx.accounts.mandate,
@@ -811,9 +826,9 @@ pub mod keys {
         allowance.used_at = now;
 
         msg!(
-            "PAYMENT_ALLOW_ONCE_CONSUMED amount={} destination={} nonce={}",
+            "PAYMENT_ALLOW_ONCE_CONSUMED amount={} recipient={} nonce={}",
             amount,
-            ctx.accounts.destination_token_account.key(),
+            ctx.accounts.recipient.key(),
             expected_nonce
         );
         Ok(())
@@ -1276,8 +1291,8 @@ fn require_allowance_exact_notional(
 fn require_exact_payment_action(
     approved_amount: u64,
     actual_amount: u64,
-    approved_destination: Pubkey,
-    actual_destination: Pubkey,
+    approved_recipient: Pubkey,
+    actual_recipient: Pubkey,
 ) -> Result<()> {
     require_eq!(
         actual_amount,
@@ -1285,9 +1300,28 @@ fn require_exact_payment_action(
         KeysError::PaymentAllowanceAmountMismatch
     );
     require_keys_eq!(
+        actual_recipient,
+        approved_recipient,
+        KeysError::PaymentAllowanceRecipientMismatch
+    );
+    Ok(())
+}
+
+fn require_recipient_ata(
+    recipient: Pubkey,
+    mint: Pubkey,
+    token_program: Pubkey,
+    actual_destination: Pubkey,
+) -> Result<()> {
+    let expected_destination = get_associated_token_address_with_program_id(
+        &recipient,
+        &mint,
+        &token_program,
+    );
+    require_keys_eq!(
         actual_destination,
-        approved_destination,
-        KeysError::PaymentAllowanceDestinationMismatch
+        expected_destination,
+        KeysError::PaymentDestinationNotRecipientAta
     );
     Ok(())
 }
@@ -1649,6 +1683,8 @@ pub struct ExecutePaymentWithinMandate<'info> {
         constraint = destination_token_account.mint == mint.key() @ KeysError::DestinationMintMismatch
     )]
     pub destination_token_account: InterfaceAccount<'info, TokenAccount>,
+    /// CHECK: Solana Pay recipient wallet; its canonical ATA is verified in the instruction.
+    pub recipient: UncheckedAccount<'info>,
     pub token_program: Interface<'info, TokenInterface>,
 }
 
@@ -1668,10 +1704,8 @@ pub struct GrantPaymentAllowanceOnce<'info> {
     )]
     pub mandate: Account<'info, Mandate>,
     pub mint: InterfaceAccount<'info, Mint>,
-    #[account(
-        constraint = destination_token_account.mint == mint.key() @ KeysError::DestinationMintMismatch
-    )]
-    pub destination_token_account: InterfaceAccount<'info, TokenAccount>,
+    /// CHECK: Solana Pay recipient wallet bound into the exact allowance.
+    pub recipient: UncheckedAccount<'info>,
     #[account(
         init,
         payer = guardian,
@@ -1745,6 +1779,8 @@ pub struct ExecutePaymentOnce<'info> {
         constraint = destination_token_account.mint == mint.key() @ KeysError::DestinationMintMismatch
     )]
     pub destination_token_account: InterfaceAccount<'info, TokenAccount>,
+    /// CHECK: Must match the recipient stored in the allowance; ATA is verified in the instruction.
+    pub recipient: UncheckedAccount<'info>,
     pub token_program: Interface<'info, TokenInterface>,
 }
 
@@ -1934,7 +1970,7 @@ pub struct PaymentAllowanceReceipt {
     pub guardian: Pubkey,
     pub beneficiary: Pubkey,
     pub mint: Pubkey,
-    pub destination: Pubkey,
+    pub recipient: Pubkey,
     pub amount_base_units: u64,
     pub request_id: [u8; 32],
     pub mandate_nonce: u64,
@@ -2052,8 +2088,10 @@ pub enum KeysError {
     DestinationMintMismatch,
     #[msg("The payment amount does not match the exact one-time payment approved by the guardian.")]
     PaymentAllowanceAmountMismatch,
-    #[msg("The payment destination does not match the exact one-time payment approved by the guardian.")]
-    PaymentAllowanceDestinationMismatch,
+    #[msg("The payment recipient does not match the exact one-time payment approved by the guardian.")]
+    PaymentAllowanceRecipientMismatch,
+    #[msg("The payment destination is not the recipient's canonical associated token account.")]
+    PaymentDestinationNotRecipientAta,
     #[msg("Unexpected Pyth Lazer program id.")]
     InvalidPythProgram,
     #[msg("Unexpected Pyth Lazer storage account.")]
@@ -2282,7 +2320,7 @@ mod payment_intent_tests {
     }
 
     #[test]
-    fn exact_payment_rejects_destination_mutation() {
+    fn exact_payment_rejects_recipient_mutation() {
         assert!(require_exact_payment_action(
             12_000_000,
             12_000_000,
