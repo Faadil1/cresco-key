@@ -1,7 +1,7 @@
 # CRESCO Key — Product Requirements Document
 
-Version: 0.1  
-Status: **CONCEPT LOCKED**  
+Version: 0.2  
+Status: **CONCEPT LOCKED — P0 IMPLEMENTATION ACTIVE**  
 Repository: `Faadil1/cresco-key`  
 Target: Solana Mobile CLOCK IN 2026
 
@@ -135,12 +135,15 @@ For the CLOCK IN payment vertical slice, security-relevant action fields should 
 - Mandate nonce/version;
 - action type;
 - token mint;
-- destination;
+- Solana Pay recipient wallet;
+- token mint;
 - amount;
 - expiry or validity constraints;
 - one-time identifier / request commitment.
 
 The capital path must be able to verify the executed action against the authorized action.
+
+For SPL-token Solana Pay requests, the program binds the guardian exception to the recipient wallet and derives/verifies the recipient's canonical associated token account (ATA) from recipient + mint + active token program. A client cannot preserve the approved recipient label while silently routing the vault transfer to another token account.
 
 A client-provided label or UI hash alone is insufficient.
 
@@ -266,7 +269,7 @@ Before execution, one material field changes.
 
 Preferred proof:
 
-- destination A → destination B;
+- recipient A → recipient B;
 
 acceptable secondary proof:
 
@@ -516,11 +519,11 @@ Each relevant gateway must be marked ACTIVE, N/A, BLOCKED, or PROVEN.
 
 | Gateway | P0 state | Rule |
 |---|---|---|
-| Solana authority program | PROVEN baseline / DELTA REQUIRED | Preserve exact exception semantics; add payment destination binding. |
-| Mobile Wallet Adapter | ACTIVE | Required for native signing flows. |
-| Android APK | ACTIVE | Required. |
-| Two-device relay | ACTIVE | Coordination only; never authority. |
-| Solana Pay / payment QR | ACTIVE | Mobile input / payment-request surface. |
+| Solana authority program | PROVEN baseline / DELTA REQUIRED | Preserve exact exception semantics; add exact Solana Pay recipient binding. |
+| Mobile Wallet Adapter | CODE PROVEN / RUNTIME BLOCKED | Native provider, signing and transaction construction are implemented; physical-device proof remains #2. |
+| Android APK | ACTIVE | Installable debug-APK evidence gate is in PR #14; physical-device install/runtime remains separate. |
+| Two-device relay | CODE PROVEN / RELAY_LIVE BLOCKED | Coordination logic and deployment gate exist; real Cloudflare deployment receipt still required. |
+| Solana Pay / payment QR | CODE PROVEN / RUNTIME ACTIVE | Native QR parsing is implemented; hero runtime still requires live Devnet state. |
 | Seed Vault | INDIRECT | Wallet-layer security, not direct dApp API. |
 | SGT | N/A | Do not force into P0. |
 | SKR | N/A | Add only if meaningful product value is identified. |
@@ -546,16 +549,27 @@ Each relevant gateway must be marked ACTIVE, N/A, BLOCKED, or PROVEN.
 - capital-path enforcement;
 - Pyth evidence in the prior investment lane.
 
-### ACTIVE
+### CODE PROVEN / RUNTIME PENDING
 
-- native Android build;
-- MWA integration;
-- local signing for each role;
-- payment-intent / QR input;
-- private request relay;
-- recipient-bound exact action semantics;
-- mobile state recovery;
-- judge-visible receipts.
+- native Expo/React Native Android prebuild;
+- MWA provider, local wallet connection and signing surfaces;
+- direct construction of standing-payment, exact-grant and exact-execution instructions;
+- Solana Pay SPL-token QR parsing;
+- private request relay with capability-protected request access;
+- exact recipient-wallet binding and canonical ATA verification;
+- fail-closed ALLOW / REFUSE / UNKNOWN transaction outcome handling;
+- deterministic two-wallet Devnet setup tooling;
+- Rust, relay, mobile and Devnet-tooling CI.
+
+### RUNTIME BLOCKED / ACTIVE
+
+- distinct CRESCO Key Devnet program deployment (#8);
+- physical-device MWA proof (#2);
+- live Cloudflare relay deployment (#4);
+- repeatable two-device hero run (#5);
+- canonical app identity URI + Digital Asset Links (#6);
+- installable APK evidence artifact and device install;
+- judge-visible transaction/program receipts.
 
 ### N/A for P0
 
@@ -677,7 +691,52 @@ P0 is not done until a reviewer can reproduce the following on the mobile build:
 
 ---
 
-## 20. Collaboration rule
+## 20. Implementation state snapshot — 2026-09-26
+
+The concept is locked; implementation has moved past architecture-only work.
+
+### Merged code evidence
+
+- native Android/React Native client with Mobile Wallet Adapter;
+- exact Solana Pay SPL-token request parsing;
+- CRESCO Key payment program delta:
+  - standing in-Key payment;
+  - exact Allow Once grant;
+  - exact one-time payment;
+  - recipient mutation refusal;
+  - replay/stale/expiry enforcement;
+- private two-device boundary relay;
+- direct native construction/submission of CRESCO Key instructions;
+- fail-closed transaction classification: unclassified failures remain UNKNOWN;
+- guarded relay deployment workflow;
+- guarded distinct-program provisioning script;
+- deterministic two-wallet Devnet demo bootstrap with recipient A/B ATAs.
+
+### Active evidence work
+
+- PR #14 — Android debug APK build artifact + checksum receipt.
+
+### Promotion blockers
+
+The product must not claim the complete CLOCK IN hero run until all of these exist:
+
+1. distinct CRESCO Key program id deployed to Devnet;
+2. live relay deployment receipt;
+3. Android APK installed on the target device;
+4. local MWA connection/sign/send evidence;
+5. real in-bounds ALLOW transaction;
+6. real out-of-bounds REFUSE;
+7. guardian exact Allow Once confirmation;
+8. changed-recipient REFUSE;
+9. exact ALLOW ONCE;
+10. replay REFUSE;
+11. evidence that standing Mandate version/nonce did not change because of Allow Once.
+
+Until then, code/CI evidence and runtime evidence must remain explicitly distinguished.
+
+---
+
+## 21. Collaboration rule
 
 This file is the canonical shared product source of truth for collaborators.
 
