@@ -1,0 +1,13 @@
+{
+  "expo": {
+    "name": "CRESCO Key",
+    "slug": "cresco-key",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "scheme": "crescokey",
+    "userInterfaceStyle": "automatic",
+    "android": {
+      "package": "com.faadil.crescokey"
+    }
+  }
+}
