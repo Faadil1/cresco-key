@@ -8,8 +8,8 @@ export type TransactionOutcome =
     }
   | {
       state: "REFUSE";
-      signature: Signature;
-      error: unknown;
+      signature: Signature | null;
+      evidence: string;
     }
   | {
       state: "UNKNOWN";
@@ -29,42 +29,116 @@ type RpcLike = {
       >;
     }>;
   };
+  getTransaction(
+    signature: Signature,
+    config: {
+      commitment: "confirmed";
+      encoding: "json";
+      maxSupportedTransactionVersion: 0;
+    },
+  ): {
+    send(): Promise<
+      | {
+          meta?: {
+            err?: unknown;
+            logMessages?: string[] | null;
+          } | null;
+        }
+      | null
+    >;
+  };
 };
+
+const KNOWN_REFUSAL_MARKERS = [
+  "ActionAmountExceeded",
+  "PeriodAmountExceeded",
+  "AllowanceAlreadyUsed",
+  "StaleAllowance",
+  "AllowanceExpired",
+  "AllowanceRequestMismatch",
+  "PaymentAllowanceAmountMismatch",
+  "PaymentAllowanceRecipientMismatch",
+  "PaymentDestinationNotRecipientAta",
+  "StaleNonce",
+  "MandateNotActive",
+  "MandateExpired",
+  "ActionNotAllowed",
+  "AssetRuleDisabled",
+] as const;
 
 function delay(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+function errorText(error: unknown): string {
+  if (error instanceof Error) return `${error.name}: ${error.message}`;
+  if (typeof error === "string") return error;
+  try {
+    return JSON.stringify(error);
+  } catch {
+    return String(error);
+  }
+}
+
+export function knownRefusalEvidence(value: unknown): string | null {
+  const text = errorText(value);
+  const marker = KNOWN_REFUSAL_MARKERS.find((candidate) =>
+    text.includes(candidate),
+  );
+  return marker ?? null;
+}
+
 export function classifyProgramSubmissionError(
   error: unknown,
-): "REFUSE" | "UNKNOWN" {
-  const text =
-    error instanceof Error
-      ? `${error.name}: ${error.message}`
-      : typeof error === "string"
-        ? error
-        : JSON.stringify(error);
+): TransactionOutcome {
+  const evidence = knownRefusalEvidence(error);
+  if (evidence) {
+    return {
+      state: "REFUSE",
+      signature: null,
+      evidence,
+    };
+  }
 
-  const knownRefusalMarkers = [
-    "ActionAmountExceeded",
-    "PeriodAmountExceeded",
-    "AllowanceAlreadyUsed",
-    "StaleAllowance",
-    "AllowanceExpired",
-    "AllowanceRequestMismatch",
-    "PaymentAllowanceAmountMismatch",
-    "PaymentAllowanceRecipientMismatch",
-    "PaymentDestinationNotRecipientAta",
-    "StaleNonce",
-    "MandateNotActive",
-    "MandateExpired",
-    "ActionNotAllowed",
-    "AssetRuleDisabled",
-  ];
+  return {
+    state: "UNKNOWN",
+    signature: null,
+    error,
+  };
+}
 
-  return knownRefusalMarkers.some((marker) => text.includes(marker))
-    ? "REFUSE"
-    : "UNKNOWN";
+async function classifyConfirmedFailure(
+  rpc: RpcLike,
+  signature: Signature,
+  statusError: unknown,
+): Promise<TransactionOutcome> {
+  try {
+    const transaction = await rpc
+      .getTransaction(signature, {
+        commitment: "confirmed",
+        encoding: "json",
+        maxSupportedTransactionVersion: 0,
+      })
+      .send();
+
+    const logs = transaction?.meta?.logMessages ?? [];
+    const evidence = knownRefusalEvidence(logs.join("\n"));
+    if (evidence) {
+      return {
+        state: "REFUSE",
+        signature,
+        evidence,
+      };
+    }
+  } catch {
+    // Preserve fail-closed behavior below.
+  }
+
+  return {
+    state: "UNKNOWN",
+    signature,
+    error: statusError,
+  };
 }
 
 export async function waitForTransactionOutcome(
@@ -89,11 +163,7 @@ export async function waitForTransactionOutcome(
     } = await rpc.getSignatureStatuses([rawSignature]).send();
 
     if (status?.err) {
-      return {
-        state: "REFUSE",
-        signature: rawSignature,
-        error: status.err,
-      };
+      return classifyConfirmedFailure(rpc, rawSignature, status.err);
     }
 
     if (
