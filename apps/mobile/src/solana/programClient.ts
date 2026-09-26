@@ -88,7 +88,7 @@ export function requestIdBytes(requestId: string): Uint8Array {
 }
 
 function addressBytes(value: Address): Uint8Array {
-  return addressEncoder.encode(value);
+  return new Uint8Array(addressEncoder.encode(value));
 }
 
 export function paymentProgramConfigFromEnv(): PaymentProgramConfig {
