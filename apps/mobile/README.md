@@ -86,3 +86,42 @@ The P0 mobile flow now includes:
 The relay harness is intentionally not wired to the hero claim yet. It may create a private request for integration testing, but the final product must call that path only after a real onchain standing-authority REFUSE.
 
 The guardian screen deliberately has no fake Approve button until the actual `grant_payment_allowance_once` program transaction is connected.
+
+
+## P0 capital-path client
+
+The native client now has a direct `@solana/kit` instruction builder for the CRESCO Key payment delta.
+
+It derives the same PDAs as the Anchor program:
+
+- `charter`;
+- `mandate`;
+- `asset-rule`;
+- `vault`;
+- `payment-allowance`;
+- recipient ATA.
+
+The Android flow can now construct and submit:
+
+- `execute_payment_within_mandate`;
+- `grant_payment_allowance_once`;
+- `execute_payment_once`.
+
+Transaction handling is fail-closed:
+
+- a confirmed successful transaction is `ALLOW`;
+- a failed transaction becomes `REFUSE` only when the client can identify a known CRESCO Key refusal marker in program logs;
+- unclassified failures and timeouts are `UNKNOWN`;
+- no guardian request is created from an `UNKNOWN` result.
+
+The guardian's "Allow this exact payment once" control therefore submits the real program instruction when a distinct CRESCO Key Devnet program id is configured. It is no longer a simulated approval surface.
+
+The young-person flow supports the target sequence once Devnet state is provisioned:
+
+`standing attempt → verified REFUSE → private request → guardian exact grant → changed-recipient refusal → exact retry → replay refusal`.
+
+### Required before runtime claims
+
+The app intentionally refuses to use the inherited CRESCO program id by default. Set `EXPO_PUBLIC_CRESCO_KEY_PROGRAM_ID` only after issue #8 provisions a distinct program identity and deployment.
+
+A successful TypeScript/prebuild CI run proves client construction, not on-device MWA execution or Devnet capital movement. Those remain runtime gates.
