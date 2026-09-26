@@ -136,7 +136,6 @@ For the CLOCK IN payment vertical slice, security-relevant action fields should 
 - action type;
 - token mint;
 - Solana Pay recipient wallet;
-- token mint;
 - amount;
 - expiry or validity constraints;
 - one-time identifier / request commitment.
@@ -366,13 +365,16 @@ P0 must preserve or adapt the proven CRESCO authority behavior:
 
 The mobile payment lane must bind and verify the actual payment intent, not only a human-readable amount.
 
-The program should support a canonical payment action commitment containing at least:
+The program must bind the exact payment semantics through explicit program state containing at least:
 
-- mint;
-- destination;
-- amount;
-- action type;
-- mandate nonce/version.
+- token mint;
+- Solana Pay recipient wallet;
+- exact amount;
+- one-time request identifier;
+- mandate nonce/version;
+- expiry/validity where applicable.
+
+The payment instruction itself fixes the action type. For SPL-token execution, the recipient's canonical ATA must be derived and verified rather than trusted as an arbitrary client-selected destination account.
 
 The program must reject an approved request if any material bound field changes.
 
@@ -519,7 +521,7 @@ Each relevant gateway must be marked ACTIVE, N/A, BLOCKED, or PROVEN.
 
 | Gateway | P0 state | Rule |
 |---|---|---|
-| Solana authority program | PROVEN baseline / DELTA REQUIRED | Preserve exact exception semantics; add exact Solana Pay recipient binding. |
+| Solana authority program | DELTA CODE PROVEN / DEVNET BLOCKED | Exact amount + recipient + one-time semantics are implemented and Rust-tested; distinct CRESCO Key Devnet deployment remains #8. |
 | Mobile Wallet Adapter | CODE PROVEN / RUNTIME BLOCKED | Native provider, signing and transaction construction are implemented; physical-device proof remains #2. |
 | Android APK | ACTIVE | Installable debug-APK evidence gate is in PR #14; physical-device install/runtime remains separate. |
 | Two-device relay | CODE PROVEN / RELAY_LIVE BLOCKED | Coordination logic and deployment gate exist; real Cloudflare deployment receipt still required. |
