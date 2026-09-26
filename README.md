@@ -12,7 +12,7 @@ CRESCO Key gives a young person real standing financial authority inside explici
 - Target: **Solana Mobile CLOCK IN 2026**
 - Network for current proof work: **Solana Devnet**
 - Mobile direction: **native Android / React Native + Mobile Wallet Adapter**
-- Current phase: **Technical Reality Check → Demo-First Architecture → Build**
+- Current phase: **P0 vertical slice implementation → APK build evidence → runtime proof**
 
 ## Core product law
 
@@ -45,8 +45,38 @@ The mobile build prioritizes a stablecoin/payment-intent demonstration rather th
 - `product/PRD.md` — canonical product requirements and shared team source of truth.
 - `docs/TECHNICAL-REALITY-CHECK.md` — proven, active, blocked, and out-of-scope technical gates.
 - `docs/DEMO-FIRST-ARCHITECTURE.md` — target mobile vertical slice and evidence requirements.
-- `apps/mobile/` — native Android/React Native client. *(to be built)*
-- `programs/` — Solana authority program. *(to be ported/adapted from the proven CRESCO baseline only as needed)*
+- `apps/mobile/` — Expo/React Native Android client with Mobile Wallet Adapter, Solana Pay QR parsing, two-device boundary flow, and direct CRESCO Key instruction construction.
+- `programs/keys/` — Anchor authority program with standing payment execution and exact one-time payment allowance.
+- `services/relay/` — private Cloudflare Durable Object boundary relay; coordination only, never authority.
+- `docs/EXACT-PAYMENT-INTENT.md` — exact amount/recipient semantics and hostile-mutation rules.
+- `docs/MOBILE-APK-EVIDENCE.md` — Android build-evidence gate and runtime promotion boundary.
+- `scripts/provision-cresco-key-program.ps1` — guarded local provisioning/deployment path for a distinct CRESCO Key Devnet program id.
+
+## Implementation evidence
+
+Implemented and CI-verified in the repository:
+
+- native Android prebuild;
+- local Mobile Wallet Adapter integration code;
+- Solana Pay SPL-token QR parsing;
+- exact recipient-wallet binding with canonical ATA verification;
+- standing payment instruction;
+- guardian exact Allow Once instruction;
+- exact retry and replay path;
+- private two-device relay with fail-closed semantics;
+- amount/recipient mutation refusal logic;
+- Rust program tests, relay tests, and mobile TypeScript/prebuild checks.
+
+These are **build/code evidence**, not claims that the full hero flow has already run on physical devices or Devnet.
+
+Runtime promotion still requires:
+
+- a distinct CRESCO Key program id deployed to Devnet;
+- live relay deployment;
+- verified app identity URI / Digital Asset Links for production-shaped wallet identity;
+- installable APK on device;
+- real MWA connect/reject/sign/send evidence;
+- repeatable two-device hero run with Devnet receipts and hostile negative cases.
 
 ## Truth boundary
 
