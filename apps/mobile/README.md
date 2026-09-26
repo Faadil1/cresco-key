@@ -70,3 +70,19 @@ The identity URI should ultimately host the Digital Asset Links relationship req
 6. add guardian role flow;
 7. add app lifecycle restoration;
 8. produce signed release APK.
+
+
+## Current mobile boundary-flow branch
+
+The P0 mobile flow now includes:
+
+- Solana Pay QR scanning through `expo-camera`;
+- strict parsing of exact SPL-token payment requests;
+- secure local storage for private relay capabilities;
+- a young-person relay integration harness;
+- guardian deep-link loading and exact-request review;
+- explicit UI copy that relay state is **not** financial authority.
+
+The relay harness is intentionally not wired to the hero claim yet. It may create a private request for integration testing, but the final product must call that path only after a real onchain standing-authority REFUSE.
+
+The guardian screen deliberately has no fake Approve button until the actual `grant_payment_allowance_once` program transaction is connected.
