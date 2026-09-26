@@ -5,6 +5,7 @@ use anchor_lang::solana_program::{
     pubkey,
     sysvar,
 };
+use anchor_spl::associated_token::get_associated_token_address_with_program_id;
 use anchor_spl::token_interface::{
     self, Mint, TokenAccount, TokenInterface, TransferChecked,
 };
