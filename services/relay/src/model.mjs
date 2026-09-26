@@ -76,7 +76,7 @@ export function validateCreatePayload(input) {
     mandate: requireString(input.mandate, "mandate"),
     mandateNonce,
     mint: requireString(input.mint, "mint"),
-    destination: requireString(input.destination, "destination"),
+    recipient: requireString(input.recipient, "recipient"),
     amountBaseUnits,
     requesterWallet: requireString(input.requesterWallet, "requesterWallet"),
     guardianWallet: requireString(input.guardianWallet, "guardianWallet"),
