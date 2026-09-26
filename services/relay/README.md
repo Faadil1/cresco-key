@@ -46,7 +46,7 @@ Required:
 - `mandate`;
 - `mandateNonce` — integer string;
 - `mint`;
-- `destination`;
+- `recipient` — Solana Pay recipient wallet;
 - `amountBaseUnits` — positive integer string;
 - `requesterWallet`;
 - `guardianWallet`.
