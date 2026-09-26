@@ -61,7 +61,7 @@ function missingConfig(config: ReturnType<typeof demoConfig>): string[] {
 }
 
 export function BoundaryWorkspace() {
-  const { account } = useMobileWallet();
+  const { account, chain, signMessage } = useMobileWallet();
   const [mode, setMode] = useState<Mode>(null);
   const [scanning, setScanning] = useState(false);
   const [intent, setIntent] = useState<SolanaPayTransferIntent | null>(null);
@@ -74,6 +74,9 @@ export function BoundaryWorkspace() {
     "No boundary relay action has been attempted.",
   );
   const [busy, setBusy] = useState(false);
+  const [walletProof, setWalletProof] = useState(
+    "Wallet connected. Signature proof not attempted on this session.",
+  );
 
   const config = useMemo(() => demoConfig(), []);
   const configMissing = useMemo(() => missingConfig(config), [config]);
@@ -119,6 +122,26 @@ export function BoundaryWorkspace() {
 
     return () => subscription.remove();
   }, []);
+
+  const signWalletProof = async () => {
+    if (!account) return;
+    setBusy(true);
+    try {
+      const payload = new TextEncoder().encode(
+        `CRESCO Key TRC-01 wallet proof | ${account.address.toString()} | ${chain}`,
+      );
+      const signature = await signMessage(payload);
+      setWalletProof(`SIGNED · ${signature.length} signature bytes`);
+    } catch (error) {
+      setWalletProof(
+        error instanceof Error
+          ? `REFUSED/FAILED · ${error.message}`
+          : "UNKNOWN · signing did not complete",
+      );
+    } finally {
+      setBusy(false);
+    }
+  };
 
   const createRelayHarnessRequest = async () => {
     if (!intent || !account) return;
@@ -219,6 +242,17 @@ export function BoundaryWorkspace() {
           Choose the human role on this device. Each role still uses its own
           local wallet session.
         </Text>
+        <View style={styles.truthCard}>
+          <Text style={styles.truthTitle}>Local wallet proof</Text>
+          <Text style={styles.body}>{walletProof}</Text>
+          <Pressable
+            disabled={busy}
+            style={styles.button}
+            onPress={signWalletProof}
+          >
+            <Text style={styles.buttonText}>Sign TRC-01 proof message</Text>
+          </Pressable>
+        </View>
         <Pressable style={styles.button} onPress={() => setMode("YOUNG")}>
           <Text style={styles.buttonText}>Young person flow</Text>
         </Pressable>
