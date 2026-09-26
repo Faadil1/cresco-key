@@ -1,0 +1,29 @@
+name: Boundary Relay CI
+
+on:
+  pull_request:
+    paths:
+      - "services/relay/**"
+      - ".github/workflows/relay-ci.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "services/relay/**"
+      - ".github/workflows/relay-ci.yml"
+
+jobs:
+  relay-check:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: services/relay
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20.19.0"
+      - name: Install
+        run: npm install
+      - name: Test and dry-run Worker build
+        run: npm run check
