@@ -6,6 +6,15 @@
     "orientation": "portrait",
     "scheme": "crescokey",
     "userInterfaceStyle": "automatic",
+    "plugins": [
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "CRESCO Key uses the camera to scan payment QR codes."
+        }
+      ],
+      "expo-secure-store"
+    ],
     "android": {
       "package": "com.faadil.crescokey"
     }

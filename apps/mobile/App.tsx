@@ -2,7 +2,7 @@ import { MobileWalletProvider, createSolanaDevnet } from "@wallet-ui/react-nativ
 import { StatusBar } from "expo-status-bar";
 import { SafeAreaView, StyleSheet } from "react-native";
 
-import { WalletGate } from "./src/WalletGate";
+import { MobileExperience } from "./src/MobileExperience";
 
 const rpcUrl =
   process.env.EXPO_PUBLIC_SOLANA_RPC_URL ?? "https://api.devnet.solana.com";
@@ -25,7 +25,7 @@ export default function App() {
     >
       <SafeAreaView style={styles.root}>
         <StatusBar style="auto" />
-        <WalletGate />
+        <MobileExperience />
       </SafeAreaView>
     </MobileWalletProvider>
   );
