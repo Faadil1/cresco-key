@@ -9,7 +9,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@solana/kit": "8.3.0",
+    "@solana/kit": "^7.0.0",
     "@wallet-ui/react-native-kit": "4.3.0",
     "expo": "~57.0.25",
     "expo-dev-client": "~57.0.19",
@@ -17,10 +17,14 @@
     "react": "19.2.3",
     "react-native": "0.86.3",
     "react-native-nitro-modules": "0.37.1",
+    "react-native-quick-base64": "3.0.1",
     "react-native-quick-crypto": "1.1.7"
   },
   "devDependencies": {
     "@types/react": "~19.2.2",
     "typescript": "~6.0.3"
+  },
+  "engines": {
+    "node": ">=20.19.0"
   }
 }
