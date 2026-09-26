@@ -1,3 +1,4 @@
+import { address } from "@solana/kit";
 import { useMobileWallet } from "@wallet-ui/react-native-kit";
 import * as Linking from "expo-linking";
 import { randomBytes } from "react-native-quick-crypto";
@@ -28,8 +29,22 @@ import {
   type BoundaryRelayRequest,
 } from "./relay/client";
 import { saveBoundaryCapability } from "./relay/storage";
+import {
+  buildExecutePaymentOnceInstruction,
+  buildExecutePaymentWithinMandateInstruction,
+  buildGrantPaymentAllowanceOnceInstruction,
+  derivePaymentAccounts,
+  derivePaymentAllowanceAccounts,
+  paymentProgramConfigFromEnv,
+} from "./solana/programClient";
+import {
+  classifyProgramSubmissionError,
+  waitForTransactionOutcome,
+  type TransactionOutcome,
+} from "./solana/outcome";
 
 type Mode = "YOUNG" | "GUARDIAN" | null;
+type ExactExecutionState = "IDLE" | "ALLOW" | "REFUSE" | "UNKNOWN";
 
 function randomRequestId(): string {
   return randomBytes(32).toString("hex");
@@ -39,29 +54,63 @@ function demoConfig() {
   const decimals = Number(process.env.EXPO_PUBLIC_DEMO_TOKEN_DECIMALS ?? "6");
 
   return {
-    mandate: process.env.EXPO_PUBLIC_DEMO_MANDATE?.trim() ?? "",
     mandateNonce: process.env.EXPO_PUBLIC_DEMO_MANDATE_NONCE?.trim() ?? "",
     guardianWallet: process.env.EXPO_PUBLIC_DEMO_GUARDIAN_WALLET?.trim() ?? "",
+    mutatedRecipient:
+      process.env.EXPO_PUBLIC_DEMO_MUTATED_RECIPIENT?.trim() ?? "",
     tokenDecimals: decimals,
   };
 }
 
-function missingConfig(config: ReturnType<typeof demoConfig>): string[] {
+function missingCapitalConfig(
+  config: ReturnType<typeof demoConfig>,
+): string[] {
   const missing: string[] = [];
-  if (!process.env.EXPO_PUBLIC_BOUNDARY_RELAY_URL?.trim()) {
-    missing.push("BOUNDARY_RELAY_URL");
+  if (!process.env.EXPO_PUBLIC_CRESCO_KEY_PROGRAM_ID?.trim()) {
+    missing.push("CRESCO_KEY_PROGRAM_ID");
   }
-  if (!config.mandate) missing.push("DEMO_MANDATE");
+  if (!process.env.EXPO_PUBLIC_DEMO_TOKEN_PROGRAM_ID?.trim()) {
+    missing.push("DEMO_TOKEN_PROGRAM_ID");
+  }
   if (!config.mandateNonce) missing.push("DEMO_MANDATE_NONCE");
-  if (!config.guardianWallet) missing.push("DEMO_GUARDIAN_WALLET");
   if (!Number.isInteger(config.tokenDecimals) || config.tokenDecimals < 0) {
     missing.push("DEMO_TOKEN_DECIMALS");
   }
   return missing;
 }
 
+function missingRelayConfig(config: ReturnType<typeof demoConfig>): string[] {
+  const missing = missingCapitalConfig(config);
+  if (!process.env.EXPO_PUBLIC_BOUNDARY_RELAY_URL?.trim()) {
+    missing.push("BOUNDARY_RELAY_URL");
+  }
+  if (!config.guardianWallet) missing.push("DEMO_GUARDIAN_WALLET");
+  return missing;
+}
+
+function outcomeLabel(outcome: TransactionOutcome): string {
+  if (outcome.state === "ALLOW") {
+    return `ALLOW · ${outcome.signature}`;
+  }
+  if (outcome.state === "REFUSE") {
+    return `REFUSE · ${outcome.evidence}${
+      outcome.signature ? ` · ${outcome.signature}` : ""
+    }`;
+  }
+  return `UNKNOWN · ${String(outcome.error)}${
+    outcome.signature ? ` · ${outcome.signature}` : ""
+  }`;
+}
+
 export function BoundaryWorkspace() {
-  const { account, chain, signMessage } = useMobileWallet();
+  const {
+    account,
+    chain,
+    client,
+    sendTransactions,
+    signMessages,
+  } = useMobileWallet();
+
   const [mode, setMode] = useState<Mode>(null);
   const [scanning, setScanning] = useState(false);
   const [intent, setIntent] = useState<SolanaPayTransferIntent | null>(null);
@@ -69,17 +118,31 @@ export function BoundaryWorkspace() {
     useState<BoundaryRelayRequest | null>(null);
   const [guardianCapability, setGuardianCapability] =
     useState<BoundaryDeepLink | null>(null);
+  const [youngCapability, setYoungCapability] =
+    useState<BoundaryDeepLink | null>(null);
   const [shareLink, setShareLink] = useState<string | null>(null);
   const [status, setStatus] = useState(
-    "No boundary relay action has been attempted.",
+    "No capital-path action has been attempted.",
   );
   const [busy, setBusy] = useState(false);
   const [walletProof, setWalletProof] = useState(
     "Wallet connected. Signature proof not attempted on this session.",
   );
+  const [exactExecutionState, setExactExecutionState] =
+    useState<ExactExecutionState>("IDLE");
 
   const config = useMemo(() => demoConfig(), []);
-  const configMissing = useMemo(() => missingConfig(config), [config]);
+  const capitalConfigMissing = useMemo(
+    () => missingCapitalConfig(config),
+    [config],
+  );
+  const relayConfigMissing = useMemo(
+    () => missingRelayConfig(config),
+    [config],
+  );
+
+  const rpcForOutcome =
+    client.rpc as unknown as Parameters<typeof waitForTransactionOutcome>[0];
 
   const loadGuardianLink = async (url: string) => {
     const capability = parseBoundaryDeepLink(url);
@@ -130,7 +193,7 @@ export function BoundaryWorkspace() {
       const payload = new TextEncoder().encode(
         `CRESCO Key TRC-01 wallet proof | ${account.address.toString()} | ${chain}`,
       );
-      const signature = await signMessage(payload);
+      const signature = await signMessages(payload);
       setWalletProof(`SIGNED · ${signature.length} signature bytes`);
     } catch (error) {
       setWalletProof(
@@ -143,58 +206,132 @@ export function BoundaryWorkspace() {
     }
   };
 
-  const createRelayHarnessRequest = async () => {
+  const createBoundaryFromVerifiedRefusal = async (
+    refusal: Extract<TransactionOutcome, { state: "REFUSE" }>,
+  ) => {
     if (!intent || !account) return;
 
-    if (configMissing.length > 0) {
-      setStatus(`Missing dev configuration: ${configMissing.join(", ")}`);
+    if (relayConfigMissing.length > 0) {
+      setStatus(
+        `REFUSE verified, but relay is not configured: ${relayConfigMissing.join(
+          ", ",
+        )}`,
+      );
+      return;
+    }
+
+    const programConfig = paymentProgramConfigFromEnv();
+    const beneficiary = address(account.address.toString());
+    const mint = address(intent.mint);
+    const recipient = address(intent.recipient);
+    const accounts = await derivePaymentAccounts({
+      config: programConfig,
+      beneficiary,
+      mint,
+      recipient,
+    });
+
+    const requestId = randomRequestId();
+    const amountBaseUnits = decimalToBaseUnits(
+      intent.amountUi,
+      config.tokenDecimals,
+    );
+
+    const created = await createBoundaryRequest({
+      requestId,
+      mandate: accounts.mandate,
+      mandateNonce: config.mandateNonce,
+      mint: intent.mint,
+      recipient: intent.recipient,
+      amountBaseUnits,
+      requesterWallet: account.address.toString(),
+      guardianWallet: config.guardianWallet,
+      expiresAt: Math.floor(Date.now() / 1000) + 10 * 60,
+      display: {
+        label: intent.label,
+        reason: `Standing Key refused: ${refusal.evidence}${
+          refusal.signature ? ` · tx ${refusal.signature}` : ""
+        }`,
+      },
+    });
+
+    const capability = {
+      requestId,
+      relayToken: created.relayToken,
+    };
+
+    await saveBoundaryCapability(capability);
+
+    const link = createBoundaryDeepLink(requestId, created.relayToken);
+    setYoungCapability(capability);
+    setRelayRequest(created.request);
+    setShareLink(link);
+    setExactExecutionState("IDLE");
+    setStatus(
+      "REFUSE is verified. A private PENDING request now carries the exact action to the guardian; the standing Key has not moved.",
+    );
+  };
+
+  const attemptStandingPayment = async () => {
+    if (!intent || !account) return;
+
+    if (capitalConfigMissing.length > 0) {
+      setStatus(
+        `Capital path is not configured: ${capitalConfigMissing.join(", ")}`,
+      );
       return;
     }
 
     setBusy(true);
-    setStatus(
-      "Creating coordination request. This does not claim an onchain boundary refusal.",
-    );
+    setStatus("Submitting the standing-Key payment instruction on Devnet.");
 
     try {
-      const requestId = randomRequestId();
-      const amountBaseUnits = decimalToBaseUnits(
-        intent.amountUi,
-        config.tokenDecimals,
-      );
+      const programConfig = paymentProgramConfigFromEnv();
+      const instruction =
+        await buildExecutePaymentWithinMandateInstruction({
+          config: programConfig,
+          beneficiary: address(account.address.toString()),
+          mint: address(intent.mint),
+          recipient: address(intent.recipient),
+          amountBaseUnits: BigInt(
+            decimalToBaseUnits(intent.amountUi, config.tokenDecimals),
+          ),
+          expectedNonce: BigInt(config.mandateNonce),
+        });
 
-      const created = await createBoundaryRequest({
-        requestId,
-        mandate: config.mandate,
-        mandateNonce: config.mandateNonce,
-        mint: intent.mint,
-        recipient: intent.recipient,
-        amountBaseUnits,
-        requesterWallet: account.address.toString(),
-        guardianWallet: config.guardianWallet,
-        expiresAt: Math.floor(Date.now() / 1000) + 10 * 60,
-        display: {
-          label: intent.label,
-          reason:
-            "Relay integration harness. Production flow creates this only after a real capital-path REFUSE.",
-        },
-      });
+      let outcome: TransactionOutcome;
+      try {
+        const signature = await sendTransactions([instruction]);
+        outcome = await waitForTransactionOutcome(rpcForOutcome, signature);
+      } catch (submissionError) {
+        outcome = classifyProgramSubmissionError(submissionError);
+      }
 
-      await saveBoundaryCapability({
-        requestId,
-        relayToken: created.relayToken,
-      });
+      setStatus(outcomeLabel(outcome));
 
-      const link = createBoundaryDeepLink(requestId, created.relayToken);
-      setRelayRequest(created.request);
-      setShareLink(link);
-      setStatus(
-        "Private relay request created. Still PENDING; the relay cannot grant financial authority.",
-      );
+      if (outcome.state === "REFUSE") {
+        await createBoundaryFromVerifiedRefusal(outcome);
+      }
     } catch (error) {
-      setStatus(
-        error instanceof Error ? error.message : "BOUNDARY_REQUEST_FAILED",
+      setStatus(error instanceof Error ? error.message : "PAYMENT_ATTEMPT_FAILED");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const refreshYoungRequest = async () => {
+    if (!youngCapability) return;
+
+    setBusy(true);
+    try {
+      const request = await getBoundaryRequest(
+        youngCapability.requestId,
+        youngCapability.relayToken,
       );
+      setRelayRequest(request);
+      setStatus(`Relay status: ${request.status}`);
+    } catch (error) {
+      setStatus(error instanceof Error ? error.message : "REFRESH_FAILED");
     } finally {
       setBusy(false);
     }
@@ -202,6 +339,7 @@ export function BoundaryWorkspace() {
 
   const refreshGuardianRequest = async () => {
     if (!guardianCapability) return;
+
     setBusy(true);
     try {
       const request = await getBoundaryRequest(
@@ -217,6 +355,145 @@ export function BoundaryWorkspace() {
     }
   };
 
+  const grantExactAllowanceOnce = async () => {
+    if (!guardianCapability || !relayRequest || !account) return;
+
+    if (capitalConfigMissing.length > 0) {
+      setStatus(
+        `Capital path is not configured: ${capitalConfigMissing.join(", ")}`,
+      );
+      return;
+    }
+
+    if (relayRequest.status !== "PENDING") {
+      setStatus(`Guardian action blocked in relay state ${relayRequest.status}.`);
+      return;
+    }
+
+    setBusy(true);
+    setStatus(
+      "Submitting exact Allow Once on Devnet. The standing Key remains unchanged.",
+    );
+
+    try {
+      const programConfig = paymentProgramConfigFromEnv();
+      const guardian = address(account.address.toString());
+      const beneficiary = address(relayRequest.requesterWallet);
+      const mint = address(relayRequest.mint);
+      const recipient = address(relayRequest.recipient);
+      const derived = await derivePaymentAllowanceAccounts({
+        config: programConfig,
+        beneficiary,
+        mint,
+        recipient,
+        requestId: relayRequest.requestId,
+      });
+
+      if (derived.mandate.toString() !== relayRequest.mandate) {
+        throw new Error("RELAY_MANDATE_MISMATCH");
+      }
+
+      const instruction = await buildGrantPaymentAllowanceOnceInstruction({
+        config: programConfig,
+        guardian,
+        beneficiary,
+        mint,
+        recipient,
+        requestId: relayRequest.requestId,
+        expectedNonce: BigInt(relayRequest.mandateNonce),
+        amountBaseUnits: BigInt(relayRequest.amountBaseUnits),
+        expiresAtUnixSeconds: BigInt(
+          relayRequest.expiresAt ?? Math.floor(Date.now() / 1000) + 600,
+        ),
+      });
+
+      let outcome: TransactionOutcome;
+      try {
+        const signature = await sendTransactions([instruction]);
+        outcome = await waitForTransactionOutcome(rpcForOutcome, signature);
+      } catch (submissionError) {
+        outcome = classifyProgramSubmissionError(submissionError);
+      }
+
+      if (outcome.state !== "ALLOW") {
+        setStatus(outcomeLabel(outcome));
+        return;
+      }
+
+      const request = await postBoundaryRelayEvent(
+        guardianCapability.requestId,
+        guardianCapability.relayToken,
+        {
+          type: "ALLOWANCE_SUBMITTED",
+          txSignature: outcome.signature,
+        },
+      );
+
+      setRelayRequest(request);
+      setStatus(
+        `Allowance transaction confirmed onchain · ${outcome.signature}. Relay marker recorded; no payment has executed yet.`,
+      );
+    } catch (error) {
+      setStatus(error instanceof Error ? error.message : "ALLOW_ONCE_FAILED");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const executeExactAllowance = async (recipientOverride?: string) => {
+    if (!relayRequest || !account) return;
+
+    if (relayRequest.status !== "ALLOWANCE_SUBMITTED") {
+      setStatus(
+        `Exact execution blocked until guardian allowance is confirmed. Current relay state: ${relayRequest.status}.`,
+      );
+      return;
+    }
+
+    if (capitalConfigMissing.length > 0) {
+      setStatus(
+        `Capital path is not configured: ${capitalConfigMissing.join(", ")}`,
+      );
+      return;
+    }
+
+    setBusy(true);
+    setStatus(
+      recipientOverride
+        ? "Submitting changed-recipient action. It must not inherit the guardian approval."
+        : "Submitting the exact one-time payment.",
+    );
+
+    try {
+      const programConfig = paymentProgramConfigFromEnv();
+      const instruction = await buildExecutePaymentOnceInstruction({
+        config: programConfig,
+        beneficiary: address(account.address.toString()),
+        mint: address(relayRequest.mint),
+        recipient: address(recipientOverride ?? relayRequest.recipient),
+        requestId: relayRequest.requestId,
+        expectedNonce: BigInt(relayRequest.mandateNonce),
+        amountBaseUnits: BigInt(relayRequest.amountBaseUnits),
+      });
+
+      let outcome: TransactionOutcome;
+      try {
+        const signature = await sendTransactions([instruction]);
+        outcome = await waitForTransactionOutcome(rpcForOutcome, signature);
+      } catch (submissionError) {
+        outcome = classifyProgramSubmissionError(submissionError);
+      }
+
+      setExactExecutionState(outcome.state);
+      setStatus(outcomeLabel(outcome));
+    } catch (error) {
+      setExactExecutionState("UNKNOWN");
+      setStatus(error instanceof Error ? error.message : "EXACT_EXECUTION_FAILED");
+    } finally {
+      setBusy(false);
+    }
+  };
+
   if (scanning) {
     return (
       <View style={styles.full}>
@@ -224,6 +501,10 @@ export function BoundaryWorkspace() {
           onCancel={() => setScanning(false)}
           onIntent={(nextIntent) => {
             setIntent(nextIntent);
+            setRelayRequest(null);
+            setYoungCapability(null);
+            setShareLink(null);
+            setExactExecutionState("IDLE");
             setScanning(false);
             setStatus(
               "Payment request parsed. No authority decision has been made yet.",
@@ -290,9 +571,9 @@ export function BoundaryWorkspace() {
         <View style={styles.truthCard}>
           <Text style={styles.truthTitle}>Authority boundary</Text>
           <Text style={styles.body}>
-            Guardian review is wired to the private relay. The onchain Allow
-            Once transaction is deliberately not simulated here. Until the
-            program client is connected, this screen cannot approve capital.
+            The relay can coordinate this request, but only the Solana program
+            can create the exact one-time allowance. Confirmation of the grant
+            still does not execute the payment.
           </Text>
         </View>
 
@@ -303,6 +584,16 @@ export function BoundaryWorkspace() {
             onPress={refreshGuardianRequest}
           >
             <Text style={styles.buttonText}>Refresh request</Text>
+          </Pressable>
+        ) : null}
+
+        {guardianCapability && relayRequest?.status === "PENDING" ? (
+          <Pressable
+            disabled={busy}
+            style={styles.button}
+            onPress={grantExactAllowanceOnce}
+          >
+            <Text style={styles.buttonText}>Allow this exact payment once</Text>
           </Pressable>
         ) : null}
 
@@ -319,8 +610,8 @@ export function BoundaryWorkspace() {
       <Text style={styles.eyebrow}>YOUNG PERSON DEVICE</Text>
       <Text style={styles.sectionTitle}>Start with the payment intent</Text>
       <Text style={styles.body}>
-        Scan the exact action first. CRESCO must know what is being attempted
-        before authority can be evaluated.
+        Scan the exact action first. CRESCO sends that action through the
+        standing Key before a guardian request is even possible.
       </Text>
 
       <Pressable style={styles.button} onPress={() => setScanning(true)}>
@@ -336,25 +627,24 @@ export function BoundaryWorkspace() {
         </View>
       ) : null}
 
-      {intent ? (
-        <View style={styles.truthCard}>
-          <Text style={styles.truthTitle}>Integration harness only</Text>
-          <Text style={styles.body}>
-            The next button tests private two-device coordination. It is not the
-            CLOCK IN hero boundary yet. The final product may create a request
-            only after the onchain standing path actually REFUSES this action.
-          </Text>
-        </View>
-      ) : null}
-
-      {intent ? (
+      {intent && !relayRequest ? (
         <Pressable
           disabled={busy}
           style={styles.button}
-          onPress={createRelayHarnessRequest}
+          onPress={attemptStandingPayment}
         >
-          <Text style={styles.buttonText}>Create relay test request</Text>
+          <Text style={styles.buttonText}>Try payment inside my Key</Text>
         </Pressable>
+      ) : null}
+
+      {relayRequest ? (
+        <View style={styles.truthCard}>
+          <Text style={styles.truthTitle}>Boundary request</Text>
+          <Text style={styles.body}>
+            Relay: {relayRequest.status}. This coordination state cannot move
+            capital or widen the standing Key.
+          </Text>
+        </View>
       ) : null}
 
       {shareLink ? (
@@ -371,8 +661,41 @@ export function BoundaryWorkspace() {
         </Pressable>
       ) : null}
 
-      {relayRequest ? (
-        <Text style={styles.status}>Relay: {relayRequest.status}</Text>
+      {youngCapability ? (
+        <Pressable
+          disabled={busy}
+          style={styles.button}
+          onPress={refreshYoungRequest}
+        >
+          <Text style={styles.buttonText}>Refresh guardian decision</Text>
+        </Pressable>
+      ) : null}
+
+      {relayRequest?.status === "ALLOWANCE_SUBMITTED" &&
+      config.mutatedRecipient ? (
+        <Pressable
+          disabled={busy}
+          style={styles.button}
+          onPress={() => executeExactAllowance(config.mutatedRecipient)}
+        >
+          <Text style={styles.buttonText}>
+            Try changed recipient — must refuse
+          </Text>
+        </Pressable>
+      ) : null}
+
+      {relayRequest?.status === "ALLOWANCE_SUBMITTED" ? (
+        <Pressable
+          disabled={busy}
+          style={styles.button}
+          onPress={() => executeExactAllowance()}
+        >
+          <Text style={styles.buttonText}>
+            {exactExecutionState === "ALLOW"
+              ? "Replay exact payment — must refuse"
+              : "Retry exact approved payment"}
+          </Text>
+        </Pressable>
       ) : null}
 
       <Pressable style={styles.textButton} onPress={() => setMode(null)}>
