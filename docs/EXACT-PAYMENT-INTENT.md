@@ -16,7 +16,7 @@ The original CRESCO proof already established exact one-time authorization by no
 
 CLOCK IN requires a more legible mobile proof:
 
-> Guardian approved this payment to this destination. A changed destination does not inherit that approval.
+> Guardian approved this payment to this recipient. A changed recipient does not inherit that approval.
 
 The program must enforce that statement independently of the UI.
 
@@ -36,9 +36,9 @@ Standing authority remains defined by:
 
 The beneficiary signs the payment instruction.
 
-The destination may be any valid token account for the configured mint in P0.
+The recipient may be any valid token account for the configured mint in P0.
 
-Future destination allowlists are a separate policy dimension and are not implied by this implementation.
+Future recipient allowlists are a separate policy dimension and are not implied by this implementation.
 
 ## Boundary request
 
@@ -49,7 +49,7 @@ A P0 boundary request ultimately maps to these security-relevant values:
 - Mandate;
 - Mandate nonce;
 - mint;
-- destination token account;
+- Solana Pay recipient wallet;
 - exact amount;
 - request id;
 - expiry.
@@ -69,7 +69,7 @@ mandate
 guardian
 beneficiary
 mint
-destination
+recipient
 amount_base_units
 request_id
 mandate_nonce
@@ -94,7 +94,7 @@ Before capital movement, the program requires:
 6. allowance not expired;
 7. request id matches;
 8. actual amount exactly equals approved amount;
-9. actual destination token account exactly equals approved destination;
+9. actual Solana Pay recipient wallet exactly equals approved recipient;
 10. mint matches.
 
 Only after those checks does the vault transfer occur.
@@ -123,7 +123,7 @@ P0 does not yet enforce:
 - geolocation;
 - legal age;
 - parenthood;
-- destination reputation;
+- recipient reputation;
 - fiat settlement;
 - card-network acceptance.
 
@@ -131,4 +131,13 @@ Those may inform future policy but must not be implied by the exact-payment proo
 
 ## Judge-safe statement
 
-> The guardian approves one exact payment. Changing the amount or destination does not inherit that approval, and successful use does not widen the standing Key.
+> The guardian approves one exact payment. Changing the amount or recipient does not inherit that approval, and successful use does not widen the standing Key.
+
+
+## Solana Pay alignment
+
+Solana Pay transfer-request URLs encode the **recipient wallet** as the URL pathname. For SPL-token requests, the canonical associated token account (ATA) is derived from the recipient wallet and the `spl-token` mint.
+
+CRESCO Key therefore binds the guardian's exact exception to the Solana Pay recipient wallet, not to a client-selected arbitrary token account. At execution, the program derives the recipient's canonical ATA for the active Token/Token-2022 program and refuses any different token-account destination.
+
+This removes a client-side ambiguity: the UI cannot keep the approved recipient label while silently routing the vault transfer to another token account.
