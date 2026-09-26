@@ -48,10 +48,34 @@ jobs:
         run: ./gradlew assembleDebug
         working-directory: apps/mobile/android
 
+      - name: Write APK evidence receipt
+        env:
+          COMMIT_SHA: ${{ github.sha }}
+        run: |
+          mkdir -p ../../evidence/apk
+          APK="android/app/build/outputs/apk/debug/app-debug.apk"
+          export SHA256="$(sha256sum "$APK" | awk '{print $1}')"
+          export SIZE_BYTES="$(stat -c%s "$APK")"
+          node - <<'NODE' > ../../evidence/apk/debug-apk-receipt.json
+          console.log(JSON.stringify({
+            schema: "cresco-key/android-apk-receipt/v1",
+            commit: process.env.COMMIT_SHA,
+            packageId: "com.faadil.crescokey",
+            buildType: "debug",
+            artifactName: "cresco-key-debug-apk",
+            apkSha256: process.env.SHA256,
+            sizeBytes: Number(process.env.SIZE_BYTES),
+            runtimeProven: false,
+            generatedAt: new Date().toISOString()
+          }, null, 2));
+          NODE
+
       - name: Upload APK evidence
         uses: actions/upload-artifact@v4
         with:
           name: cresco-key-debug-apk
-          path: apps/mobile/android/app/build/outputs/apk/debug/app-debug.apk
+          path: |
+            apps/mobile/android/app/build/outputs/apk/debug/app-debug.apk
+            evidence/apk/debug-apk-receipt.json
           if-no-files-found: error
           retention-days: 14
