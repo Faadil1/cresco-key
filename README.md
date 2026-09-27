@@ -6,13 +6,24 @@ CRESCO Key gives a young person real standing financial authority inside explici
 
 > The exception moved. The boundary did not.
 
+## Start here if you are collaborating
+
+New collaborator? Read these in order:
+
+1. [`docs/COLLABORATOR-START-HERE.md`](docs/COLLABORATOR-START-HERE.md)
+2. [`product/PRD.md`](product/PRD.md)
+3. [`docs/CURRENT-STATE.md`](docs/CURRENT-STATE.md)
+4. [`CONTRIBUTING.md`](CONTRIBUTING.md)
+
+The PRD is the product source of truth. `CURRENT-STATE.md` is the operational handoff.
+
 ## Status
 
 - Product concept: **LOCKED**
 - Target: **Solana Mobile CLOCK IN 2026**
 - Network for current proof work: **Solana Devnet**
 - Mobile direction: **native Android / React Native + Mobile Wallet Adapter**
-- Current phase: **P0 vertical slice implementation → APK build evidence → runtime proof**
+- Current phase: **P0 vertical slice implemented → Android APK builds → runtime proof + mobile UX refinement**
 
 ## Core product law
 
@@ -56,7 +67,7 @@ The mobile build prioritizes a stablecoin/payment-intent demonstration rather th
 
 Implemented and CI-verified in the repository:
 
-- native Android prebuild;
+- native Android prebuild and successful installable debug APK build;
 - local Mobile Wallet Adapter integration code;
 - Solana Pay SPL-token QR parsing;
 - exact recipient-wallet binding with canonical ATA verification;
