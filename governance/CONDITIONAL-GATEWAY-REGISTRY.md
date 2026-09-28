@@ -38,7 +38,7 @@ A blank, missing, or forgotten gate is not a PASS.
 | Legal / Compliance Boundary Gate | Money/minors/custody/securities | **ACTIVE** | Devnet/demo truth boundary remains explicit; no production custody/brokerage/minor-securities claim. |
 | IP / Licence / Originality Gate | Public release/submission | **ACTIVE** | Dependency/assets/licence/originality review remains required before submission. |
 | Observability / Reproducibility Gate | Runtime/evidence work | **ACTIVE** | Receipts/workflows exist; clean-room reproducibility still needs completion. |
-| Demo Environment Gate | Before demo/recording | **ACTIVE** | Emulator-first path is allowed for development; physical Android remains required for strongest final runtime evidence. |
+| Demo Environment Gate | Before demo/recording | **ACTIVE** | Emulator-first smoke workflow now builds/installs CRESCO + official Mock MWA Wallet and captures LOCAL/PARTIAL evidence; physical Android remains required for strongest final runtime evidence. |
 | Accessibility / Responsive Gate | User-facing product | **ACTIVE** | Mobile UX pass must include legibility/accessibility checks. |
 | Performance / Latency Gate | User-facing/load-bearing flow | **ACTIVE** | MWA handoff, RPC, relay and confirmation latency must be measured on runtime. |
 | Pre-Launch / Ship Assurance | Before shipping/submission | **BLOCKED** | Cannot advance until deploy/runtime/critical path/evidence gates are proven. |
