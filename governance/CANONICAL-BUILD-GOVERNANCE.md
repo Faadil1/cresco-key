@@ -19,7 +19,43 @@ For judged / hackathon builds, the mandatory sequence is:
 
 No stage is skipped because the build already "works."
 
-## 2. Mandatory status vocabulary
+## 2. Product discovery / concept-lock sequence
+
+Before consequential build work:
+
+`Winning Intelligence → Hidden Problem Mining → Divergent Ideation → Winner-to-Winner Collision → Pre-Build Reality Gate → Concept Lock → Technical Reality Check → Backend Engineering Intelligence → Demo-First Architecture → Build`
+
+Rules:
+
+- **No consequential build before Concept Lock.**
+- The living PRD must exist before implementation can silently redefine the product.
+- Divergent ideation is intentionally unconstrained by current tool permissions, read-only modes, deployment convenience, or remaining deadline.
+- Deadline pressure changes **execution sequencing**, not creative ambition.
+- Read-only is an execution/safety mode, not the default product concept.
+- After Concept Lock, decompose the full product vision into a demo-first vertical slice without shrinking the underlying company/product thesis.
+- Collaborator response latency must not block a deadline-critical build; when needed, move into clearly declared solo execution and preserve handoff/state for later re-entry.
+
+## 19. Backend Engineering Intelligence
+
+Backend quality is evaluated after Concept Lock.
+
+Canonical rule:
+
+> **SCALE ON EVIDENCE, NOT ON POSSIBILITY.**
+
+Do not introduce distributed-system complexity, multi-region architecture, queues, caching layers, or enterprise-scale patterns unless justified by actual volume, concurrency, resilience, SLA, latency, throughput, partitioning, growth, or hot-path requirements.
+
+Backend rigor must preserve:
+
+- truth boundaries;
+- observability;
+- deterministic failure handling;
+- reproducibility;
+- least authority;
+- secrets hygiene;
+- explicit external-dependency behavior.
+
+## 20. Mandatory status vocabulary
 
 Every registered conditional gateway is explicitly one of:
 
