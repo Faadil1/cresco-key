@@ -28,6 +28,7 @@ Canonical sentence:
 
 - native Android/React Native application structure;
 - Android debug APK build;
+- Android emulator smoke workflow with official Mock MWA Wallet installation/discovery evidence path;
 - Mobile Wallet Adapter integration code;
 - Solana Pay SPL-token request parsing;
 - standing payment instruction;
@@ -47,6 +48,7 @@ Canonical sentence:
 ## Blocked / not yet live-proven
 
 - distinct CRESCO Key program id deployed to Devnet;
+- emulator smoke runtime receipt (workflow prepared, run pending);
 - physical Android runtime;
 - real MWA connect/reject/sign/send evidence;
 - live Cloudflare relay deployment receipt;
