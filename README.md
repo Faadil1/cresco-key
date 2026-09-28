@@ -12,10 +12,13 @@ New collaborator? Read these in order:
 
 1. [`docs/COLLABORATOR-START-HERE.md`](docs/COLLABORATOR-START-HERE.md)
 2. [`product/PRD.md`](product/PRD.md)
-3. [`docs/CURRENT-STATE.md`](docs/CURRENT-STATE.md)
-4. [`CONTRIBUTING.md`](CONTRIBUTING.md)
+3. [`state/CURRENT.md`](state/CURRENT.md)
+4. [`state/HANDOVER.md`](state/HANDOVER.md)
+5. [`governance/CONDITIONAL-GATEWAY-REGISTRY.md`](governance/CONDITIONAL-GATEWAY-REGISTRY.md)
+6. [`governance/PRODUCT-DEPTH-LIVE-REALITY-v1.2.1.md`](governance/PRODUCT-DEPTH-LIVE-REALITY-v1.2.1.md)
+7. [`CONTRIBUTING.md`](CONTRIBUTING.md)
 
-The PRD is the product source of truth. `CURRENT-STATE.md` is the operational handoff.
+The PRD is the product source of truth. `state/CURRENT.md` and `state/HANDOVER.md` preserve canonical continuity. The Conditional Gateway Registry governs promotion.
 
 ## Status
 
