@@ -35,7 +35,7 @@ Rules:
 - After Concept Lock, decompose the full product vision into a demo-first vertical slice without shrinking the underlying company/product thesis.
 - Collaborator response latency must not block a deadline-critical build; when needed, move into clearly declared solo execution and preserve handoff/state for later re-entry.
 
-## 19. Backend Engineering Intelligence
+## 3. Backend Engineering Intelligence
 
 Backend quality is evaluated after Concept Lock.
 
@@ -55,7 +55,7 @@ Backend rigor must preserve:
 - secrets hygiene;
 - explicit external-dependency behavior.
 
-## 20. Mandatory status vocabulary
+## 4. Mandatory status vocabulary
 
 Every registered conditional gateway is explicitly one of:
 
@@ -66,7 +66,7 @@ Every registered conditional gateway is explicitly one of:
 
 Nothing is considered passed merely because it was not discussed.
 
-## 3. Pre-Build Reality Gate
+## 5. Pre-Build Reality Gate
 
 Required before Concept Lock.
 
@@ -93,7 +93,7 @@ Canonical five-part pattern:
 4. Design lesson.
 5. Product response.
 
-## 4. Competitive Novelty / Kill Gate
+## 6. Competitive Novelty / Kill Gate
 
 Required before Concept Lock.
 
@@ -113,7 +113,7 @@ The purpose is not to prove "nobody has ever done this." It is to identify the *
 
 If a nearby product already solves the same problem with the same mechanism and equal/better native fit, mutate or kill the concept.
 
-## 5. Technical Reality Check
+## 7. Technical Reality Check
 
 Required immediately after Concept Lock.
 
@@ -130,7 +130,7 @@ When relevant:
 
 Technical feasibility is not inferred from architecture diagrams.
 
-## 6. Truth Boundary Gate
+## 8. Truth Boundary Gate
 
 Every material claim must be classified by evidence:
 
@@ -142,7 +142,7 @@ Do not upgrade UNKNOWN because the expected behavior is obvious.
 
 No fake PASS.
 
-## 7. Negative Path Gate
+## 9. Negative Path Gate
 
 Every build must preserve a truthful negative state.
 
@@ -162,7 +162,7 @@ For CRESCO Key specifically:
 - transaction timeout/unclassified failure is UNKNOWN;
 - relay state is not financial authority.
 
-## 8. Evidence Integrity Gate
+## 10. Evidence Integrity Gate
 
 Every important proof artifact must identify its evidence class:
 
@@ -178,7 +178,7 @@ Do not narrate LOCAL_STUB, PRESEEDED or SIMULATED behavior as LIVE.
 
 Captured video/replay can prove that a run happened; it does not by itself prove a currently live core loop.
 
-## 9. Runtime / Commit Binding Gate
+## 11. Runtime / Commit Binding Gate
 
 Once a runtime exists, runtime evidence must bind to the actual demonstrated commit.
 
@@ -193,7 +193,7 @@ Record, when material:
 
 A later code commit must not inherit runtime proof from an older commit without re-verification.
 
-## 10. Deterministic Demo Gate
+## 12. Deterministic Demo Gate
 
 Before recording/submission:
 
@@ -206,7 +206,7 @@ Before recording/submission:
 - no silent state mutation;
 - no dependency on a single flaky external service without fallback or explicit truth boundary.
 
-## 11. Judge Performance Assurance
+## 13. Judge Performance Assurance
 
 Before submission, verify:
 
@@ -226,7 +226,7 @@ Current Judge Memory Sentence candidate:
 
 > **The exception moved. The boundary did not.**
 
-## 12. Submission Integrity Gate
+## 14. Submission Integrity Gate
 
 Before submission, verify:
 
@@ -248,7 +248,7 @@ Before submission, verify:
 
 A technically strong build can still fail submission integrity.
 
-## 13. Pre-Launch / Ship Assurance
+## 15. Pre-Launch / Ship Assurance
 
 Promotion sequence:
 
@@ -269,7 +269,7 @@ Where relevant, inspect:
 
 Do not call code-ready "shipped."
 
-## 14. Distinctiveness Escalation
+## 16. Distinctiveness Escalation
 
 Functional ≠ finished.
 
@@ -286,7 +286,7 @@ After functional proof, explicitly test:
 
 Do not add features merely to increase feature count.
 
-## 15. Canonical State & Handover
+## 17. Canonical State & Handover
 
 At every meaningful:
 
@@ -322,7 +322,7 @@ Final cycle requires:
 - final snapshot;
 - post-mortem.
 
-## 16. Protected human actions
+## 18. Protected human actions
 
 Actions requiring explicit human execution/approval remain human checkpoints.
 
@@ -337,7 +337,7 @@ Examples may include:
 
 Automation must not silently claim these actions occurred.
 
-## 17. Frozen / submitted projects
+## 19. Frozen / submitted projects
 
 No silent retrofit.
 
@@ -345,7 +345,7 @@ Once a project is frozen/submitted, do not rewrite the historical evidence state
 
 Reopen explicitly, create a new delta, and preserve the prior submission snapshot.
 
-## 18. Authority boundaries
+## 20. Authority boundaries
 
 Canonical orchestration roles remain:
 
