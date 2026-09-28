@@ -2,7 +2,16 @@
 
 Updated: 2026-09-27
 
-This file is the operational handoff for collaborators.
+This file is a collaborator-facing operational summary.
+
+Canonical continuity now lives in:
+- `state/CURRENT.md`
+- `state/HANDOVER.md`
+
+Canonical governance lives in:
+- `governance/CONDITIONAL-GATEWAY-REGISTRY.md`
+- `governance/PRODUCT-DEPTH-LIVE-REALITY-v1.2.1.md`
+- `governance/CANONICAL-BUILD-GOVERNANCE.md`
 
 The PRD remains the product source of truth.
 
