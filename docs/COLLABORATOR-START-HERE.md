@@ -7,12 +7,18 @@ This is the fastest path to become productive without breaking the product or au
 In order:
 
 1. `product/PRD.md` — canonical product source of truth.
-2. `docs/CURRENT-STATE.md` — what is done, what is blocked, what is safe to work on now.
-3. `docs/DEMO-FIRST-ARCHITECTURE.md` — P0 mobile flow and evidence requirements.
-4. `docs/EXACT-PAYMENT-INTENT.md` — exact amount/recipient semantics.
-5. `docs/TECHNICAL-REALITY-CHECK.md` — code proof vs runtime proof.
+2. `state/CURRENT.md` — canonical current project state.
+3. `state/HANDOVER.md` — continuity, ownership and next actions.
+4. `governance/CONDITIONAL-GATEWAY-REGISTRY.md` — every gate marked ACTIVE / N/A / BLOCKED / PROVEN.
+5. `governance/PRODUCT-DEPTH-LIVE-REALITY-v1.2.1.md` — live-depth promotion rules.
+6. `governance/CANONICAL-BUILD-GOVERNANCE.md` — lifecycle, truth, evidence, demo and submission governance.
+7. `docs/DEMO-FIRST-ARCHITECTURE.md` — P0 mobile flow and evidence requirements.
+8. `docs/EXACT-PAYMENT-INTENT.md` — exact amount/recipient semantics.
+9. `docs/TECHNICAL-REALITY-CHECK.md` — code proof vs runtime proof.
 
 If an implementation decision conflicts with the PRD, the PRD wins until the PRD is deliberately changed.
+
+No workstream may silently skip the Conditional Gateway Registry. A missing gate is not a PASS. Product Depth & Live Reality v1.2.1 remains active even after the vertical slice works.
 
 ## 2. Product in one minute
 
