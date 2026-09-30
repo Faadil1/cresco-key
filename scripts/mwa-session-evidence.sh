@@ -68,8 +68,45 @@ wait_text() {
   return 1
 }
 
-echo "== Configure emulator credential =="
-adb shell locksettings set-pin "$PIN" > "$EVIDENCE/locksettings.txt" 2>&1 || true
+unlock_emulator() {
+  adb shell input keyevent 224 || true
+  sleep 1
+
+  # Secure keyguard does not reliably accept `input text` on API 36.
+  # Reveal the PIN surface, then send digit key events directly.
+  adb shell input swipe 540 2100 540 650 500 || true
+  sleep 2
+
+  adb shell uiautomator dump /sdcard/keyguard-pin.xml >/dev/null 2>&1 || true
+  adb pull /sdcard/keyguard-pin.xml "$EVIDENCE/keyguard-pin.xml" >/dev/null 2>&1 || true
+
+  # KEYCODE_1..4 are 8..11. This PIN is emulator-only.
+  adb shell input keyevent 8 || true
+  adb shell input keyevent 9 || true
+  adb shell input keyevent 10 || true
+  adb shell input keyevent 11 || true
+  adb shell input keyevent 66 || true
+  sleep 4
+
+  # A final MENU key helps dismiss a completed keyguard transition on emulators.
+  adb shell input keyevent 82 || true
+  sleep 2
+
+  adb shell uiautomator dump /sdcard/unlock.xml >/dev/null 2>&1 || true
+  adb pull /sdcard/unlock.xml "$EVIDENCE/unlock.xml" >/dev/null 2>&1 || true
+
+  if grep -Eq 'Unlock for all features and data|Enter PIN|Emergency call' "$EVIDENCE/unlock.xml" 2>/dev/null; then
+    echo "Emulator remained locked after direct PIN key events." >&2
+    dump_ui "unlock-failed"
+    return 1
+  fi
+
+  echo "Emulator keyguard dismissed." > "$EVIDENCE/unlock-result.txt"
+}
+
+echo "== Configure and unlock emulator credential =="
+adb shell locksettings set-pin "$PIN" > "$EVIDENCE/locksettings.txt" 2>&1
+unlock_emulator
 
 echo "== Build CRESCO standalone test APK =="
 cd "$MOBILE"
@@ -111,21 +148,34 @@ tap_text "Connect wallet" 10
 wait_text "Connect" 20
 dump_ui "04-wallet-authorize-request"
 tap_text "Connect" 10
-sleep 2
 
-adb shell uiautomator dump /sdcard/auth.xml >/dev/null 2>&1 || true
-adb pull /sdcard/auth.xml "$EVIDENCE/auth-prompt.xml" >/dev/null 2>&1 || true
-for label in "Use PIN" "Use password" "Use device credential"; do
-  if grep -Fq "$label" "$EVIDENCE/auth-prompt.xml" 2>/dev/null; then
-    tap_text "$label" 5 || true
-    sleep 1
+echo "== Wait for authorization completion or device credential prompt =="
+elapsed=0
+while [ "$elapsed" -lt 30 ]; do
+  adb shell uiautomator dump /sdcard/auth.xml >/dev/null 2>&1 || true
+  adb pull /sdcard/auth.xml "$EVIDENCE/auth-prompt.xml" >/dev/null 2>&1 || true
+
+  if grep -Fq "P0 mobile workspace" "$EVIDENCE/auth-prompt.xml"; then
     break
   fi
-done
-adb shell input text "$PIN" || true
-adb shell input keyevent 66 || true
 
-wait_text "P0 mobile workspace" 30
+  if grep -Eq "Use PIN|Use password|Use device credential|Log in to" "$EVIDENCE/auth-prompt.xml"; then
+    for label in "Use PIN" "Use password" "Use device credential"; do
+      if grep -Fq "$label" "$EVIDENCE/auth-prompt.xml"; then
+        tap_text "$label" 5 || true
+        sleep 1
+        break
+      fi
+    done
+    adb shell input text "$PIN" || true
+    adb shell input keyevent 66 || true
+  fi
+
+  sleep 1
+  elapsed=$((elapsed+1))
+done
+
+wait_text "P0 mobile workspace" 15
 dump_ui "05-cresco-connected"
 
 echo "== signMessage path =="

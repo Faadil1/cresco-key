@@ -22,6 +22,16 @@ The workflow attempts to observe:
 12. force-stop / relaunch;
 13. truthful restored-connected or disconnected state.
 
+## First run — preserved negative evidence
+
+Run `36673316075` failed before the MWA interaction itself. The test configured a device PIN with `locksettings set-pin`, which immediately left the Android emulator on the lock screen. CRESCO had launched behind the lock screen, so the harness timed out waiting for `Connect wallet`.
+
+This is classified as a **test-environment failure**, not an app or MWA failure.
+
+Run `36677207011` then showed that Android API 36 secure keyguard does not reliably accept `adb shell input text 1234`; the emulator remained on the lock screen.
+
+The current correction reveals the PIN surface and sends direct numeric Android key events (KEYCODE_1..4 + ENTER), then verifies that keyguard text is gone before CRESCO starts. The authorization step also distinguishes between an already-satisfied recent device credential and an actual biometric/device-credential prompt.
+
 ## Evidence classification
 
 A successful run remains **LOCAL / PARTIAL**.
