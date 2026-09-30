@@ -28,7 +28,9 @@ Run `36673316075` failed before the MWA interaction itself. The test configured 
 
 This is classified as a **test-environment failure**, not an app or MWA failure.
 
-The correction explicitly unlocks the emulator after configuring the PIN and verifies that the lock screen is gone before launching CRESCO. The authorization step also now distinguishes between an already-satisfied recent device credential and an actual biometric/device-credential prompt.
+Run `36677207011` then showed that Android API 36 secure keyguard does not reliably accept `adb shell input text 1234`; the emulator remained on the lock screen.
+
+The current correction reveals the PIN surface and sends direct numeric Android key events (KEYCODE_1..4 + ENTER), then verifies that keyguard text is gone before CRESCO starts. The authorization step also distinguishes between an already-satisfied recent device credential and an actual biometric/device-credential prompt.
 
 ## Evidence classification
 
