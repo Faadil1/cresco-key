@@ -2,11 +2,6 @@ name: Devnet MWA Transaction Evidence
 
 on:
   workflow_dispatch:
-  push:
-    paths:
-      - "apps/mobile/**"
-      - "scripts/devnet-mwa-transaction-evidence.sh"
-      - ".github/workflows/devnet-mwa-transaction-evidence.yml"
   pull_request:
     paths:
       - "apps/mobile/**"
@@ -15,6 +10,10 @@ on:
 
 permissions:
   contents: read
+
+concurrency:
+  group: devnet-mwa-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 
 jobs:
   devnet-mwa-transaction:
