@@ -1,6 +1,6 @@
 # CRESCO Key — CURRENT
 
-Updated: 2026-09-28
+Updated: 2026-09-30
 
 ## North Star
 
@@ -28,7 +28,7 @@ Canonical sentence:
 
 - native Android/React Native application structure;
 - Android debug APK build;
-- Android emulator smoke workflow with official Mock MWA Wallet installation/discovery evidence path;
+- Android emulator smoke gate PROVEN on GitHub Actions run 36669206551: standalone CRESCO Key launch, Connect wallet UI, official Mock MWA Wallet install, and Android local-association intent discovery;
 - Mobile Wallet Adapter integration code;
 - Solana Pay SPL-token request parsing;
 - standing payment instruction;
@@ -48,7 +48,6 @@ Canonical sentence:
 ## Blocked / not yet live-proven
 
 - distinct CRESCO Key program id deployed to Devnet;
-- emulator smoke first run produced real negative evidence: APKs installed, but debug CRESCO APK opened Expo Development Build launcher without Metro; corrected release-mode test run pending;
 - physical Android runtime;
 - real MWA connect/reject/sign/send evidence;
 - live Cloudflare relay deployment receipt;
