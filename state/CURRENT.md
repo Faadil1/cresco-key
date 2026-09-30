@@ -98,7 +98,7 @@ MWA session evidence is ACTIVE:
 
 `decline authorize → authorize → signMessage → kill/relaunch truthfulness`
 
-Run 36673316075 produced negative environment evidence: configuring the emulator PIN left Android on the lock screen, so MWA interaction was not reached. The harness is corrected to unlock and verify the emulator before launch. Status remains ACTIVE / UNKNOWN until a green re-run.
+Runs 36673316075 and 36677207011 produced negative environment evidence: configuring the emulator PIN left Android on the secure lock screen, and API 36 ignored the prior text-based unlock attempt. The harness now uses direct PIN key events and verifies keyguard dismissal before launch. Status remains ACTIVE / UNKNOWN until a green re-run.
 
 This remains LOCAL / PARTIAL even if green. Devnet transaction proof is a separate next gate.
 
