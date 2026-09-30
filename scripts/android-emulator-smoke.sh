@@ -57,11 +57,19 @@ if ! grep -q 'Connect wallet' "$EVIDENCE/cresco-window.xml"; then
 fi
 
 echo "== Verify an installed MWA-compatible handler is discoverable =="
-adb shell cmd package query-intent-activities   -a android.intent.action.VIEW   -c android.intent.category.DEFAULT   -d 'solana-wallet:/v1/associate/local'   > "$EVIDENCE/mwa-intent-handlers.txt" || true
+LAUNCH_RESULT="$(adb shell am start -W \
+  -a android.intent.action.VIEW \
+  -c android.intent.category.DEFAULT \
+  -d 'solana-wallet:/v1/associate/local' 2>&1 || true)"
 
-if ! grep -q 'com.solana.mwallet' "$EVIDENCE/mwa-intent-handlers.txt"; then
-  echo "Official Mock MWA Wallet is installed, but Android did not report it for the local MWA URI." >&2
-  cat "$EVIDENCE/mwa-intent-handlers.txt" >&2 || true
+printf '%s\n' "$LAUNCH_RESULT" > "$EVIDENCE/mwa-view-intent-launch.txt"
+sleep 2
+adb shell dumpsys activity activities > "$EVIDENCE/activities-after-mwa-intent.txt"
+
+if ! grep -q 'com.solana.mwallet' "$EVIDENCE/activities-after-mwa-intent.txt" && \
+   ! printf '%s\n' "$LAUNCH_RESULT" | grep -q 'com.solana.mwallet'; then
+  echo "Official Mock MWA Wallet is installed, but Android did not launch it for the local MWA URI." >&2
+  cat "$EVIDENCE/mwa-view-intent-launch.txt" >&2 || true
   exit 1
 fi
 
