@@ -8,13 +8,13 @@ MOCK_WALLET="$ROOT/vendor/mock-mwa-wallet"
 
 mkdir -p "$EVIDENCE"
 
-echo "== Build CRESCO Key debug APK =="
+echo "== Build standalone CRESCO Key test APK =="
 cd "$MOBILE"
 npx expo prebuild --platform android --no-install --non-interactive
 cd android
-./gradlew assembleDebug
+NODE_ENV=production ./gradlew assembleRelease
 
-CRESCO_APK="$MOBILE/android/app/build/outputs/apk/debug/app-debug.apk"
+CRESCO_APK="$MOBILE/android/app/build/outputs/apk/release/app-release.apk"
 test -f "$CRESCO_APK"
 
 echo "== Build official Mock MWA Wallet =="
@@ -71,7 +71,8 @@ export APK_SHA MOCK_SHA PID
 
 node <<'NODE' > "$EVIDENCE/emulator-smoke-receipt.json"
 console.log(JSON.stringify({
-  schema: "cresco-key/android-emulator-smoke/v1",
+  note: "Release-mode test APK is used so the JS bundle launches without a Metro development server. It is not a production-signed submission APK.",
+  schema: "cresco-key/android-emulator-smoke/v2",
   commit: process.env.GITHUB_SHA ?? null,
   evidenceClass: "LOCAL",
   integrationDepth: "PARTIAL",
@@ -79,6 +80,7 @@ console.log(JSON.stringify({
     emulator: true,
     apiLevel: 36,
     packageInstalled: true,
+    apkFlavor: "release-test",
     packageId: "com.faadil.crescokey",
     processAliveAfterLaunch: true,
     connectWalletSurfaceObserved: true
@@ -100,7 +102,8 @@ console.log(JSON.stringify({
     mwaAuthorizationProven: false,
     transactionSigningProven: false,
     devnetHeroRunProven: false,
-    liveCoreLoopProven: false
+    liveCoreLoopProven: false,
+    productionReleaseSigningProven: false
   },
   generatedAt: new Date().toISOString()
 }, null, 2));
