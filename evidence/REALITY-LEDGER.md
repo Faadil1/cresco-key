@@ -9,9 +9,9 @@ Purpose: preserve the distinction between what exists in code, what has been bui
 | Product concept / authority semantics are locked | LOCAL | OBSERVED | PRD v0.2 on main | None for concept level |
 | Android native project exists | LOCAL | OBSERVED | Expo/React Native source on main | None for code existence |
 | Android debug APK can compile | LOCAL | OBSERVED | Successful GitHub Actions APK build | Physical-device runtime |
-| Android APK installs and process launches in emulator | LOCAL / PARTIAL | OBSERVED | Run 36444987861 installed both APKs and kept CRESCO process alive | Product UI still needs standalone bundled run |
-| CRESCO product UI launches standalone in emulator | LOCAL / PARTIAL | UNKNOWN | First run exposed Expo Development Build launcher because debug APK required Metro; workflow corrected to release-mode test APK | Re-run corrected workflow |
-| Official Mock MWA Wallet is discoverable on emulator | LOCAL / PARTIAL | UNKNOWN | Mock wallet built and installed in first run; handler assertion was not reached because UI gate failed first | Re-run corrected workflow |
+| Android APK installs and process launches in emulator | LOCAL / PARTIAL | OBSERVED | Run 36669206551 installed CRESCO Key and official Mock MWA Wallet and completed the smoke job successfully | Physical-device runtime |
+| CRESCO product UI launches standalone in emulator | LOCAL / PARTIAL | OBSERVED | Run 36669206551 passed the standalone launch + Connect wallet UI assertion on commit b95dfd1b53ac1bfb08820d3f06a08a58298fa47f | Physical-device runtime |
+| Official Mock MWA Wallet is discoverable on emulator | LOCAL / PARTIAL | OBSERVED | Run 36669206551 launched/resolved the official mock wallet through a real Android VIEW intent for solana-wallet:/v1/associate/local | Real MWA authorization/signing still pending |
 | MWA integration exists in code | LOCAL | OBSERVED | Mobile provider/client code | Real Android wallet runtime |
 | MWA works on physical device | NOT_IMPLEMENTED | UNKNOWN | No physical Android proof yet | Borrow/obtain Android and run |
 | Solana Pay QR parsing exists | LOCAL | OBSERVED | Mobile parser/scanner code | Runtime scan proof |
