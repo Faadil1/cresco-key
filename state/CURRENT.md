@@ -108,7 +108,9 @@ The earlier lock-screen failures remain preserved as negative environment eviden
 
 **Next active sub-gate:** real Devnet transaction proof:
 
-`construct transaction → wallet approval → sign/send → RPC submission → confirmation receipt → commit/runtime binding`
+`authorize MWA → fund connected test wallet on Devnet → construct Memo transaction → wallet approval → sign/send → RPC submission → confirmation receipt → commit/runtime binding`
+
+The proof intentionally uses a Memo transaction first. It proves the wallet/RPC path without claiming the distinct CRESCO Key program is deployed.
 
 Physical Android and production-wallet compatibility remain separate later gates.
 
