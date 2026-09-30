@@ -9,8 +9,9 @@ Purpose: preserve the distinction between what exists in code, what has been bui
 | Product concept / authority semantics are locked | LOCAL | OBSERVED | PRD v0.2 on main | None for concept level |
 | Android native project exists | LOCAL | OBSERVED | Expo/React Native source on main | None for code existence |
 | Android debug APK can compile | LOCAL | OBSERVED | Successful GitHub Actions APK build | Physical-device runtime |
-| Android app installs/launches in emulator | LOCAL / PARTIAL | UNKNOWN | Emulator smoke workflow added; promotion waits on first successful run | Run workflow |
-| Official Mock MWA Wallet is discoverable on emulator | LOCAL / PARTIAL | UNKNOWN | Workflow installs official mock wallet and verifies local association handler; first run pending | Run workflow |
+| Android APK installs and process launches in emulator | LOCAL / PARTIAL | OBSERVED | Run 36444987861 installed both APKs and kept CRESCO process alive | Product UI still needs standalone bundled run |
+| CRESCO product UI launches standalone in emulator | LOCAL / PARTIAL | UNKNOWN | First run exposed Expo Development Build launcher because debug APK required Metro; workflow corrected to release-mode test APK | Re-run corrected workflow |
+| Official Mock MWA Wallet is discoverable on emulator | LOCAL / PARTIAL | UNKNOWN | Mock wallet built and installed in first run; handler assertion was not reached because UI gate failed first | Re-run corrected workflow |
 | MWA integration exists in code | LOCAL | OBSERVED | Mobile provider/client code | Real Android wallet runtime |
 | MWA works on physical device | NOT_IMPLEMENTED | UNKNOWN | No physical Android proof yet | Borrow/obtain Android and run |
 | Solana Pay QR parsing exists | LOCAL | OBSERVED | Mobile parser/scanner code | Runtime scan proof |
