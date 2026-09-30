@@ -10,7 +10,7 @@ CRESCO Key therefore uses an **emulator-first** runtime strategy for development
 
 The `Android Emulator Smoke Evidence` workflow:
 
-1. builds the current CRESCO Key Android debug APK;
+1. builds a **release-mode test APK** so the JS bundle is embedded and the app can launch in GitHub Actions without a Metro development server;
 2. checks out and builds Solana Mobile's official **Mock MWA Wallet**;
 3. starts an Android API 36 emulator;
 4. installs both apps;
@@ -24,6 +24,14 @@ Official Mock MWA Wallet:
 https://github.com/solana-mobile/mock-mwa-wallet
 
 The wallet is development-only. It must never be described as a production wallet or used with real funds.
+
+## First run — useful negative evidence
+
+The first emulator run successfully built and installed both APKs, and CRESCO Key stayed alive after launch. However, the installed **debug** APK opened the Expo Development Build launcher rather than the CRESCO Key product UI because no Metro development server was present.
+
+That run is intentionally retained as a real negative result, not rewritten as success.
+
+Correction: the emulator smoke gate now builds a **release-mode test APK** with the JS bundle embedded. This is for automated runtime testing only and is **not** equivalent to final production/release signing.
 
 ## Evidence classification
 
