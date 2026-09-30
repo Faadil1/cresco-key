@@ -1,5 +1,4 @@
-import { getAddMemoInstruction } from "@solana-program/memo";
-import { address } from "@solana/kit";
+import { address, type Instruction } from "@solana/kit";
 import { useMobileWallet } from "@wallet-ui/react-native-kit";
 import * as Linking from "expo-linking";
 import { randomBytes } from "react-native-quick-crypto";
@@ -217,9 +216,13 @@ export function BoundaryWorkspace() {
     setDevnetProof("DEVNET_TX_PENDING · waiting for wallet approval");
 
     try {
-      const instruction = getAddMemoInstruction({
-        memo: `CRESCO Key Devnet MWA proof | ${account.address.toString()} | ${Date.now()}`,
-      });
+      const instruction: Instruction = {
+        programAddress: address("MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr"),
+        accounts: [],
+        data: new TextEncoder().encode(
+          `CRESCO Key Devnet MWA proof | ${account.address.toString()} | ${Date.now()}`,
+        ),
+      };
       const signature = await sendTransactions([instruction]);
       const outcome = await waitForTransactionOutcome(rpcForOutcome, signature, {
         attempts: 20,
