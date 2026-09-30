@@ -1,3 +1,4 @@
+import { getAddMemoInstruction } from "@solana-program/memo";
 import { address } from "@solana/kit";
 import { useMobileWallet } from "@wallet-ui/react-native-kit";
 import * as Linking from "expo-linking";
@@ -128,6 +129,9 @@ export function BoundaryWorkspace() {
   const [walletProof, setWalletProof] = useState(
     "Wallet connected. Signature proof not attempted on this session.",
   );
+  const [devnetProof, setDevnetProof] = useState(
+    "Devnet transaction proof not attempted on this session.",
+  );
   const [exactExecutionState, setExactExecutionState] =
     useState<ExactExecutionState>("IDLE");
 
@@ -200,6 +204,46 @@ export function BoundaryWorkspace() {
         error instanceof Error
           ? `REFUSED/FAILED · ${error.message}`
           : "UNKNOWN · signing did not complete",
+      );
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const sendDevnetProofTransaction = async () => {
+    if (!account) return;
+
+    setBusy(true);
+    setDevnetProof("DEVNET_TX_PENDING · waiting for wallet approval");
+
+    try {
+      const instruction = getAddMemoInstruction({
+        memo: `CRESCO Key Devnet MWA proof | ${account.address.toString()} | ${Date.now()}`,
+      });
+      const signature = await sendTransactions([instruction]);
+      const outcome = await waitForTransactionOutcome(rpcForOutcome, signature, {
+        attempts: 20,
+        delayMs: 1000,
+      });
+
+      if (outcome.state === "ALLOW") {
+        setDevnetProof(
+          `DEVNET_TX_CONFIRMED · ${outcome.signature} · ${outcome.confirmationStatus ?? "confirmed"}`,
+        );
+      } else if (outcome.state === "REFUSE") {
+        setDevnetProof(
+          `DEVNET_TX_REFUSED · ${outcome.evidence} · ${outcome.signature ?? "no-signature"}`,
+        );
+      } else {
+        setDevnetProof(
+          `DEVNET_TX_UNKNOWN · ${String(outcome.error)} · ${outcome.signature ?? "no-signature"}`,
+        );
+      }
+    } catch (error) {
+      setDevnetProof(
+        error instanceof Error
+          ? `DEVNET_TX_UNKNOWN · ${error.message}`
+          : "DEVNET_TX_UNKNOWN · transaction did not complete",
       );
     } finally {
       setBusy(false);
@@ -532,6 +576,17 @@ export function BoundaryWorkspace() {
             onPress={signWalletProof}
           >
             <Text style={styles.buttonText}>Sign TRC-01 proof message</Text>
+          </Pressable>
+        </View>
+        <View style={styles.truthCard}>
+          <Text style={styles.truthTitle}>Devnet transaction proof</Text>
+          <Text style={styles.body}>{devnetProof}</Text>
+          <Pressable
+            disabled={busy}
+            style={styles.button}
+            onPress={sendDevnetProofTransaction}
+          >
+            <Text style={styles.buttonText}>Send Devnet proof transaction</Text>
           </Pressable>
         </View>
         <Pressable style={styles.button} onPress={() => setMode("YOUNG")}>
