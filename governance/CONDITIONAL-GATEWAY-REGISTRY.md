@@ -1,6 +1,6 @@
 # CRESCO Key — Conditional Gateway Registry
 
-Updated: 2026-09-28  
+Updated: 2026-09-30  
 Status vocabulary: **ACTIVE / N/A / BLOCKED / PROVEN**
 
 This registry must be reviewed at every material gate transition.  
@@ -38,7 +38,7 @@ A blank, missing, or forgotten gate is not a PASS.
 | Legal / Compliance Boundary Gate | Money/minors/custody/securities | **ACTIVE** | Devnet/demo truth boundary remains explicit; no production custody/brokerage/minor-securities claim. |
 | IP / Licence / Originality Gate | Public release/submission | **ACTIVE** | Dependency/assets/licence/originality review remains required before submission. |
 | Observability / Reproducibility Gate | Runtime/evidence work | **ACTIVE** | Receipts/workflows exist; clean-room reproducibility still needs completion. |
-| Demo Environment Gate | Before demo/recording | **ACTIVE** | Emulator smoke sub-gate is PROVEN on run 36669206551: standalone CRESCO UI + official Mock MWA Wallet installation + Android VIEW-intent discovery. Physical Android remains a separate BLOCKED promotion requirement for strongest final evidence. |
+| Demo Environment Gate | Before demo/recording | **ACTIVE** | Emulator smoke is PROVEN on run 36669206551 and emulator MWA session behavior is PROVEN on run 36699897176. Physical Android remains a separate BLOCKED promotion requirement for strongest final evidence. |
 | Accessibility / Responsive Gate | User-facing product | **ACTIVE** | Mobile UX pass must include legibility/accessibility checks. |
 | Performance / Latency Gate | User-facing/load-bearing flow | **ACTIVE** | MWA handoff, RPC, relay and confirmation latency must be measured on runtime. |
 | Pre-Launch / Ship Assurance | Before shipping/submission | **BLOCKED** | Cannot advance until deploy/runtime/critical path/evidence gates are proven. |
@@ -51,7 +51,7 @@ A blank, missing, or forgotten gate is not a PASS.
 |---|---|---:|---|
 | Gateway / Nanopayments | Transactional rail where applicable | **N/A** | CRESCO P0 does not depend on a separate nanopayment rail. |
 | x402 | M2M paid unlock | **N/A** | Not used by CRESCO P0. If activated later, full requirements/payment → verify → settle → HTTP 200/unlock proof is mandatory. |
-| Wallets | Blockchain identity/value | **ACTIVE** | Emulator smoke is PROVEN. Next sub-gate is real MWA decline → authorize → signMessage → kill/relaunch using the official Mock MWA Wallet. Production-wallet and physical-device proof remain separate. |
+| Wallets | Blockchain identity/value | **ACTIVE** | Emulator MWA session sub-gate is PROVEN on run 36699897176: decline → authorize/connect → signMessage approve → relaunch recovery. Devnet sign/send and physical/production-wallet proof remain active. |
 | Contracts | Smart contracts | **ACTIVE** | Program delta is code/Rust-test proven; distinct CRESCO Key Devnet deployment is still required. |
 | App Kit / external platform integration | Sponsor/platform requirement | **N/A** | No separate App Kit is required for the locked P0; Solana Mobile/MWA is tracked under Sponsor-Native Advantage + Wallets. |
 | LIVE_GATEWAY Promotion Gate | Core value depends on live external gateway | **N/A** | No separate third-party settlement gateway is central to P0. Solana runtime itself is handled through Contracts/Wallets/Runtime gates. |

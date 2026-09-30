@@ -30,6 +30,7 @@ Canonical sentence:
 - Android debug APK build;
 - Android emulator smoke gate PROVEN on GitHub Actions run 36669206551: standalone CRESCO Key launch, Connect wallet UI, official Mock MWA Wallet install, and Android local-association intent discovery;
 - Mobile Wallet Adapter integration code;
+- emulator MWA session gate PROVEN on run 36699897176: explicit authorize decline → authorize/connect → signMessage approve → force-stop/relaunch with CONNECTED_RESTORED;
 - Solana Pay SPL-token request parsing;
 - standing payment instruction;
 - exact one-time allowance instruction;
@@ -49,7 +50,8 @@ Canonical sentence:
 
 - distinct CRESCO Key program id deployed to Devnet;
 - physical Android runtime;
-- real MWA connect/reject/sign/send evidence;
+- real MWA transaction sign/send + Devnet confirmation evidence;
+- production-wallet / physical-Android MWA evidence;
 - live Cloudflare relay deployment receipt;
 - full two-device CLOCK IN hero run;
 - changed-recipient hostile runtime proof;
@@ -73,7 +75,7 @@ Benita / collaborator lane:
 Owner/runtime lane:
 
 - Devnet program identity/deploy;
-- MWA runtime proof;
+- MWA Devnet transaction proof;
 - relay deployment;
 - canonical live evidence;
 - runtime/commit binding.
@@ -92,15 +94,23 @@ Current product state is not yet `LIVE CORE LOOP`.
 
 Code/build evidence must not be narrated as complete runtime proof.
 
-## Active runtime sub-gate
+## Runtime gate progression
 
-MWA session evidence is ACTIVE:
+**MWA session sub-gate: PROVEN — LOCAL / PARTIAL**
 
-`decline authorize → authorize → signMessage → kill/relaunch truthfulness`
+Canonical successful run: `36699897176`.
 
-Runs 36673316075 and 36677207011 produced negative environment evidence: configuring the emulator PIN left Android on the secure lock screen, and API 36 ignored the prior text-based unlock attempt. The harness now uses direct PIN key events and verifies keyguard dismissal before launch. Status remains ACTIVE / UNKNOWN until a green re-run.
+Observed sequence:
 
-This remains LOCAL / PARTIAL even if green. Devnet transaction proof is a separate next gate.
+`decline authorize → authorize/connect → signMessage approve → force-stop/relaunch → CONNECTED_RESTORED`
+
+The earlier lock-screen failures remain preserved as negative environment evidence.
+
+**Next active sub-gate:** real Devnet transaction proof:
+
+`construct transaction → wallet approval → sign/send → RPC submission → confirmation receipt → commit/runtime binding`
+
+Physical Android and production-wallet compatibility remain separate later gates.
 
 ## Next promotion conditions
 
