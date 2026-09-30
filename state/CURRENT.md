@@ -112,7 +112,9 @@ The earlier lock-screen failures remain preserved as negative environment eviden
 
 The proof intentionally uses a Memo transaction first. It proves the wallet/RPC path without claiming the distinct CRESCO Key program is deployed.
 
-First run `36717900238` failed before runtime on a real dependency mismatch: `@solana-program/memo@0.11.2` expects Kit 6.x while CRESCO uses Kit 7.x. The helper package was removed instead of bypassing npm validation; the Memo instruction is now built directly using the Kit instruction shape.
+Run `36717900238` failed before runtime on a real dependency mismatch: `@solana-program/memo@0.11.2` expects Kit 6.x while CRESCO uses Kit 7.x. The helper package was removed instead of bypassing npm validation; the Memo instruction is now built directly using the Kit instruction shape.
+
+Run `36718132402` then exposed secure-keyguard flakiness in the Mock MWA Wallet harness before transaction runtime. The transaction-specific gate now uses Solana Mobile's official upstream `android/fakewallet` reference implementation, while the earlier Mock MWA decline/authorize/signMessage proof remains unchanged and separately canonical.
 
 Physical Android and production-wallet compatibility remain separate later gates.
 
