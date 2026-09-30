@@ -10,6 +10,12 @@ This gate proves a real Devnet transaction path through CRESCO and Mobile Wallet
 
 The official Mock MWA Wallet generates its own random test key. The workflow never exports or reads its private key. It only reads the public wallet address from CRESCO after authorization and funds that address with Devnet SOL.
 
+## First run — preserved dependency failure
+
+Run `36717900238` failed before runtime because `@solana-program/memo@0.11.2` declares a peer dependency on `@solana/kit ^6.4.0`, while CRESCO Key uses Kit 7.1.x.
+
+The fix does not weaken npm resolution. The external Memo package was removed, and the standard Memo instruction is constructed directly with the Kit `Instruction` shape and the canonical Memo program address.
+
 ## Evidence class
 
 A green run remains **LOCAL / PARTIAL**.
