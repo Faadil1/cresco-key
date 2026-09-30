@@ -13,8 +13,8 @@ Purpose: preserve the distinction between what exists in code, what has been bui
 | CRESCO product UI launches standalone in emulator | LOCAL / PARTIAL | OBSERVED | Run 36669206551 passed the standalone launch + Connect wallet UI assertion on commit b95dfd1b53ac1bfb08820d3f06a08a58298fa47f | Physical-device runtime |
 | Official Mock MWA Wallet is discoverable on emulator | LOCAL / PARTIAL | OBSERVED | Run 36669206551 launched/resolved the official mock wallet through a real Android VIEW intent for solana-wallet:/v1/associate/local | Real MWA authorization/signing still pending |
 | MWA integration exists in code | LOCAL | OBSERVED | Mobile provider/client code | Real Android wallet runtime |
-| MWA explicit decline on emulator | LOCAL / PARTIAL | UNKNOWN | Run 36673316075 was blocked by emulator lock-screen setup before MWA interaction; harness correction pending re-run | Re-run MWA session evidence |
-| MWA authorize on emulator | LOCAL / PARTIAL | UNKNOWN | Not reached in run 36673316075 because emulator remained locked after PIN setup | Re-run MWA session evidence |
+| MWA explicit decline on emulator | LOCAL / PARTIAL | UNKNOWN | Runs 36673316075 and 36677207011 were blocked by secure keyguard setup before MWA interaction; API 36 unlock now uses direct PIN key events | Re-run MWA session evidence |
+| MWA authorize on emulator | LOCAL / PARTIAL | UNKNOWN | Not reached in runs 36673316075 / 36677207011 because emulator remained locked after PIN setup | Re-run MWA session evidence |
 | MWA signMessage on emulator | LOCAL / PARTIAL | UNKNOWN | Not reached in run 36673316075 | Re-run MWA session evidence |
 | App relaunch state after MWA session | LOCAL / PARTIAL | UNKNOWN | Workflow classifies restored-connected vs disconnected truthfully | Run MWA session evidence |
 | MWA works on physical device | NOT_IMPLEMENTED | UNKNOWN | No physical Android proof yet | Borrow/obtain Android and run |
