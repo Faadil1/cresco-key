@@ -1,6 +1,6 @@
 # CRESCO Key — Reality Ledger
 
-Updated: 2026-09-28
+Updated: 2026-09-30
 
 Purpose: preserve the distinction between what exists in code, what has been built, what has run, and what remains unknown.
 
@@ -11,12 +11,12 @@ Purpose: preserve the distinction between what exists in code, what has been bui
 | Android debug APK can compile | LOCAL | OBSERVED | Successful GitHub Actions APK build | Physical-device runtime |
 | Android APK installs and process launches in emulator | LOCAL / PARTIAL | OBSERVED | Run 36669206551 installed CRESCO Key and official Mock MWA Wallet and completed the smoke job successfully | Physical-device runtime |
 | CRESCO product UI launches standalone in emulator | LOCAL / PARTIAL | OBSERVED | Run 36669206551 passed the standalone launch + Connect wallet UI assertion on commit b95dfd1b53ac1bfb08820d3f06a08a58298fa47f | Physical-device runtime |
-| Official Mock MWA Wallet is discoverable on emulator | LOCAL / PARTIAL | OBSERVED | Run 36669206551 launched/resolved the official mock wallet through a real Android VIEW intent for solana-wallet:/v1/associate/local | Real MWA authorization/signing still pending |
+| Official Mock MWA Wallet is discoverable on emulator | LOCAL / PARTIAL | OBSERVED | Run 36669206551 launched/resolved the official mock wallet through a real Android VIEW intent for solana-wallet:/v1/associate/local | Production-wallet / physical-device proof |
 | MWA integration exists in code | LOCAL | OBSERVED | Mobile provider/client code | Real Android wallet runtime |
-| MWA explicit decline on emulator | LOCAL / PARTIAL | UNKNOWN | Runs 36673316075 and 36677207011 were blocked by secure keyguard setup before MWA interaction; API 36 unlock now uses direct PIN key events | Re-run MWA session evidence |
-| MWA authorize on emulator | LOCAL / PARTIAL | UNKNOWN | Not reached in runs 36673316075 / 36677207011 because emulator remained locked after PIN setup | Re-run MWA session evidence |
-| MWA signMessage on emulator | LOCAL / PARTIAL | UNKNOWN | Not reached in run 36673316075 | Re-run MWA session evidence |
-| App relaunch state after MWA session | LOCAL / PARTIAL | UNKNOWN | Workflow classifies restored-connected vs disconnected truthfully | Run MWA session evidence |
+| MWA explicit decline on emulator | LOCAL / PARTIAL | OBSERVED | Run 36699897176 captured the official Mock MWA Wallet authorize surface, explicit Cancel, and CRESCO REFUSED state | Physical Android / production-wallet proof |
+| MWA authorize on emulator | LOCAL / PARTIAL | OBSERVED | Run 36699897176 captured a second real authorize request, explicit Connect, and the connected CRESCO workspace | Physical Android / production-wallet proof |
+| MWA signMessage on emulator | LOCAL / PARTIAL | OBSERVED | Run 36699897176 captured the wallet sign-message approval surface, explicit Approve, and CRESCO SIGNED state | Devnet transaction + physical Android remain separate |
+| App relaunch state after MWA session | LOCAL / PARTIAL | OBSERVED | Run 36699897176 force-stopped and relaunched CRESCO; receipt classified relaunchState=CONNECTED_RESTORED | Physical-device recovery proof |
 | MWA works on physical device | NOT_IMPLEMENTED | UNKNOWN | No physical Android proof yet | Borrow/obtain Android and run |
 | Solana Pay QR parsing exists | LOCAL | OBSERVED | Mobile parser/scanner code | Runtime scan proof |
 | Exact amount + recipient allowance logic exists | LOCAL | OBSERVED | Anchor code + Rust tests | Distinct Devnet deployment + runtime |
