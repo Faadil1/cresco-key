@@ -13,6 +13,10 @@ Purpose: preserve the distinction between what exists in code, what has been bui
 | CRESCO product UI launches standalone in emulator | LOCAL / PARTIAL | OBSERVED | Run 36669206551 passed the standalone launch + Connect wallet UI assertion on commit b95dfd1b53ac1bfb08820d3f06a08a58298fa47f | Physical-device runtime |
 | Official Mock MWA Wallet is discoverable on emulator | LOCAL / PARTIAL | OBSERVED | Run 36669206551 launched/resolved the official mock wallet through a real Android VIEW intent for solana-wallet:/v1/associate/local | Real MWA authorization/signing still pending |
 | MWA integration exists in code | LOCAL | OBSERVED | Mobile provider/client code | Real Android wallet runtime |
+| MWA explicit decline on emulator | LOCAL / PARTIAL | UNKNOWN | Workflow added; first run pending | Run MWA session evidence |
+| MWA authorize on emulator | LOCAL / PARTIAL | UNKNOWN | Workflow added; first run pending | Run MWA session evidence |
+| MWA signMessage on emulator | LOCAL / PARTIAL | UNKNOWN | Workflow added; first run pending | Run MWA session evidence |
+| App relaunch state after MWA session | LOCAL / PARTIAL | UNKNOWN | Workflow classifies restored-connected vs disconnected truthfully | Run MWA session evidence |
 | MWA works on physical device | NOT_IMPLEMENTED | UNKNOWN | No physical Android proof yet | Borrow/obtain Android and run |
 | Solana Pay QR parsing exists | LOCAL | OBSERVED | Mobile parser/scanner code | Runtime scan proof |
 | Exact amount + recipient allowance logic exists | LOCAL | OBSERVED | Anchor code + Rust tests | Distinct Devnet deployment + runtime |
