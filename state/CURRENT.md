@@ -48,7 +48,7 @@ Canonical sentence:
 ## Blocked / not yet live-proven
 
 - distinct CRESCO Key program id deployed to Devnet;
-- emulator smoke runtime receipt (workflow prepared, run pending);
+- emulator smoke first run produced real negative evidence: APKs installed, but debug CRESCO APK opened Expo Development Build launcher without Metro; corrected release-mode test run pending;
 - physical Android runtime;
 - real MWA connect/reject/sign/send evidence;
 - live Cloudflare relay deployment receipt;
