@@ -2,6 +2,11 @@ name: Devnet MWA Transaction Evidence
 
 on:
   workflow_dispatch:
+  push:
+    paths:
+      - "apps/mobile/**"
+      - "scripts/devnet-mwa-transaction-evidence.sh"
+      - ".github/workflows/devnet-mwa-transaction-evidence.yml"
   pull_request:
     paths:
       - "apps/mobile/**"
