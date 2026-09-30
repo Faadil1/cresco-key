@@ -112,6 +112,8 @@ The earlier lock-screen failures remain preserved as negative environment eviden
 
 The proof intentionally uses a Memo transaction first. It proves the wallet/RPC path without claiming the distinct CRESCO Key program is deployed.
 
+First run `36717900238` failed before runtime on a real dependency mismatch: `@solana-program/memo@0.11.2` expects Kit 6.x while CRESCO uses Kit 7.x. The helper package was removed instead of bypassing npm validation; the Memo instruction is now built directly using the Kit instruction shape.
+
 Physical Android and production-wallet compatibility remain separate later gates.
 
 ## Next promotion conditions
