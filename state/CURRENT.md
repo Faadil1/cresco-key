@@ -94,9 +94,11 @@ Code/build evidence must not be narrated as complete runtime proof.
 
 ## Active runtime sub-gate
 
-MWA session evidence is now ACTIVE:
+MWA session evidence is ACTIVE:
 
 `decline authorize → authorize → signMessage → kill/relaunch truthfulness`
+
+Run 36673316075 produced negative environment evidence: configuring the emulator PIN left Android on the lock screen, so MWA interaction was not reached. The harness is corrected to unlock and verify the emulator before launch. Status remains ACTIVE / UNKNOWN until a green re-run.
 
 This remains LOCAL / PARTIAL even if green. Devnet transaction proof is a separate next gate.
 
