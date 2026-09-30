@@ -1,6 +1,6 @@
 # CRESCO Key — CURRENT
 
-Updated: 2026-09-28
+Updated: 2026-09-30
 
 ## North Star
 
@@ -28,6 +28,7 @@ Canonical sentence:
 
 - native Android/React Native application structure;
 - Android debug APK build;
+- Android emulator smoke gate PROVEN on GitHub Actions run 36669206551: standalone CRESCO Key launch, Connect wallet UI, official Mock MWA Wallet install, and Android local-association intent discovery;
 - Mobile Wallet Adapter integration code;
 - Solana Pay SPL-token request parsing;
 - standing payment instruction;
