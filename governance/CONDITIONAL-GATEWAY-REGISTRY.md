@@ -51,7 +51,7 @@ A blank, missing, or forgotten gate is not a PASS.
 |---|---|---:|---|
 | Gateway / Nanopayments | Transactional rail where applicable | **N/A** | CRESCO P0 does not depend on a separate nanopayment rail. |
 | x402 | M2M paid unlock | **N/A** | Not used by CRESCO P0. If activated later, full requirements/payment → verify → settle → HTTP 200/unlock proof is mandatory. |
-| Wallets | Blockchain identity/value | **ACTIVE** | MWA integration exists in code; real Android wallet runtime remains unproven. |
+| Wallets | Blockchain identity/value | **ACTIVE** | Emulator smoke is PROVEN. Next sub-gate is real MWA decline → authorize → signMessage → kill/relaunch using the official Mock MWA Wallet. Production-wallet and physical-device proof remain separate. |
 | Contracts | Smart contracts | **ACTIVE** | Program delta is code/Rust-test proven; distinct CRESCO Key Devnet deployment is still required. |
 | App Kit / external platform integration | Sponsor/platform requirement | **N/A** | No separate App Kit is required for the locked P0; Solana Mobile/MWA is tracked under Sponsor-Native Advantage + Wallets. |
 | LIVE_GATEWAY Promotion Gate | Core value depends on live external gateway | **N/A** | No separate third-party settlement gateway is central to P0. Solana runtime itself is handled through Contracts/Wallets/Runtime gates. |
