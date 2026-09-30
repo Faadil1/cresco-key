@@ -22,11 +22,11 @@ jobs:
     steps:
       - name: Checkout CRESCO Key
         uses: actions/checkout@v4
-      - name: Checkout official Mock MWA Wallet
+      - name: Checkout official MWA fakewallet reference
         uses: actions/checkout@v4
         with:
-          repository: solana-mobile/mock-mwa-wallet
-          path: vendor/mock-mwa-wallet
+          repository: solana-mobile/mobile-wallet-adapter
+          path: vendor/mobile-wallet-adapter
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
