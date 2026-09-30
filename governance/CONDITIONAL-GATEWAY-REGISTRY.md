@@ -32,7 +32,7 @@ A blank, missing, or forgotten gate is not a PASS.
 | Rules / Eligibility Gate | Any competition | **ACTIVE** | CLOCK IN requirements must be rechecked against final submission state. |
 | Sponsor-Native Advantage Gate | Sponsored ecosystem build | **ACTIVE** | Solana Mobile/MWA + Solana capital-path enforcement are load-bearing; must be runtime-proven. |
 | Data Provenance / Freshness Gate | External/current data claims | **ACTIVE** | Current public rule/product claims require source/date tracking; hero payment path itself does not depend on live market data. |
-| External Dependency / Failure Gate | Any load-bearing external service | **ACTIVE** | RPC, wallet, Cloudflare relay and mobile OS failure/recovery must be tested. |
+| External Dependency / Failure Gate | Any load-bearing external service | **ACTIVE** | RPC, wallet, Cloudflare relay and mobile OS failure/recovery must be tested. Devnet faucet availability is treated as an external dependency for the transaction-proof workflow, not as product success. |
 | Human Action Boundary Gate | Protected human steps | **ACTIVE** | Wallet approvals, collaborator access, final submission and irreversible external actions remain explicit human checkpoints. |
 | Security / Secrets Gate | Keys/wallets/cloud credentials | **ACTIVE** | Keypairs remain outside git; Cloudflare secrets belong in repository secrets/runtime only. |
 | Legal / Compliance Boundary Gate | Money/minors/custody/securities | **ACTIVE** | Devnet/demo truth boundary remains explicit; no production custody/brokerage/minor-securities claim. |
@@ -51,7 +51,7 @@ A blank, missing, or forgotten gate is not a PASS.
 |---|---|---:|---|
 | Gateway / Nanopayments | Transactional rail where applicable | **N/A** | CRESCO P0 does not depend on a separate nanopayment rail. |
 | x402 | M2M paid unlock | **N/A** | Not used by CRESCO P0. If activated later, full requirements/payment → verify → settle → HTTP 200/unlock proof is mandatory. |
-| Wallets | Blockchain identity/value | **ACTIVE** | Emulator MWA session sub-gate is PROVEN on run 36699897176: decline → authorize/connect → signMessage approve → relaunch recovery. Devnet sign/send and physical/production-wallet proof remain active. |
+| Wallets | Blockchain identity/value | **ACTIVE** | Emulator MWA session sub-gate is PROVEN on run 36699897176. Real Devnet wallet sign/send + independent RPC confirmation is the active next sub-gate; physical/production-wallet proof remains separate. |
 | Contracts | Smart contracts | **ACTIVE** | Program delta is code/Rust-test proven; distinct CRESCO Key Devnet deployment is still required. |
 | App Kit / external platform integration | Sponsor/platform requirement | **N/A** | No separate App Kit is required for the locked P0; Solana Mobile/MWA is tracked under Sponsor-Native Advantage + Wallets. |
 | LIVE_GATEWAY Promotion Gate | Core value depends on live external gateway | **N/A** | No separate third-party settlement gateway is central to P0. Solana runtime itself is handled through Contracts/Wallets/Runtime gates. |
