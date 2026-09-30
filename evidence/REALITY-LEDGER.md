@@ -16,6 +16,8 @@ Purpose: preserve the distinction between what exists in code, what has been bui
 | MWA explicit decline on emulator | LOCAL / PARTIAL | OBSERVED | Run 36699897176 captured the official Mock MWA Wallet authorize surface, explicit Cancel, and CRESCO REFUSED state | Physical Android / production-wallet proof |
 | MWA authorize on emulator | LOCAL / PARTIAL | OBSERVED | Run 36699897176 captured a second real authorize request, explicit Connect, and the connected CRESCO workspace | Physical Android / production-wallet proof |
 | MWA signMessage on emulator | LOCAL / PARTIAL | OBSERVED | Run 36699897176 captured the wallet sign-message approval surface, explicit Approve, and CRESCO SIGNED state | Devnet transaction + physical Android remain separate |
+| MWA real Devnet sign/send transaction | LOCAL / PARTIAL | UNKNOWN | Memo-based proof workflow added; first run pending | Green wallet approval + onchain RPC-confirmed signature |
+| Devnet transaction receipt bound to commit | LOCAL / PARTIAL | UNKNOWN | Workflow will independently verify signature status + transaction through RPC | Green evidence run |
 | App relaunch state after MWA session | LOCAL / PARTIAL | OBSERVED | Run 36699897176 force-stopped and relaunched CRESCO; receipt classified relaunchState=CONNECTED_RESTORED | Physical-device recovery proof |
 | MWA works on physical device | NOT_IMPLEMENTED | UNKNOWN | No physical Android proof yet | Borrow/obtain Android and run |
 | Solana Pay QR parsing exists | LOCAL | OBSERVED | Mobile parser/scanner code | Runtime scan proof |
