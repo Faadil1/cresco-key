@@ -92,6 +92,14 @@ Current product state is not yet `LIVE CORE LOOP`.
 
 Code/build evidence must not be narrated as complete runtime proof.
 
+## Active runtime sub-gate
+
+MWA session evidence is now ACTIVE:
+
+`decline authorize → authorize → signMessage → kill/relaunch truthfulness`
+
+This remains LOCAL / PARTIAL even if green. Devnet transaction proof is a separate next gate.
+
 ## Next promotion conditions
 
 1. new CRESCO Key program id exists and is deployed to Devnet;
