@@ -108,8 +108,14 @@ export function validateRelayEvent(input) {
   return event;
 }
 
+export function isRequestExpired(expiresAt, nowSeconds) {
+  return expiresAt !== null && nowSeconds >= expiresAt;
+}
+
 export function statusAfterEvent(currentStatus, eventType) {
-  if (currentStatus === "EXPIRED" || currentStatus === "REFUSED") {
+  // Relay states are monotonic. Once a coordination request has reached a
+  // terminal outcome, later bearer-capability events cannot rewrite history.
+  if (currentStatus !== "PENDING") {
     return currentStatus;
   }
 
