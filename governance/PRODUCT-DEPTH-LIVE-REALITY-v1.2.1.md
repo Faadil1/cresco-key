@@ -1,8 +1,25 @@
 # Product Depth & Live Reality v1.2.1
 
-Status: **ACTIVE — CANONICAL**
+Status: **ACTIVE — CANONICAL PROJECT PROJECTION**
 
 This rule auto-activates for CRESCO Key product/build/hackathon work and does not replace any existing gate.
+
+## 2026-10-01 v1.3 augmentation
+
+The central `Faadil1/faadil-agent-system/PRODUCT-REALITY-POLICY.yaml@1.3.0` now augments this project-local v1.2.1 projection prospectively.
+
+New active emphasis:
+
+- **PRODUCT VALUE + REAL ACTION > PROOF ARTIFACTS**
+- **EVIDENCE IS EXHAUST OF REAL PRODUCT BEHAVIOR, NOT THE PRIMARY ENGINE**
+- **LIVE PRODUCT MODE IS PRIMARY; REPLAY IS SECONDARY FALLBACK**
+- highest safe justified P0 action tier: **APPROVAL_GATED_WRITE**
+- generic Memo/wallet proof is secondary technical proof, not the CRESCO Live Core Loop
+- the exact primary live-depth gate is distinct CRESCO Key Devnet program deployment + deterministic bootstrap + actual mobile CRESCO action
+- Product Exploitation Loop begins formally after the first real integrated vertical slice and must run before heavy terminal polish
+- material live/payment/recovery claims use `evidence/CLAIM-RUNTIME-EVIDENCE-GRAPH.yaml`
+
+This augmentation does not rewrite the historical v1.2.1 adoption record.
 
 ## Core laws
 
@@ -25,20 +42,20 @@ Every serious promotion reviews the following:
 | Depth check | CRESCO Key status | Current condition |
 |---|---:|---|
 | Live Core Loop | **BLOCKED** | Full Android + wallet + program + relay hero loop has not yet been runtime-proven. |
-| Load-Bearing Integration | **ACTIVE** | MWA, program, Solana Pay semantics and relay exist in code; runtime proof remains. |
+| Load-Bearing Integration | **ACTIVE** | MWA session behavior is locally proven, but the load-bearing CRESCO program is not yet deployed to Devnet and the relay is not live. |
 | Real Consequence | **ACTIVE** | Devnet capital-path ALLOW/REFUSE/one-use consequence is designed/implemented; live receipts still needed. |
 | Representative success scenario | **ACTIVE** | 5-unit in-bounds ALLOW scenario defined; runtime receipt pending. |
 | Representative negative scenario | **ACTIVE** | 12-unit standing REFUSE + changed-recipient refusal + replay refusal defined; runtime receipts pending. |
 | Boundary scenario | **ACTIVE** | Exact guardian exception without widening standing Key is the canonical boundary scenario. |
 | Recovery scenario | **ACTIVE** | Wallet cancellation, RPC uncertainty, app restart and relay failure must be exercised. |
-| Failure / recovery | **ACTIVE** | UNKNOWN/fail-closed semantics exist; clean runtime recovery evidence pending. |
+| Failure / recovery | **ACTIVE** | Wallet decline + app relaunch recovery are locally observed; full RPC/relay/product-state recovery remains pending. |
 | Real-user surface | **ACTIVE** | Native Android UI exists; physical-user runtime is not yet proven. |
 | External-user / operator evidence | **BLOCKED** | No external operator/user runtime trial has yet been recorded. |
 | Time to First Value | **ACTIVE** | Must be measured on the actual mobile loop once runtime works. |
 | Operational Economics | **N/A** | Not yet material to P0; revisit if relay/RPC/notification costs become meaningful. |
 | Shared Product Core | **PROVEN** | Mobile flow, authority program and relay all serve the same locked authority primitive. |
 | Reality Ledger | **ACTIVE** | Gateway registry + CURRENT state act as the current ledger; runtime receipts must be appended as promotion occurs. |
-| Observability / receipts | **ACTIVE** | APK/CI receipts exist; program/relay/mobile runtime receipts remain incomplete. |
+| Observability / receipts | **ACTIVE** | APK/emulator/MWA-session receipts exist and the Evidence Graph is active; program/relay/live-core receipts remain incomplete. |
 | Judge/operator self-serve | **ACTIVE** | Setup docs and evidence paths exist; final clean judge flow still needs completion. |
 | Setup / reproducibility | **ACTIVE** | Provision/bootstrap scripts exist; clean-room reproduction must still be tested. |
 | Clean-room / external-dependency failure | **ACTIVE** | Must test missing wallet, RPC failure, relay outage, expired request, restart and unavailable dependency. |
