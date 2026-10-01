@@ -96,7 +96,7 @@ project_control_plane:
 
   reference_intelligence:
     status: ACTIVE_ADVISORY
-    registered_central_solona_mwa_packet_found: false
+    registered_central_solana_mwa_packet_found: false
     primary_sources:
       - Solana Mobile CLOCK IN official rules
       - solana-mobile/mobile-wallet-adapter
