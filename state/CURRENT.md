@@ -59,7 +59,7 @@ Android emulator standalone runtime is separately proven on run `36669206551`.
 
 ## Latest observed runtime attempt
 
-The open Devnet MWA transaction workstream remains **NOT PROVEN**.
+The generic Devnet MWA transaction workstream remains **NOT PROVEN** and is now **closed/deferred as a separate proof-only lane**. PR #28 and issue #27 were closed after the v1.3 reconciliation; the failed run remains preserved evidence.
 
 Latest run:
 
@@ -85,21 +85,27 @@ Primary build priority is the load-bearing product path:
 
 Evidence should be emitted from that real path wherever practical instead of creating a parallel proof-only product.
 
-## Exact next gate
+## Exact next system gate
 
-**LIVE_CORE_G0 — DISTINCT CRESCO KEY DEVNET PROGRAM DEPLOYMENT + BOOTSTRAP**
+**ENGINEERING_QUALITY_BACKFILL — ACTIVE / REQUIRED AT THIS SAFE BOUNDARY**
+
+Central Engineering Quality Assurance requires active code-bearing projects without a current receipt to complete bounded backfill at the next safe boundary. The prior generic transaction repair lane is now stabilized/closed, so this is the smallest valid system handoff before the next material code/deploy batch.
 
 ## Exact next action
 
-Prepare the protected Devnet deployment path for a **new distinct CRESCO Key program identity** under human-controlled key custody, then:
+Run a bounded Engineering Quality Assurance cycle over the current material code state:
 
-1. deploy the program to Devnet;
-2. capture program id, network, deployment transaction/receipt and source commit;
-3. bootstrap deterministic two-wallet payment state;
-4. bind those nodes in the Evidence Graph;
-5. resume the actual mobile CRESCO payment path.
+`PRECONDITIONS → BASELINE SCAN → TRIAGE → BOUNDED FIX LOOP → REGRESSION VERIFY → RECEIPT`
 
-The open generic Memo/MWA proof may continue only as secondary evidence and must not displace this load-bearing integration work.
+Scope must preserve product behavior, authority/security contracts, evidence schemas and the locked PRD. Do not chase a score or start a broad refactor.
+
+## Exact next product gate after EQA
+
+**LIVE_CORE_G0 — DISTINCT CRESCO KEY DEVNET PROGRAM DEPLOYMENT + BOOTSTRAP**
+
+Then prepare the protected Devnet deployment path for a **new distinct CRESCO Key program identity** under human-controlled key custody, deploy it, capture program/network/deployment receipt + commit binding, bootstrap deterministic two-wallet payment state, and resume the actual mobile CRESCO path.
+
+The generic Memo/MWA proof is deferred as a standalone lane. Its useful pieces may be recovered later only if they materially help the real CRESCO path.
 
 ## Product Exploitation Loop
 
