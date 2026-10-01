@@ -2,6 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 
 import {
+  isRequestExpired,
   publicRequest,
   statusAfterEvent,
   validateCreatePayload,
@@ -56,6 +57,29 @@ test("terminal refusal cannot be overwritten by a later submitted event", () => 
     statusAfterEvent("REFUSED", "ALLOWANCE_SUBMITTED"),
     "REFUSED",
   );
+});
+
+test("submitted allowance marker cannot be downgraded by later relay events", () => {
+  assert.equal(
+    statusAfterEvent("ALLOWANCE_SUBMITTED", "REFUSED"),
+    "ALLOWANCE_SUBMITTED",
+  );
+  assert.equal(
+    statusAfterEvent("ALLOWANCE_SUBMITTED", "EXPIRED"),
+    "ALLOWANCE_SUBMITTED",
+  );
+});
+
+test("expired request remains expired", () => {
+  assert.equal(statusAfterEvent("EXPIRED", "GUARDIAN_OPENED"), "EXPIRED");
+  assert.equal(statusAfterEvent("EXPIRED", "ALLOWANCE_SUBMITTED"), "EXPIRED");
+});
+
+test("request expiry is fail-closed at the expiry second", () => {
+  assert.equal(isRequestExpired(null, 100), false);
+  assert.equal(isRequestExpired(101, 100), false);
+  assert.equal(isRequestExpired(100, 100), true);
+  assert.equal(isRequestExpired(99, 100), true);
 });
 
 test("public request strips capability hash", () => {
