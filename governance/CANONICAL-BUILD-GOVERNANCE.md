@@ -5,6 +5,29 @@ Applies to: product, build, hackathon, demo, runtime, evidence, submission, post
 
 This file does not replace the PRD. It governs **how** the PRD is executed, proven, promoted, and handed over.
 
+## 2026-10-01 control-plane reconciliation
+
+CRESCO Key now consumes the central `Faadil1/faadil-agent-system` System Control Plane v1 and Product Reality / Integration-First v1.3 **prospectively from this material touch**.
+
+This project-local governance file remains valid where it is consistent with the central canon. The reconciliation does not claim these newer mechanisms were historically active.
+
+Additional active laws:
+
+- **PRODUCT VALUE + REAL ACTION > PROOF ARTIFACTS**
+- **EVIDENCE IS EXHAUST OF REAL PRODUCT BEHAVIOR, NOT THE PRIMARY ENGINE**
+- **LIVE PRODUCT MODE IS PRIMARY; REPLAY/DETERMINISTIC MODE IS SECONDARY FALLBACK**
+- choose the highest safe justified action tier rather than defaulting to read-only for proof convenience;
+- after the first real live vertical slice, run the Product Exploitation / Depth Gap loop before terminal polish;
+- material claims trace through the Claim → Runtime → Evidence Graph;
+- active code-bearing projects without a current Engineering Quality receipt require bounded backfill before terminal-sensitive promotion;
+- lifecycle reconstruction from earlier project evidence must be labeled and never backdated.
+
+Control-plane state:
+
+- `governance/PROJECT-CONTROL-PLANE.yaml`
+- `governance/BUILD-LIFECYCLE-COVERAGE.yaml`
+- `evidence/CLAIM-RUNTIME-EVIDENCE-GRAPH.yaml`
+
 ## 1. Mandatory macro lifecycle
 
 Every build passes through:
@@ -57,14 +80,18 @@ Backend rigor must preserve:
 
 ## 4. Mandatory status vocabulary
 
-Every registered conditional gateway is explicitly one of:
+Historically this project used four operational gateway states. From the 2026-10-01 control-plane reconciliation forward, the project registry may explicitly use:
 
+- **PROVEN** — adequate evidence exists for the bounded claim represented by the gate.
 - **ACTIVE** — applies now and is being satisfied / verified.
-- **N/A** — evaluated and not relevant to the current build/scope.
-- **BLOCKED** — required, but a material dependency or proof is missing.
-- **PROVEN** — requirement has adequate evidence for its current claim level.
+- **BLOCKED** — required, but a material dependency, authority boundary or proof is missing.
+- **PENDING** — applicable and deliberately queued behind a known prerequisite.
+- **N/A** — evaluated and not relevant to the current scope, with reason.
+- **UNKNOWN** — applicability or factual truth is not yet resolvable from canonical evidence.
 
-Nothing is considered passed merely because it was not discussed.
+Lifecycle completeness uses its separate canonical vocabulary in `governance/BUILD-LIFECYCLE-COVERAGE.yaml`.
+
+Nothing is considered passed merely because it was not discussed. New status semantics are not backdated into earlier records.
 
 ## 5. Pre-Build Reality Gate
 
