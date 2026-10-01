@@ -62,7 +62,7 @@ A blank, omitted, or forgotten gate is never a PASS.
 
 | Gateway | Activation | Status | Current condition |
 |---|---|---:|---|
-| Engineering Quality Assurance | Active code-bearing project without current receipt | **PENDING** | **BACKFILL_REQUIRED** at next safe boundary. It must be complete before BUILD_CANDIDATE_READY/release/submission-ready but need not interrupt an atomic live-runtime repair. |
+| Engineering Quality Assurance | Active code-bearing project without current receipt | **ACTIVE** | **BACKFILL_REQUIRED and now the exact next system gate.** The prior atomic proof-repair lane is stabilized/closed; run bounded scan → triage → justified fixes → regression verification → receipt before the next material code/deploy batch. |
 | TRACE / Design Experience Assurance | Evaluator-facing UI or material design risk | **ACTIVE** | Mobile evaluator-facing experience makes TRACE applicable. Benita's design work is useful but does not substitute for a TRACE verdict. |
 | Distinctiveness Escalation | After functional slice | **ACTIVE** | Preserve young-person agency, boundary legibility, exact exception consumption, non-generic visual language and signature behavior. |
 | Accessibility / Responsive | User-facing mobile product | **ACTIVE** | Mobile legibility, reduced motion, keyboard/accessibility equivalents where relevant, and small-screen behavior still require final verification. |
@@ -91,7 +91,7 @@ A blank, omitted, or forgotten gate is never a PASS.
 |---|---|---:|---|
 | Android standalone emulator runtime | Mobile runtime | **PROVEN** | Run `36669206551` proved standalone CRESCO launch + Connect wallet surface at LOCAL/PARTIAL scope. |
 | MWA session decline/authorize/signMessage/relaunch | Mobile wallet behavior | **PROVEN** | Run `36699897176` proved the bounded emulator session sequence at LOCAL/PARTIAL scope. |
-| Real MWA Devnet sign/send | Transaction technical proof | **ACTIVE** | Not proven. Latest inspected run `36761591880` failed before transaction runtime because Android platform 37 could not be installed for the upstream fakewallet build. This generic Memo lane is secondary under v1.3. |
+| Real MWA Devnet sign/send | Transaction technical proof | **PENDING** | Not proven. Latest run `36761591880` failed before transaction runtime. Separate PR #28/issue #27 were closed/deferred under v1.3; sign/send should now be proven through the real CRESCO product path where practical. |
 | Physical Android | Strongest target-device evidence | **UNKNOWN** | No physical Android runtime has been observed. Lack of owner device does not change architecture; borrow/obtain one later for final evidence if feasible. |
 | Production-wallet compatibility | Real wallet target | **UNKNOWN** | Official test wallets prove protocol behavior only; production-wallet behavior remains unobserved. |
 | Solana authority program code | Smart-contract mechanism | **PROVEN** | Exact payment/allowance logic and negative invariants exist in code/tests at code-test scope. |
@@ -116,15 +116,23 @@ A blank, omitted, or forgotten gate is never a PASS.
 | AI agent authority | Recursive delegate | **N/A** | Chain of Keys is roadmap, not P0. |
 | LIVE_GATEWAY | Separate third-party live gateway | **N/A** | Solana runtime is tracked directly under wallet/contracts/runtime gates. |
 
-## Exact next gate
+## Exact next system gate
 
-**LIVE_CORE_G0 — DISTINCT CRESCO KEY DEVNET PROGRAM DEPLOYMENT + BOOTSTRAP**
+**ENGINEERING_QUALITY_BACKFILL**
 
 Exact next action:
 
+`PRECONDITIONS → BASELINE SCAN → TRIAGE → BOUNDED FIX LOOP → REGRESSION VERIFY → ENGINEERING QUALITY RECEIPT`
+
+This is the required safe-boundary repair handoff. It must preserve product/security/evidence contracts and avoid score chasing or broad aesthetic refactors.
+
+## Exact next product gate after EQA
+
+**LIVE_CORE_G0 — DISTINCT CRESCO KEY DEVNET PROGRAM DEPLOYMENT + BOOTSTRAP**
+
 `HUMAN-CONTROLLED DISTINCT PROGRAM KEY → DEVNET DEPLOY → DEPLOYMENT RECEIPT/PROGRAM ID → COMMIT BINDING → DETERMINISTIC PAYMENT BOOTSTRAP → REAL MOBILE CRESCO ACTION`
 
-The generic Memo transaction proof may continue only as secondary technical evidence and must not displace this load-bearing path.
+The generic Memo transaction proof is deferred as a separate lane and must not displace the load-bearing path.
 
 ## Review triggers
 
