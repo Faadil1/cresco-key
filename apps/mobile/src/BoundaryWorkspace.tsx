@@ -141,8 +141,8 @@ export function BoundaryWorkspace() {
     [config],
   );
 
-  const rpcForOutcome =
-    client.rpc as unknown as Parameters<typeof waitForTransactionOutcome>[0];
+  const rpcForOutcome: Parameters<typeof waitForTransactionOutcome>[0] =
+    client.rpc;
 
   const loadGuardianLink = async (url: string) => {
     const capability = parseBoundaryDeepLink(url);
