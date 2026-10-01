@@ -81,3 +81,28 @@ project_control_plane:
       detail: >-
         The project is active and code-bearing with no current Engineering Quality receipt.
         Backfill is required before BUILD_CANDIDATE_READY/submission-ready, but should not interrupt a current atomic runtime repair.
+
+  rule_lifecycle:
+    rule_lifecycle_decision: NO_CHANGE
+    reason: >-
+      This reconciliation adopts already-promoted central rules and adds project-local state/traceability only.
+      It does not propose a new universal rule from CRESCO-specific failures or successes.
+
+  cross_project_learning:
+    status: NOT_APPLICABLE_YET
+    reason: >-
+      CRESCO Key is still ACTIVE. Current runtime failures remain project evidence; no cross-project generalization
+      is made before post-mortem and comparable independent-project observations.
+
+  reference_intelligence:
+    status: ACTIVE_ADVISORY
+    registered_central_solona_mwa_packet_found: false
+    primary_sources:
+      - Solana Mobile CLOCK IN official rules
+      - solana-mobile/mobile-wallet-adapter
+      - solana-mobile/mock-mwa-wallet
+      - official Solana Mobile MWA documentation when material
+    current_gate_ossium_relevance: NOT_APPLICABLE_WITH_REASON
+    current_gate_ossium_reason: >-
+      The exact gate is Devnet program deployment/runtime integration; OSS discovery does not resolve the protected
+      program-key/deployment dependency and is therefore not material to this gate.
