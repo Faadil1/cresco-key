@@ -4,21 +4,27 @@ This is the fastest path to become productive without breaking the product or au
 
 ## 1. Read these first
 
-In order:
+For a material product/runtime change, first use the central canon in `Faadil1/faadil-agent-system@main` as routed by `state/HANDOVER.md`.
 
-1. `product/PRD.md` — canonical product source of truth.
-2. `state/CURRENT.md` — canonical current project state.
-3. `state/HANDOVER.md` — continuity, ownership and next actions.
-4. `governance/CONDITIONAL-GATEWAY-REGISTRY.md` — every gate marked ACTIVE / N/A / BLOCKED / PROVEN.
-5. `governance/PRODUCT-DEPTH-LIVE-REALITY-v1.2.1.md` — live-depth promotion rules.
-6. `governance/CANONICAL-BUILD-GOVERNANCE.md` — lifecycle, truth, evidence, demo and submission governance.
-7. `docs/DEMO-FIRST-ARCHITECTURE.md` — P0 mobile flow and evidence requirements.
-8. `docs/EXACT-PAYMENT-INTENT.md` — exact amount/recipient semantics.
-9. `docs/TECHNICAL-REALITY-CHECK.md` — code proof vs runtime proof.
+Then read this project in order:
 
-If an implementation decision conflicts with the PRD, the PRD wins until the PRD is deliberately changed.
+1. `state/CURRENT.md` — canonical current project state and exact next gate.
+2. `state/HANDOVER.md` — continuity, precedence and owner/action handoff.
+3. `product/PRD.md` — canonical living product source.
+4. `governance/PROJECT-CONTROL-PLANE.yaml` — project activation / precedence / control-plane state.
+5. `governance/BUILD-LIFECYCLE-COVERAGE.yaml` — explicit mandatory/triggered capability coverage.
+6. `governance/CONDITIONAL-GATEWAY-REGISTRY.md` — operational gate state.
+7. `evidence/CLAIM-RUNTIME-EVIDENCE-GRAPH.yaml` — material claim causal trace.
+8. `evidence/REALITY-LEDGER.md` — what is real today.
+9. `governance/PRODUCT-DEPTH-LIVE-REALITY-v1.2.1.md` — project-local depth projection, augmented by central Product Reality v1.3.
+10. `governance/CANONICAL-BUILD-GOVERNANCE.md` — lifecycle, truth, demo and submission governance.
+11. `docs/DEMO-FIRST-ARCHITECTURE.md`
+12. `docs/EXACT-PAYMENT-INTENT.md`
+13. `docs/TECHNICAL-REALITY-CHECK.md`
 
-No workstream may silently skip the Conditional Gateway Registry. A missing gate is not a PASS. Product Depth & Live Reality v1.2.1 remains active even after the vertical slice works.
+If project product law conflicts with implementation convenience, reconcile the living PRD deliberately rather than silently changing behavior.
+
+No workstream may silently skip lifecycle coverage or the Conditional Gateway Registry. A missing/unknown material gate is not a PASS. Integration-First / Product Reality v1.3 now applies prospectively from the 2026-10-01 reconciliation.
 
 ## 2. Product in one minute
 
