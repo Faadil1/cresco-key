@@ -1,0 +1,195 @@
+version: 0.1.1
+build_lifecycle_coverage:
+  project: CRESCO Key
+  project_type: HACKATHON
+  repository: Faadil1/cresco-key
+  source_of_truth: GitHub
+  current_owner: pbpd_or_existing_product_owner
+  current_stage: DELIVER_TO_LIVE_DEPTH
+  exact_next_gate: LIVE_CORE_G0_DISTINCT_CRESCO_KEY_DEVNET_PROGRAM_DEPLOY_AND_BOOTSTRAP
+  exact_next_action: >-
+    Establish the distinct Devnet program identity under human key custody, deploy it, bootstrap deterministic
+    payment state, and bind the resulting program/network/deployment receipt to the demonstrated commit.
+  last_updated: 2026-10-01
+
+  bootstrap:
+    faadil_system_router_activated: true
+    project_profile_resolved: true
+    lifecycle_manifest_created_at_first_material_build_touch: false
+    lifecycle_manifest_created_at_current_material_touch: true
+    chat_memory_used_as_only_gate_source: false
+    reconstruction_rule: >-
+      Earlier stages are marked RECONSTRUCTED_FROM_CANONICAL_EVIDENCE only where the repository already records them.
+      No reconstructed artifact is backdated.
+
+  capabilities:
+    - capability: faadil_system_router
+      owner: faadil-agent-system
+      status: SATISFIED
+      evidence_pointer: governance/PROJECT-CONTROL-PLANE.yaml
+      reconstruction_note: Activated prospectively on 2026-10-01.
+    - capability: opportunity_or_domain_intelligence
+      owner: hackathon_opportunity_intelligence
+      status: RECONSTRUCTED_FROM_CANONICAL_EVIDENCE
+      evidence_pointer: governance/CONDITIONAL-GATEWAY-REGISTRY.md
+      reconstruction_note: Existing project state records rubric/problem/competitive research as completed before concept lock; no claim is made that the new control plane existed then.
+    - capability: authorization_owner
+      owner: human_or_existing_authority
+      status: SATISFIED
+      evidence_pointer: governance/PROJECT-CONTROL-PLANE.yaml
+      reconstruction_note: Ongoing project work is explicitly authorized from the current reconciliation forward.
+    - capability: problem_worthiness_or_problem_reality
+      owner: hackathon_opportunity_intelligence_or_existing_product_owner
+      status: RECONSTRUCTED_FROM_CANONICAL_EVIDENCE
+      evidence_pointer: governance/CONDITIONAL-GATEWAY-REGISTRY.md
+      reconstruction_note: Pre-Build Reality Gate is already recorded PROVEN in project canonical state.
+    - capability: negative_event_gate
+      owner: hackathon_opportunity_intelligence_or_existing_product_owner
+      status: RECONSTRUCTED_FROM_CANONICAL_EVIDENCE
+      evidence_pointer: governance/CONDITIONAL-GATEWAY-REGISTRY.md
+      reconstruction_note: Existing project canonical state preserves concrete authorization-failure examples and design implications.
+    - capability: product_reality_and_production_evidence
+      owner: pbpd_or_existing_product_owner
+      status: MISSING
+      evidence_pointer: governance/PRODUCT-DEPTH-LIVE-REALITY-v1.2.1.md
+      reconstruction_note: Product Reality is active, but live core, real consequence, external-user evidence and several depth dimensions remain unresolved.
+    - capability: prototype_killer_or_simpler_alternative_challenge
+      owner: hackathon_opportunity_intelligence
+      status: RECONSTRUCTED_FROM_CANONICAL_EVIDENCE
+      evidence_pointer: governance/CONDITIONAL-GATEWAY-REGISTRY.md
+      reconstruction_note: Competitive Novelty/Kill Gate is recorded PROVEN; this reconstruction does not claim a separate historical artifact existed.
+    - capability: living_PRD
+      owner: pbpd_or_existing_product_owner
+      status: SATISFIED
+      evidence_pointer: product/PRD.md
+      reconstruction_note: Living PRD exists; v1.3 reconciliation is adopted prospectively.
+    - capability: spec_kit_or_equivalent
+      owner: none
+      status: NOT_APPLICABLE_WITH_REASON
+      evidence_pointer: product/PRD.md
+      not_applicable_reason: Current product is already governed by a living PRD and direct implementation plan; no separate Spec Kit subprotocol is required for the present gate.
+    - capability: production_owner
+      owner: pbpd_or_existing_product_owner
+      status: SATISFIED
+      evidence_pointer: state/CURRENT.md
+    - capability: evidence_and_evaluation
+      owner: pbpd_or_existing_product_owner
+      status: MISSING
+      evidence_pointer: evidence/CLAIM-RUNTIME-EVIDENCE-GRAPH.yaml
+      reconstruction_note: Local technical/behavior evidence exists, but transaction/program/live-core claim edges remain incomplete.
+    - capability: engineering_quality_assurance
+      owner: pbpd_or_router_authorized_implementation_owner
+      status: MISSING
+      evidence_pointer: null
+      reconstruction_note: Active code-bearing project has no current Engineering Quality receipt; BACKFILL_REQUIRED before the next terminal-sensitive transition.
+    - capability: design_experience_assurance
+      owner: trace
+      status: MISSING
+      evidence_pointer: null
+      reconstruction_note: Evaluator-facing mobile experience makes TRACE/design assurance applicable; no terminal TRACE verdict is currently recorded.
+    - capability: winner_intelligence
+      owner: hackathon_opportunity_intelligence
+      status: RECONSTRUCTED_FROM_CANONICAL_EVIDENCE
+      evidence_pointer: governance/CANONICAL-BUILD-GOVERNANCE.md
+      reconstruction_note: The project records Winning Intelligence as part of the pre-lock route; no new winner law is inferred.
+    - capability: competitive_collision
+      owner: hackathon_opportunity_intelligence
+      status: RECONSTRUCTED_FROM_CANONICAL_EVIDENCE
+      evidence_pointer: governance/CONDITIONAL-GATEWAY-REGISTRY.md
+      reconstruction_note: Competitive Novelty/Kill Gate is recorded PROVEN.
+    - capability: post_build_reconciliation
+      owner: pbpd_or_existing_product_owner
+      status: MISSING
+      evidence_pointer: state/CURRENT.md
+      reconstruction_note: Build is still active and has not reached BUILD_CANDIDATE_READY.
+    - capability: terminal_assurance
+      owner: project_finisher
+      status: MISSING
+      evidence_pointer: null
+      reconstruction_note: Not yet eligible; BUILD_CANDIDATE_READY has not been reached.
+    - capability: protected_human_action
+      owner: human
+      status: MISSING
+      evidence_pointer: state/HANDOVER.md
+      reconstruction_note: Program/wallet key custody, external secrets and final submission remain future protected actions.
+    - capability: post_mortem_and_learning
+      owner: project_finisher
+      status: NOT_APPLICABLE_WITH_REASON
+      evidence_pointer: null
+      not_applicable_reason: Project is ACTIVE and not submitted/frozen.
+
+  product_depth_and_live_reality:
+    applicable: true
+    live_core_loop: MISSING
+    load_bearing_integration: MISSING
+    real_action_depth: MISSING
+    highest_safe_justified_action_tier: APPROVAL_GATED_WRITE
+    post_vertical_slice_product_exploitation_loop: ACTIVE_PENDING_FIRST_LIVE_CORE_SLICE
+    real_consequence: MISSING
+    representative_scenario_depth: MISSING
+    failure_and_recovery: MISSING
+    real_user_surface: SATISFIED
+    external_user_or_operator_evidence: MISSING
+    organic_usage_boundary: NOT_APPLICABLE_WITH_REASON
+    organic_usage_reason: No adoption/retention claim is currently being made; external usability evidence is still required before submission where practical.
+    time_to_first_value: MISSING
+    operational_economics: NOT_APPLICABLE_WITH_REASON
+    operational_economics_reason: Current P0 Devnet/RPC/relay path does not yet have material paid usage cost; revisit if paid infrastructure becomes material.
+    shared_product_core: SATISFIED
+    reality_ledger: SATISFIED
+    post_vertical_slice_depth_gap_review: NOT_APPLICABLE_WITH_REASON
+    post_vertical_slice_reason: First real live core vertical slice is not yet proven; review activates immediately after that proof.
+    observability_and_receipts: MISSING
+    judge_or_operator_self_serve: MISSING
+    setup_and_reproducibility: MISSING
+    clean_room_core_path: MISSING
+    external_dependency_failure_behavior: MISSING
+    production_like_behavior: MISSING
+    evidence_pointer: evidence/REALITY-LEDGER.md
+    unresolved_gaps:
+      - distinct Devnet program deployment
+      - real CRESCO payment transaction from mobile
+      - live relay
+      - two-device guardian flow
+      - changed-recipient and replay runtime refusals
+      - physical Android / production-wallet evidence
+      - external operator trial
+      - engineering quality receipt
+      - TRACE/design terminal verdict
+      - clean-room setup
+
+  competitive_judge_cycle:
+    applicable: true
+    RUBRIC: SATISFIED
+    PAIN: RECONSTRUCTED_FROM_CANONICAL_EVIDENCE
+    PROBLEM: RECONSTRUCTED_FROM_CANONICAL_EVIDENCE
+    NEGATIVE_EVENT: RECONSTRUCTED_FROM_CANONICAL_EVIDENCE
+    DIFFERENTIATOR: RECONSTRUCTED_FROM_CANONICAL_EVIDENCE
+    EXECUTION: SATISFIED
+    LIVE_DEPTH: MISSING
+    EVIDENCE: MISSING
+    STORY: MISSING
+    DEMO: MISSING
+    Q_AND_A: MISSING
+    public_surface_exposes_internal_process_theater: false
+
+  missing:
+    - product_reality_and_production_evidence
+    - evidence_and_evaluation
+    - engineering_quality_assurance
+    - design_experience_assurance
+    - post_build_reconciliation
+    - terminal_assurance
+    - protected_human_action
+  triggered_but_unresolved:
+    - live_core_loop
+    - load_bearing_integration
+    - real_consequence
+    - engineering_quality_backfill
+    - TRACE_design_assurance
+    - runtime_commit_deployment_binding
+    - pre_launch_ship_assurance
+  human_overrides: []
+  reconstructed_artifacts:
+    - opportunity/problem/negative-event/competitive pre-lock state from existing project governance
+  terminal_completeness_allowed: false
