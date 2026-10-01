@@ -1,0 +1,180 @@
+version: 1.0.0
+claim_runtime_evidence_graph:
+  project: CRESCO Key
+  repository: Faadil1/cresco-key
+  policy: Faadil1/faadil-agent-system/EVIDENCE-GRAPH-POLICY.yaml
+  created_at: 2026-10-01
+  adoption_note: >-
+    Created at the first material touch after System Control Plane v1 promotion. Existing evidence is referenced
+    at its true class; no earlier run is retroactively upgraded.
+
+  claims:
+    - claim_id: CK_ANDROID_EMULATOR_RUNTIME
+      statement: CRESCO Key launches as a standalone Android app in an API 36 emulator and exposes the wallet-connect surface.
+      evidence_class: LOCAL_PARTIAL
+      truth_state: COMPLETE
+      scenarios:
+        - scenario_id: CK_ANDROID_EMULATOR_SUCCESS
+          scenario_type: SUCCESS
+          preconditions: [Android_API_36_emulator, CRESCO_test_APK]
+          expected_consequence: App process is alive and Connect wallet is visible.
+          runtime_execution:
+            execution_id: gha_36669206551
+            runtime: GitHub_Actions_Android_emulator
+            observed_at: 2026-09-30
+            result: SUCCESS
+          dependencies:
+            - dependency_id: android_emulator
+              role: target_runtime
+              live_or_stub: LOCAL_TEST_RUNTIME
+              load_bearing: true
+          receipt_or_telemetry:
+            receipt_id: ANDROID_EMULATOR_SMOKE_PROOF_2026_09_30
+            artifact_pointer: evidence/emulator/ANDROID-EMULATOR-SMOKE-PROOF-2026-09-30.md
+            observed_or_generated: OBSERVED_AND_GENERATED
+          commit:
+            repository: Faadil1/cresco-key
+            commit_sha: b95dfd1b53ac1bfb08820d3f06a08a58298fa47f
+          deployment:
+            runtime_url_or_environment: GitHub_Actions_Android_API_36
+            deployment_identity: run_36669206551
+            deployment_state: LOCAL_TEST_ONLY
+
+    - claim_id: CK_MWA_SESSION
+      statement: CRESCO Key can decline authorization, authorize, sign a message, and restore the connected session with the official Mock MWA Wallet in the emulator.
+      evidence_class: LOCAL_PARTIAL
+      truth_state: COMPLETE
+      scenarios:
+        - scenario_id: CK_MWA_DECLINE_AUTHORIZE_SIGN_RECOVER
+          scenario_type: RECOVERY
+          preconditions: [Android_API_36_emulator, official_Mock_MWA_Wallet]
+          expected_consequence: Explicit decline is non-success; later authorize/signMessage succeeds; relaunch restores truthful state.
+          runtime_execution:
+            execution_id: gha_36699897176
+            runtime: GitHub_Actions_Android_emulator
+            observed_at: 2026-09-30
+            result: SUCCESS
+          dependencies:
+            - dependency_id: mock_mwa_wallet
+              role: wallet_protocol_runtime
+              live_or_stub: OFFICIAL_TEST_WALLET
+              load_bearing: true
+          receipt_or_telemetry:
+            receipt_id: MWA_SESSION_CANONICAL_PROOF_2026_09_30
+            artifact_pointer: evidence/mwa-session/MWA-SESSION-CANONICAL-PROOF-2026-09-30.md
+            observed_or_generated: OBSERVED_AND_GENERATED
+          commit:
+            repository: Faadil1/cresco-key
+            commit_sha: aaeacbe37610a282993dde8ddc96dca2a3e64347
+          deployment:
+            runtime_url_or_environment: GitHub_Actions_Android_API_36
+            deployment_identity: run_36699897176
+            deployment_state: LOCAL_TEST_ONLY
+
+    - claim_id: CK_REAL_DEVNET_MWA_TRANSACTION
+      statement: CRESCO Key sends a real Devnet transaction through MWA and independently confirms it by RPC.
+      evidence_class: TECHNICAL_PROOF_TARGET
+      truth_state: PARTIAL
+      scenarios:
+        - scenario_id: CK_DEVNET_MEMO_TRANSACTION
+          scenario_type: SUCCESS
+          preconditions: [connected_test_wallet, Devnet_funding, MWA_transaction_approval]
+          expected_consequence: Wallet signs/sends and RPC confirms a transaction signature.
+          runtime_execution:
+            execution_id: gha_36761591880
+            runtime: GitHub_Actions_Android_emulator
+            observed_at: 2026-09-30
+            result: FAILED_BEFORE_TRANSACTION_RUNTIME
+          dependencies:
+            - dependency_id: upstream_mwa_fakewallet
+              role: transaction_test_wallet
+              live_or_stub: OFFICIAL_TEST_WALLET
+              load_bearing: true
+            - dependency_id: android_37_sdk
+              role: upstream_fakewallet_build_requirement
+              live_or_stub: EXTERNAL_BUILD_DEPENDENCY
+              load_bearing: true
+            - dependency_id: solana_devnet_rpc
+              role: transaction_network
+              live_or_stub: LIVE_DEVNET_SERVICE
+              load_bearing: true
+          receipt_or_telemetry:
+            receipt_id: gha_run_36761591880_logs
+            artifact_pointer: https://github.com/Faadil1/cresco-key/actions/runs/36761591880
+            observed_or_generated: OBSERVED_FAILURE
+          commit:
+            repository: Faadil1/cresco-key
+            commit_sha: 2cde3dd95ecebc95defb2944d910e57e07899d8e
+          deployment:
+            runtime_url_or_environment: GitHub_Actions
+            deployment_identity: run_36761591880
+            deployment_state: FAILED_BEFORE_TRANSACTION
+      missing_edges:
+        - successful_runtime_execution_to_transaction_receipt
+        - transaction_receipt_to_confirmed_signature
+      promotion_note: >-
+        This generic Memo proof is secondary under Integration-First v1.3. It must not block or displace
+        the load-bearing CRESCO program deployment and real product transaction path.
+
+    - claim_id: CK_DISTINCT_DEVNET_PROGRAM
+      statement: A distinct CRESCO Key program identity is deployed on Solana Devnet and bound to the current code.
+      evidence_class: LIVE_INTEGRATION_TARGET
+      truth_state: MISSING
+      scenarios:
+        - scenario_id: CK_PROGRAM_DEPLOY
+          scenario_type: SUCCESS
+          preconditions: [human_controlled_program_keypair, built_program, Devnet_funding]
+          expected_consequence: Distinct program id is deployed and independently queryable on Devnet.
+      missing_edges:
+        - scenario_to_runtime_execution
+        - runtime_execution_to_receipt_or_telemetry
+        - runtime_execution_to_commit
+        - commit_to_deployment
+
+    - claim_id: CK_LIVE_CORE_LOOP
+      statement: The real mobile CRESCO Key hero path enforces standing authority and exact one-use exceptions end to end.
+      evidence_class: LIVE_INTEGRATION_TARGET
+      truth_state: MISSING
+      scenarios:
+        - scenario_id: CK_HERO_SUCCESS
+          scenario_type: SUCCESS
+          preconditions: [deployed_CRESCO_program, mobile_MWA, live_relay, deterministic_demo_state]
+          expected_consequence: 5-unit in-bounds action executes with real Devnet consequence.
+        - scenario_id: CK_HERO_BOUNDARY
+          scenario_type: BOUNDARY
+          preconditions: [same_runtime]
+          expected_consequence: 12-unit action refuses and exact exception can be requested.
+        - scenario_id: CK_HERO_MUTATION
+          scenario_type: NEGATIVE
+          preconditions: [guardian_exact_allow_once]
+          expected_consequence: Changed recipient refuses without consuming allowance.
+        - scenario_id: CK_HERO_REPLAY
+          scenario_type: NEGATIVE
+          preconditions: [exact_allowance_consumed]
+          expected_consequence: Replay refuses and standing Key remains unchanged.
+        - scenario_id: CK_HERO_RECOVERY
+          scenario_type: RECOVERY
+          preconditions: [wallet_or_RPC_or_relay_interruption]
+          expected_consequence: Product fails closed or preserves/recovers truthful state.
+      missing_edges:
+        - all_runtime_execution_edges
+        - dependencies_to_real_runtime
+        - receipts
+        - commit_binding
+        - deployment_binding
+
+    - claim_id: CK_LIVE_BOUNDARY_RELAY
+      statement: The private two-device relay is deployed and reachable without acquiring financial authority.
+      evidence_class: LIVE_INTEGRATION_TARGET
+      truth_state: MISSING
+      missing_edges:
+        - scenario_to_runtime_execution
+        - runtime_execution_to_receipt_or_telemetry
+        - commit_to_deployment
+
+  exact_next_graph_edge:
+    claim_id: CK_DISTINCT_DEVNET_PROGRAM
+    edge: SCENARIO_TO_RUNTIME_EXECUTION
+    action: >-
+      Complete protected program-key setup, deploy the distinct CRESCO Key program to Devnet, capture the
+      deployment receipt/program id/network, and bind it to the source commit.
