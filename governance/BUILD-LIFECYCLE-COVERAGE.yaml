@@ -6,10 +6,11 @@ build_lifecycle_coverage:
   source_of_truth: GitHub
   current_owner: pbpd_or_existing_product_owner
   current_stage: DELIVER_TO_LIVE_DEPTH
-  exact_next_gate: LIVE_CORE_G0_DISTINCT_CRESCO_KEY_DEVNET_PROGRAM_DEPLOY_AND_BOOTSTRAP
+  exact_next_gate: ENGINEERING_QUALITY_BACKFILL
   exact_next_action: >-
-    Establish the distinct Devnet program identity under human key custody, deploy it, bootstrap deterministic
-    payment state, and bind the resulting program/network/deployment receipt to the demonstrated commit.
+    Run Engineering Quality Assurance backfill now that the prior atomic runtime repair lane is stabilized:
+    preconditions, baseline scan, triage, bounded fix loop, regression verification and receipt.
+    After that, proceed to the distinct Devnet program deployment + deterministic payment bootstrap gate.
   last_updated: 2026-10-01
 
   bootstrap:
