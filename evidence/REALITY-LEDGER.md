@@ -20,7 +20,7 @@ Purpose: distinguish what is **LIVE / TESTED / LOCAL / MOCKED / PLANNED / NOT PR
 | MWA authorize on emulator | LOCAL / PARTIAL | OBSERVED | Run `36699897176` captured second authorize/connect and connected workspace | Physical Android / production wallet |
 | MWA signMessage on emulator | LOCAL / PARTIAL | OBSERVED | Run `36699897176` captured signing approval and CRESCO SIGNED state | Product transaction / physical device |
 | App relaunch after MWA session | LOCAL / PARTIAL | OBSERVED | Run `36699897176` force-stop/relaunch, receipt `CONNECTED_RESTORED` | Physical-device recovery |
-| Generic real Devnet MWA sign/send transaction | TECHNICAL_PROOF TARGET / PARTIAL | UNKNOWN | Latest run `36761591880` failed before transaction runtime: CRESCO APK build succeeded, upstream fakewallet Android 37 SDK dependency could not be installed | Successful wallet transaction + RPC-confirmed signature; secondary lane under v1.3 |
+| Generic real Devnet MWA sign/send transaction | TECHNICAL_PROOF TARGET / PARTIAL | UNKNOWN | Latest run `36761591880` failed before transaction runtime; PR #28 and issue #27 are now closed/deferred as a separate proof-only lane | If needed, prove sign/send through the actual CRESCO product path rather than reviving parallel proof theater |
 | Generic Memo proof is the CRESCO live core | NOT_APPLICABLE | OBSERVED_FALSE | Integration-First v1.3 reconciliation: Memo spike is not the load-bearing product action | Must use actual CRESCO program path |
 | MWA works on physical Android | NOT_IMPLEMENTED | UNKNOWN | No physical-device proof | Borrow/obtain Android and run when live path is ready |
 | Production-wallet compatibility | NOT_IMPLEMENTED | UNKNOWN | Official test-wallet evidence only | Real compatible wallet/device |
@@ -40,7 +40,7 @@ Purpose: distinguish what is **LIVE / TESTED / LOCAL / MOCKED / PLANNED / NOT PR
 | Full two-device Live Core Loop | NOT_IMPLEMENTED / LIVE TARGET | UNKNOWN | Components exist separately; no same-product integrated run | Program + bootstrap + relay + mobile + representative scenarios + binding |
 | Failure/recovery on full product loop | PARTIAL | UNKNOWN | Wallet cancellation and app relaunch are locally observed; RPC/relay/product-state recovery not yet integrated | Representative recovery run |
 | Runtime → receipt → commit → deployment binding for live product | NOT_IMPLEMENTED | UNKNOWN | Evidence Graph identifies missing edges | Deployed program/relay + canonical run |
-| Engineering Quality receipt | NOT_IMPLEMENTED / GOVERNANCE | UNKNOWN | No current receipt found | Bounded backfill before terminal-sensitive promotion |
+| Engineering Quality receipt | NOT_IMPLEMENTED / GOVERNANCE | UNKNOWN | No current receipt found; central active-project rollout makes this the exact next safe-boundary system gate | Run bounded EQA backfill + regression verification + receipt |
 | TRACE / Design Experience terminal verdict | NOT_IMPLEMENTED / GOVERNANCE | UNKNOWN | Design collaboration exists; no TRACE verdict | Run before design-sensitive terminal transition |
 | External user/operator trial | NOT_IMPLEMENTED | UNKNOWN | None recorded | Usable live build |
 | Clean-room / judge self-serve core path | NOT_IMPLEMENTED | UNKNOWN | Setup scripts/docs exist; no fresh-environment proof | Live core first |
