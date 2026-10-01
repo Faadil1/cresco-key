@@ -1,6 +1,14 @@
 # CRESCO Key — CURRENT
 
-Updated: 2026-09-30
+Updated: 2026-10-01
+
+## Project status
+
+**ACTIVE**
+
+This is an existing, authorized hackathon product project. It is not FROZEN, SUBMITTED, or REOPENED.
+
+System Control Plane v1 and Product Reality / Integration-First v1.3 are adopted **from 2026-10-01 forward** at this material touch. They are not backdated into prior project history.
 
 ## North Star
 
@@ -12,25 +20,160 @@ Canonical sentence:
 
 ## Current phase
 
-**CONCEPT LOCKED → P0 IMPLEMENTATION ACTIVE → RUNTIME / LIVE DEPTH PROOF**
+**CONCEPT LOCKED → P0 IMPLEMENTATION ACTIVE → LIVE INTEGRATION / LIVE DEPTH**
 
-## Canonical product source
+Canonical product source:
 
 - `product/PRD.md`
 
-## Canonical governance
+Canonical project control:
 
-- `governance/CANONICAL-BUILD-GOVERNANCE.md`
+- `governance/PROJECT-CONTROL-PLANE.yaml`
+- `governance/BUILD-LIFECYCLE-COVERAGE.yaml`
 - `governance/CONDITIONAL-GATEWAY-REGISTRY.md`
-- `governance/PRODUCT-DEPTH-LIVE-REALITY-v1.2.1.md`
+- `evidence/CLAIM-RUNTIME-EVIDENCE-GRAPH.yaml`
+- `evidence/REALITY-LEDGER.md`
 
-## Proven at code/build level
+Central governance source:
+
+- `Faadil1/faadil-agent-system@main`
+- `SYSTEM-CONTROL-PLANE-POLICY.yaml`
+- `PRODUCT-REALITY-POLICY.yaml@1.3.0`
+- `PROJECT-LIFECYCLE-COMPLETENESS-POLICY.yaml`
+- `EVIDENCE-GRAPH-POLICY.yaml`
+- `project-profiles/hackathon.yaml`
+
+## Last materially proven gate
+
+**MWA SESSION — PROVEN at LOCAL / PARTIAL scope**
+
+Canonical successful run: `36699897176`.
+
+Observed:
+
+`authorize decline → REFUSED → authorize/connect → signMessage approve → SIGNED → force-stop/relaunch → CONNECTED_RESTORED`
+
+This is a real representative emulator behavior proof. It is **not** physical-device proof, production-wallet proof, Devnet transaction proof, or Live Core Loop proof.
+
+Android emulator standalone runtime is separately proven on run `36669206551`.
+
+## Latest observed runtime attempt
+
+The open Devnet MWA transaction workstream remains **NOT PROVEN**.
+
+Latest run:
+
+- workflow run: `36761591880`
+- branch: `p0/devnet-transaction-evidence`
+- commit: `2cde3dd95ecebc95defb2944d910e57e07899d8e`
+- result: **FAILURE BEFORE TRANSACTION RUNTIME**
+- observed cause: CRESCO release APK built successfully, but the CI environment could not install `platforms;android-37` required by the upstream Solana Mobile fakewallet build.
+
+No Devnet transaction, wallet sign/send receipt, or RPC-confirmed signature was produced by that run.
+
+The failure is preserved as external build-environment evidence. It is not narrated as product success or product failure.
+
+## Integration-First v1.3 reconciliation
+
+The generic Memo transaction proof is useful **technical evidence**, but it is not the core product action.
+
+Therefore it is now **secondary / non-blocking to product direction**.
+
+Primary build priority is the load-bearing product path:
+
+`DISTINCT CRESCO KEY DEVNET PROGRAM → DETERMINISTIC PAYMENT STATE → REAL MOBILE CRESCO ACTION → REAL CONSEQUENCE → EVIDENCE`
+
+Evidence should be emitted from that real path wherever practical instead of creating a parallel proof-only product.
+
+## Exact next gate
+
+**LIVE_CORE_G0 — DISTINCT CRESCO KEY DEVNET PROGRAM DEPLOYMENT + BOOTSTRAP**
+
+## Exact next action
+
+Prepare the protected Devnet deployment path for a **new distinct CRESCO Key program identity** under human-controlled key custody, then:
+
+1. deploy the program to Devnet;
+2. capture program id, network, deployment transaction/receipt and source commit;
+3. bootstrap deterministic two-wallet payment state;
+4. bind those nodes in the Evidence Graph;
+5. resume the actual mobile CRESCO payment path.
+
+The open generic Memo/MWA proof may continue only as secondary evidence and must not displace this load-bearing integration work.
+
+## Product Exploitation Loop
+
+Status: **ACTIVE — PENDING FIRST LIVE CORE SLICE**
+
+Integration-First behavior is active now.
+
+The formal post-vertical-slice exploitation loop begins immediately after the first real CRESCO live core slice is proven. At that point, do not jump straight to polish or submission packaging; run the depth-gap review and continue while marginal user value, differentiation, integration depth, consequence, or resilience justifies the remaining cost/risk/deadline.
+
+Highest safe justified action tier for the P0 hero path:
+
+**APPROVAL_GATED_WRITE**
+
+The product is supposed to cause a real Devnet authority/payment consequence under explicit wallet/guardian approval. Read-only is not an adequate primary experience.
+
+## Evidence Graph
+
+Status: **ACTIVE / REQUIRED**
+
+Path:
+
+- `evidence/CLAIM-RUNTIME-EVIDENCE-GRAPH.yaml`
+
+Current material claim states:
+
+- Android emulator standalone runtime: **COMPLETE at LOCAL/PARTIAL claim scope**
+- MWA session behavior: **COMPLETE at LOCAL/PARTIAL claim scope**
+- real Devnet MWA transaction: **PARTIAL / NOT PROVEN**
+- distinct CRESCO Key Devnet program: **MISSING**
+- full Live Core Loop: **MISSING**
+- live two-device relay: **MISSING**
+
+Missing edges are preserved explicitly.
+
+## Lifecycle / quality reconciliation
+
+Lifecycle coverage:
+
+- `governance/BUILD-LIFECYCLE-COVERAGE.yaml`
+- terminal completeness: **false**
+
+Engineering Quality Assurance:
+
+- **BACKFILL_REQUIRED**
+- reason: active code-bearing project with no current Engineering Quality receipt
+- does not interrupt an atomic runtime repair mid-operation
+- **must be resolved before BUILD_CANDIDATE_READY / release candidate / submission-ready**
+
+TRACE / Design Experience Assurance:
+
+- **ACTIVE / unresolved**
+- evaluator-facing mobile UX makes the capability applicable
+- Benita's design lane does not substitute for a TRACE verdict if TRACE remains triggered at terminal transition
+
+## Reference Intelligence
+
+Relevant current primary sources:
+
+- official Solana Mobile CLOCK IN 2026 rules;
+- official `solana-mobile/mobile-wallet-adapter` repository;
+- official `solana-mobile/mock-mwa-wallet` repository;
+- Solana Mobile / MWA primary documentation when a material implementation claim depends on it.
+
+No matching Solana/MWA pattern is currently registered in the central Reference Intelligence registry. Therefore there is no registered pattern packet to auto-adopt. Primary sources remain inputs, not authority beyond their own official domain.
+
+Ossium is not material to the current runtime/deployment gate.
+
+## Proven at code/build or bounded-runtime level
 
 - native Android/React Native application structure;
-- Android debug APK build;
-- Android emulator smoke gate PROVEN on GitHub Actions run 36669206551: standalone CRESCO Key launch, Connect wallet UI, official Mock MWA Wallet install, and Android local-association intent discovery;
+- Android APK build;
+- Android emulator standalone launch;
 - Mobile Wallet Adapter integration code;
-- emulator MWA session gate PROVEN on run 36699897176: explicit authorize decline → authorize/connect → signMessage approve → force-stop/relaunch with CONNECTED_RESTORED;
+- emulator MWA decline / authorize / signMessage / relaunch behavior;
 - Solana Pay SPL-token request parsing;
 - standing payment instruction;
 - exact one-time allowance instruction;
@@ -39,86 +182,68 @@ Canonical sentence:
 - recipient mismatch refusal;
 - canonical ATA verification;
 - stale/expiry/replay enforcement;
-- private two-device relay;
+- private two-device relay code;
 - fail-closed ALLOW / REFUSE / UNKNOWN handling;
 - relay deployment workflow;
 - distinct-program provisioning script;
 - deterministic Devnet bootstrap tooling;
 - Rust / relay / mobile / Devnet-tooling CI.
 
-## Blocked / not yet live-proven
+## Blocked / not live-proven
 
 - distinct CRESCO Key program id deployed to Devnet;
+- real CRESCO program payment transaction from the mobile path;
 - physical Android runtime;
-- real MWA transaction sign/send + Devnet confirmation evidence;
-- production-wallet / physical-Android MWA evidence;
+- production-wallet compatibility;
 - live Cloudflare relay deployment receipt;
 - full two-device CLOCK IN hero run;
 - changed-recipient hostile runtime proof;
 - replay runtime proof;
+- standing Key unchanged before/after Allow Once in the mobile live loop;
 - clean-room reproduction;
 - external user/operator trial;
+- current Engineering Quality receipt;
+- terminal TRACE/design verdict;
+- Project Finisher terminal assurance;
 - final release-signed APK / dApp Store readiness.
 
 ## Active hero run
 
 `5 ALLOW → 12 REFUSE → guardian Allow Once → changed recipient REFUSE → original exact action ALLOW ONCE → replay REFUSE`
 
-## Current collaborator lane
-
-Benita / collaborator lane:
-
-- mobile UX / visual direction;
-- preserve authority semantics;
-- issue #18 is the recommended parallel workstream.
-
-Owner/runtime lane:
-
-- Devnet program identity/deploy;
-- MWA Devnet transaction proof;
-- relay deployment;
-- canonical live evidence;
-- runtime/commit binding.
-
 ## Protected human checkpoints
 
-- accept collaborator invitations;
-- wallet/key custody;
+- wallet/program-key custody;
 - configure external service secrets;
+- accept collaborator access;
 - final competition submission;
 - any irreversible production action.
 
 ## Evidence truth
 
-Current product state is not yet `LIVE CORE LOOP`.
+Current product state is **not LIVE CORE LOOP**.
 
-Code/build evidence must not be narrated as complete runtime proof.
+Code, CI, local emulator behavior, a generic transaction spike, or a replay must not be narrated as complete product runtime proof.
 
-## Runtime gate progression
+## Submission timing / official rule boundary
 
-**MWA session sub-gate: PROVEN — LOCAL / PARTIAL**
+Official Solana Mobile CLOCK IN 2026 submissions close **October 8, 2026** and require a functional Android APK, GitHub repository, demo video, and pitch deck/presentation.
 
-Canonical successful run: `36699897176`.
-
-Observed sequence:
-
-`decline authorize → authorize/connect → signMessage approve → force-stop/relaunch → CONNECTED_RESTORED`
-
-The earlier lock-screen failures remain preserved as negative environment evidence.
-
-**Next active sub-gate:** real Devnet transaction proof:
-
-`construct transaction → wallet approval → sign/send → RPC submission → confirmation receipt → commit/runtime binding`
-
-Physical Android and production-wallet compatibility remain separate later gates.
+Deadline pressure changes sequencing, not evidence class or safety/authority boundaries.
 
 ## Next promotion conditions
 
-1. new CRESCO Key program id exists and is deployed to Devnet;
-2. deterministic demo state is bootstrapped;
-3. relay is live with deployment receipt;
-4. Android app runs in emulator/physical device;
-5. real MWA transaction path is captured;
-6. hero run succeeds with representative negative cases;
-7. evidence binds to exact commit/runtime;
-8. Post-Vertical-Slice Depth Gap Review runs before heavy final polish.
+Before BUILD_CANDIDATE_READY or equivalent terminal promotion, applicable material dimensions must be SATISFIED or NOT_APPLICABLE_WITH_REASON. Current blocking chain includes:
+
+1. distinct CRESCO Key program id deployed to Devnet;
+2. deterministic CRESCO payment state bootstrapped;
+3. live relay with deployment receipt;
+4. actual mobile MWA transaction through the CRESCO program;
+5. real in-bounds / boundary / Allow Once / mutation / replay consequences;
+6. runtime → receipt → commit → deployment binding;
+7. failure/recovery coverage;
+8. Engineering Quality backfill receipt;
+9. TRACE/design assurance when still triggered;
+10. clean-room / judge self-serve path;
+11. post-first-live-slice Product Exploitation / Depth Gap Review;
+12. Project Finisher terminal assurance before submission-ready.

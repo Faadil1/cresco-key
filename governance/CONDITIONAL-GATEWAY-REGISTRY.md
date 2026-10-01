@@ -1,90 +1,139 @@
 # CRESCO Key — Conditional Gateway Registry
 
-Updated: 2026-09-30  
-Status vocabulary: **ACTIVE / N/A / BLOCKED / PROVEN**
+Updated: 2026-10-01  
+Project status: **ACTIVE**
 
-This registry must be reviewed at every material gate transition.  
-A blank, missing, or forgotten gate is not a PASS.
+## Status vocabulary
 
-## Core lifecycle and judged-build gates
+From this reconciliation forward, project gateway execution may use:
 
-| Gateway | Activation | CRESCO Key status | Current condition |
+- **PROVEN** — adequate evidence exists for the bounded claim represented by the gate.
+- **ACTIVE** — the gate applies now and is being satisfied or verified.
+- **BLOCKED** — the gate is required but a material dependency, authority boundary, or proof is missing.
+- **PENDING** — the gate is applicable and deliberately queued behind a known prerequisite.
+- **N/A** — evaluated and not applicable to the current scope, with reason.
+- **UNKNOWN** — applicability or truth cannot yet be resolved from canonical evidence.
+
+This extends the older project-local four-state vocabulary prospectively. It does not rewrite earlier historical gate records.
+
+Lifecycle coverage uses the central completeness vocabulary in `governance/BUILD-LIFECYCLE-COVERAGE.yaml`:
+`SATISFIED / NOT_APPLICABLE_WITH_REASON / MISSING / UNKNOWN / RECONSTRUCTED_FROM_CANONICAL_EVIDENCE`.
+
+A blank, omitted, or forgotten gate is never a PASS.
+
+## Control plane and lifecycle
+
+| Gateway | Activation | Status | Current condition |
 |---|---|---:|---|
-| QUALIFY → DECIDE → DESIGN → DELIVER → AUDIT → EXPAND | All builds | **ACTIVE** | CRESCO is in DELIVER/AUDIT overlap: P0 implementation exists; runtime proof and audit remain. |
-| RUBRIC → PAIN → PROBLEM → NEGATIVE EVENT → DIFFERENTIATOR → EXECUTION → LIVE DEPTH → EVIDENCE → STORY → DEMO → Q&A | Hackathons / judged builds | **ACTIVE** | Rubric/problem/differentiator/execution are substantially established; LIVE DEPTH onward remain active. |
-| Pre-Build Reality Gate | Before Concept Lock | **PROVEN** | Real problem/user evidence, negative-event evidence, impact, native/mobile need and killer demo were researched before lock. |
-| Real Negative Event Gate | All serious builds | **PROVEN** | Apple/Google/Amazon broad-authorization failures and other relevant authorization failures inform the design. |
-| Competitive Novelty / Kill Gate | Before Concept Lock | **PROVEN** | Greenlight/Google Wallet/BTCBitByBit/Squads/session-key/policy alternatives were compared; residual differentiation narrowed to standing authority + exact one-use exception + mismatch/stale/replay refusal. |
-| Technical Reality Check | After Concept Lock | **ACTIVE** | Core code is implemented; runtime Android/Devnet proof is still incomplete. |
-| Truth Boundary Gate | All builds | **ACTIVE** | Code/CI proof is separated from runtime/live proof; UNKNOWN remains explicit. |
-| Negative Path Gate | All builds | **ACTIVE** | REFUSE/UNKNOWN semantics are implemented; full runtime negative evidence still required. |
-| Evidence Integrity Gate | All builds | **ACTIVE** | Build/CI/runtime artifacts must retain LIVE/LOCAL/LOCAL_STUB/PRESEEDED/SIMULATED/PARTIAL/NOT_IMPLEMENTED labels. |
-| Runtime / Commit Binding Gate | Once runtime exists | **BLOCKED** | Full mobile runtime has not yet been bound to a final demonstrated SHA/program id/relay deployment. |
-| Deterministic Demo Gate | Before recording | **ACTIVE** | Canonical hero sequence is defined; runtime reproducibility still needs proof. |
-| Judge Performance Assurance | Before submission | **ACTIVE** | Signature moment and memory sentence exist; hostile Q&A and final pacing still need validation. |
-| Submission Integrity Gate | Competition submission | **ACTIVE** | Repository/APK/evidence work exists; final rule/package/runtime verification remains. |
-| Final Snapshot / CURRENT / HANDOVER / Post-mortem | End of cycle / material handoff | **ACTIVE** | CURRENT exists; canonical HANDOVER/final snapshot will be updated at promotion/submission. |
+| System Control Plane v1 activation | Next material touch of active project | **PROVEN** | Reconciled prospectively on 2026-10-01 in `governance/PROJECT-CONTROL-PLANE.yaml`; no backdating. |
+| Lifecycle Coverage Manifest | All material projects | **PROVEN** | `governance/BUILD-LIFECYCLE-COVERAGE.yaml` now exists; unresolved capabilities inside it still block terminal completeness. |
+| QUALIFY → DECIDE → DESIGN → DELIVER → AUDIT → EXPAND | All builds | **ACTIVE** | CRESCO is in DELIVER/LIVE-DEPTH/AUDIT overlap; EXPAND follows real live depth rather than proof packaging. |
+| RUBRIC → PAIN → PROBLEM → NEGATIVE EVENT → DIFFERENTIATOR → EXECUTION → LIVE DEPTH → EVIDENCE → STORY → DEMO → Q&A | Judged builds | **ACTIVE** | Earlier stages are supported by existing canonical project evidence; LIVE DEPTH onward remain materially unresolved. |
+| Pre-Build Reality Gate | Before Concept Lock | **PROVEN** | Existing project canon records real user/problem, negative-event evidence, impact, native/mobile need and killer demo before lock. This is historical evidence, not a claim that System Control Plane v1 existed then. |
+| Real Negative Event Gate | Competitive product builds | **PROVEN** | Existing project research preserves concrete broad-authorization failures and their design implication: exact, bounded authority rather than broad silent windows. |
+| Competitive Novelty / Kill Gate | Before Concept Lock | **PROVEN** | Existing project canon records comparison against Greenlight/Google Wallet/BTCBitByBit/Squads/session-key/policy alternatives and narrows residual differentiation. |
+| Technical Reality Check | After Concept Lock | **ACTIVE** | Core program/mobile/relay code exists; load-bearing Devnet program deployment and real product runtime remain incomplete. |
+| Living PRD | Before consequential implementation / material change | **PROVEN** | `product/PRD.md` exists and is being reconciled to v0.3 without changing locked product law. |
+| Product Reality / Integration-First v1.3 | Active project next material touch | **ACTIVE** | Adopted on 2026-10-01. Real product action now outranks generic proof spikes; evidence should exhaust the canonical runtime. |
+| Product Exploitation Loop | First live vertical slice onward | **PENDING** | Integration-first priority applies now; formal post-slice exploitation/depth-gap loop starts immediately after the first real CRESCO live core slice. |
+| Claim → Runtime → Evidence Graph | Material live/payment/recovery/terminal claims | **ACTIVE** | `evidence/CLAIM-RUNTIME-EVIDENCE-GRAPH.yaml` exists. Android/MWA local claims are complete at bounded scope; program/live-core edges remain missing. |
+| Rule Lifecycle | Any proposed global/system rule change | **N/A** | This reconciliation adopts existing central rules; it proposes no new cross-project rule. |
+| Cross-Project Learning | Post-mortem / repeated comparable signals | **N/A** | Project is ACTIVE and has no terminal outcome. No single CRESCO result is being generalized. |
 
-## Additional registered governance gates
+## Product reality, evidence, and terminal gates
 
-| Gateway | Activation | CRESCO Key status | Current condition |
+| Gateway | Activation | Status | Current condition |
 |---|---|---:|---|
-| Rules / Eligibility Gate | Any competition | **ACTIVE** | CLOCK IN requirements must be rechecked against final submission state. |
-| Sponsor-Native Advantage Gate | Sponsored ecosystem build | **ACTIVE** | Solana Mobile/MWA + Solana capital-path enforcement are load-bearing; must be runtime-proven. |
-| Data Provenance / Freshness Gate | External/current data claims | **ACTIVE** | Current public rule/product claims require source/date tracking; hero payment path itself does not depend on live market data. |
-| External Dependency / Failure Gate | Any load-bearing external service | **ACTIVE** | RPC, wallet, Cloudflare relay and mobile OS failure/recovery must be tested. |
-| Human Action Boundary Gate | Protected human steps | **ACTIVE** | Wallet approvals, collaborator access, final submission and irreversible external actions remain explicit human checkpoints. |
-| Security / Secrets Gate | Keys/wallets/cloud credentials | **ACTIVE** | Keypairs remain outside git; Cloudflare secrets belong in repository secrets/runtime only. |
-| Legal / Compliance Boundary Gate | Money/minors/custody/securities | **ACTIVE** | Devnet/demo truth boundary remains explicit; no production custody/brokerage/minor-securities claim. |
-| IP / Licence / Originality Gate | Public release/submission | **ACTIVE** | Dependency/assets/licence/originality review remains required before submission. |
-| Observability / Reproducibility Gate | Runtime/evidence work | **ACTIVE** | Receipts/workflows exist; clean-room reproducibility still needs completion. |
-| Demo Environment Gate | Before demo/recording | **ACTIVE** | Emulator smoke is PROVEN on run 36669206551 and emulator MWA session behavior is PROVEN on run 36699897176. Physical Android remains a separate BLOCKED promotion requirement for strongest final evidence. |
-| Accessibility / Responsive Gate | User-facing product | **ACTIVE** | Mobile UX pass must include legibility/accessibility checks. |
-| Performance / Latency Gate | User-facing/load-bearing flow | **ACTIVE** | MWA handoff, RPC, relay and confirmation latency must be measured on runtime. |
-| Pre-Launch / Ship Assurance | Before shipping/submission | **BLOCKED** | Cannot advance until deploy/runtime/critical path/evidence gates are proven. |
-| Distinctiveness Escalation | After functional slice | **ACTIVE** | UX/signature behavior/category differentiation must continue after runtime slice. |
-| Post-Submission Freeze / Reopen Gate | After submission | **N/A** | Not submitted yet. |
+| Truth Boundary Gate | All material claims | **ACTIVE** | OBSERVED / INFERRED / UNKNOWN boundaries remain explicit; code/CI/local emulator proof is not production evidence. |
+| Negative Path Gate | All serious builds | **ACTIVE** | Wallet decline is runtime-proven; product-level 12-unit refusal, changed-recipient refusal, replay refusal and recovery remain to be proven in the integrated live path. |
+| Evidence Integrity Gate | All material proof | **ACTIVE** | LOCAL/PARTIAL/TESTED/MOCKED/NOT_PROVEN distinctions remain mandatory. Failures are preserved. |
+| Reality Ledger | Competitive/release claims | **PROVEN** | `evidence/REALITY-LEDGER.md` exists and is reconciled at this material touch; it must stay current. |
+| Runtime / Commit / Deployment Binding | Any live runtime claim | **BLOCKED** | Final CRESCO program id, live relay deployment and integrated hero runtime are not yet bound through runtime → receipt → commit → deployment. |
+| Observability / Reproducibility | Runtime/evidence work | **ACTIVE** | CI artifacts and bounded receipts exist; full program/relay/mobile hero receipts and clean-room run are missing. |
+| Deterministic Demo Gate | Before recording | **PENDING** | Hero sequence is locked, but the same-product live path must exist before deterministic fallback/replay can be treated as supporting evidence. |
+| Judge Performance Assurance | After product depth, before submission | **PENDING** | Signature moment exists conceptually; judge pacing, hostile Q&A, claim→demo→receipt chain and final self-serve path wait on live depth. |
+| Submission Integrity Gate | Before final submission | **PENDING** | Official requirements are known; final APK/runtime/video/deck/repository/evidence consistency cannot be checked until the build reaches terminal assurance. |
+| Project Finisher / Terminal Assurance | After BUILD_CANDIDATE_READY | **BLOCKED** | BUILD_CANDIDATE_READY has not been reached. |
+| Pre-Launch / Ship Assurance | Before release/submission | **BLOCKED** | Live program/relay/hero path, quality receipt, clean-room/self-serve and terminal evidence remain incomplete. |
+| Final Snapshot / CURRENT / HANDOVER / Post-mortem | Terminal cycle | **PENDING** | CURRENT/HANDOVER are current; final snapshot/post-mortem are not yet due. |
+| Post-Submission Freeze / Reopen Gate | After submission | **N/A** | Project is ACTIVE and not yet submitted/frozen. |
 
-## Transactional / blockchain conditional gateways
+## Quality, design, and evaluator experience
 
-| Gateway | Activation | CRESCO Key status | Current condition |
+| Gateway | Activation | Status | Current condition |
 |---|---|---:|---|
-| Gateway / Nanopayments | Transactional rail where applicable | **N/A** | CRESCO P0 does not depend on a separate nanopayment rail. |
-| x402 | M2M paid unlock | **N/A** | Not used by CRESCO P0. If activated later, full requirements/payment → verify → settle → HTTP 200/unlock proof is mandatory. |
-| Wallets | Blockchain identity/value | **ACTIVE** | Emulator MWA session sub-gate is PROVEN on run 36699897176: decline → authorize/connect → signMessage approve → relaunch recovery. Devnet sign/send and physical/production-wallet proof remain active. |
-| Contracts | Smart contracts | **ACTIVE** | Program delta is code/Rust-test proven; distinct CRESCO Key Devnet deployment is still required. |
-| App Kit / external platform integration | Sponsor/platform requirement | **N/A** | No separate App Kit is required for the locked P0; Solana Mobile/MWA is tracked under Sponsor-Native Advantage + Wallets. |
-| LIVE_GATEWAY Promotion Gate | Core value depends on live external gateway | **N/A** | No separate third-party settlement gateway is central to P0. Solana runtime itself is handled through Contracts/Wallets/Runtime gates. |
+| Engineering Quality Assurance | Active code-bearing project without current receipt | **PENDING** | **BACKFILL_REQUIRED** at next safe boundary. It must be complete before BUILD_CANDIDATE_READY/release/submission-ready but need not interrupt an atomic live-runtime repair. |
+| TRACE / Design Experience Assurance | Evaluator-facing UI or material design risk | **ACTIVE** | Mobile evaluator-facing experience makes TRACE applicable. Benita's design work is useful but does not substitute for a TRACE verdict. |
+| Distinctiveness Escalation | After functional slice | **ACTIVE** | Preserve young-person agency, boundary legibility, exact exception consumption, non-generic visual language and signature behavior. |
+| Accessibility / Responsive | User-facing mobile product | **ACTIVE** | Mobile legibility, reduced motion, keyboard/accessibility equivalents where relevant, and small-screen behavior still require final verification. |
+| Performance / Latency | Load-bearing mobile flow | **PENDING** | Measure wallet handoff, RPC confirmation, relay and guardian turnaround when the integrated live path is available. |
+| Time to First Value | Real mobile loop | **PENDING** | Measure open/connect → first understood Key → first ALLOW/REFUSE once the live path is usable. |
+| External user / operator trial | Before submission when practical | **PENDING** | No external trial yet; one trial would be a usability signal, not adoption. |
+| Clean-room / self-serve | Before terminal promotion | **PENDING** | Setup tooling exists but fresh-environment reproduction is not yet proven. |
 
-## x402 strict rule if ever activated
+## Platform, dependency, and safety gates
 
-A UI message such as "payment successful" is never enough.
+| Gateway | Activation | Status | Current condition |
+|---|---|---:|---|
+| Rules / Eligibility | Competition | **ACTIVE** | Official CLOCK IN requirements are current as of reconciliation; recheck at final submission. |
+| Sponsor-Native / Load-Bearing Integration | Solana Mobile build | **ACTIVE** | Solana Mobile/MWA + Solana program authority are causally load-bearing; integrated runtime remains missing. |
+| Reference Intelligence | Material external pattern/source use | **ACTIVE** | Official Solana Mobile rules/repos/docs are relevant primary sources. No central Solana/MWA pattern packet is currently registered/adopted; source presence does not imply authority. |
+| Data Provenance / Freshness | Current external claims | **ACTIVE** | Competition/rules/product claims need current source/date tracking. The hero payment loop itself does not depend on live market data. |
+| External Dependency / Failure | RPC, wallet, relay, OS/toolchain | **ACTIVE** | Keyguard and Android SDK/toolchain failures are preserved; RPC/relay outage, timeout and recovery still need integrated testing. |
+| Human Action Boundary | Protected external actions | **ACTIVE** | Program/wallet key custody, external secrets, final submission and irreversible production actions remain human checkpoints. |
+| Security / Secrets | Keys/wallets/cloud credentials | **ACTIVE** | No private key or external secret may enter git/evidence artifacts. |
+| Legal / Compliance Boundary | Money/minors/custody/securities | **ACTIVE** | Devnet/demo boundary remains explicit; no production custody, brokerage, KYC, mainnet or minor-securities execution claim. |
+| IP / Licence / Originality | Public release/submission | **PENDING** | Final dependency/asset/licence/originality review remains to be completed. |
 
-Required chain:
+## Android / wallet / Solana runtime gates
 
-`requirements/payment → verify → settle → HTTP 200/unlock`
+| Gateway | Activation | Status | Current condition |
+|---|---|---:|---|
+| Android standalone emulator runtime | Mobile runtime | **PROVEN** | Run `36669206551` proved standalone CRESCO launch + Connect wallet surface at LOCAL/PARTIAL scope. |
+| MWA session decline/authorize/signMessage/relaunch | Mobile wallet behavior | **PROVEN** | Run `36699897176` proved the bounded emulator session sequence at LOCAL/PARTIAL scope. |
+| Real MWA Devnet sign/send | Transaction technical proof | **ACTIVE** | Not proven. Latest inspected run `36761591880` failed before transaction runtime because Android platform 37 could not be installed for the upstream fakewallet build. This generic Memo lane is secondary under v1.3. |
+| Physical Android | Strongest target-device evidence | **UNKNOWN** | No physical Android runtime has been observed. Lack of owner device does not change architecture; borrow/obtain one later for final evidence if feasible. |
+| Production-wallet compatibility | Real wallet target | **UNKNOWN** | Official test wallets prove protocol behavior only; production-wallet behavior remains unobserved. |
+| Solana authority program code | Smart-contract mechanism | **PROVEN** | Exact payment/allowance logic and negative invariants exist in code/tests at code-test scope. |
+| Distinct CRESCO Key Devnet program | Load-bearing live integration | **BLOCKED** | **Exact next primary gate.** New distinct program identity + Devnet deploy + receipt/commit binding are still missing and require protected key custody. |
+| Deterministic Devnet payment bootstrap | After distinct program deploy | **PENDING** | Tooling exists; must run against the newly deployed program and bind resulting state. |
+| Solana Pay / payment intent | Mobile hero input | **ACTIVE** | Parser/QR code exists; real integrated scan/payment execution remains to be proven. |
+| Boundary relay code | Remote guardian coordination | **PROVEN** | Coordination-only code/tests exist at code/test scope. |
+| Live Cloudflare boundary relay | Two-device live experience | **BLOCKED** | Deployment receipt/runtime identity still missing. |
+| Full two-device Live Core Loop | P0 hero value | **BLOCKED** | Requires deployed program + live relay + mobile MWA + real success/boundary/grant/mutation/replay consequences + evidence binding. |
 
-Evidence must include, as applicable:
+## Other transactional gateways
 
-- amount;
-- network;
-- transaction/reference;
-- payer/buyer receipt;
-- seller/service receipt;
-- unlock response.
+| Gateway | Activation | Status | Current condition |
+|---|---|---:|---|
+| Seed Vault direct dApp integration | Direct secret/key access | **N/A** | CRESCO uses MWA; compatible wallets may use Seed Vault internally. |
+| SGT | Device/token identity | **N/A** | Not required by locked P0 and does not prove age/guardianship/consent. |
+| SKR | Token/ecosystem integration | **N/A** | Add only if it creates material product value. |
+| Gateway / Nanopayments | Separate settlement rail | **N/A** | P0 does not depend on a separate nanopayment rail. |
+| x402 | Machine-paid unlock | **N/A** | Not used by locked P0. If activated, full requirements/payment → verify → settle → unlock evidence becomes mandatory. |
+| Cards / fiat off-ramp | Production payment rail | **N/A** | Out of P0 scope. |
+| Mainnet | Production settlement | **N/A** | Devnet is sufficient for the current truthful P0 proof; no mainnet production claim. |
+| AI agent authority | Recursive delegate | **N/A** | Chain of Keys is roadmap, not P0. |
+| LIVE_GATEWAY | Separate third-party live gateway | **N/A** | Solana runtime is tracked directly under wallet/contracts/runtime gates. |
 
-`LOCAL_STUB` may support design/testing but can never be narrated as `LIVE_GATEWAY`.
+## Exact next gate
 
-If product value depends on the real external gateway, the build cannot be promoted as live until the gateway is proven.
+**LIVE_CORE_G0 — DISTINCT CRESCO KEY DEVNET PROGRAM DEPLOYMENT + BOOTSTRAP**
 
-## Registry review rule
+Exact next action:
 
-Review and update this file whenever:
+`HUMAN-CONTROLLED DISTINCT PROGRAM KEY → DEVNET DEPLOY → DEPLOYMENT RECEIPT/PROGRAM ID → COMMIT BINDING → DETERMINISTIC PAYMENT BOOTSTRAP → REAL MOBILE CRESCO ACTION`
 
-- a new integration is added;
-- a sponsor mechanism becomes load-bearing;
-- the environment changes;
-- a runtime is deployed;
-- a demo is recorded;
-- a claim is upgraded;
-- a project is frozen/submitted/reopened.
+The generic Memo transaction proof may continue only as secondary technical evidence and must not displace this load-bearing path.
+
+## Review triggers
+
+Review this registry whenever:
+
+- project scope or status changes;
+- an integration becomes load-bearing;
+- a live runtime/deployment changes;
+- an evidence claim is promoted or fails;
+- a demo is locked or recorded;
+- BUILD_CANDIDATE_READY is approached;
+- the project is frozen/submitted/reopened.

@@ -11,14 +11,17 @@ CRESCO Key gives a young person real standing financial authority inside explici
 New collaborator? Read these in order:
 
 1. [`docs/COLLABORATOR-START-HERE.md`](docs/COLLABORATOR-START-HERE.md)
-2. [`product/PRD.md`](product/PRD.md)
-3. [`state/CURRENT.md`](state/CURRENT.md)
-4. [`state/HANDOVER.md`](state/HANDOVER.md)
-5. [`governance/CONDITIONAL-GATEWAY-REGISTRY.md`](governance/CONDITIONAL-GATEWAY-REGISTRY.md)
-6. [`governance/PRODUCT-DEPTH-LIVE-REALITY-v1.2.1.md`](governance/PRODUCT-DEPTH-LIVE-REALITY-v1.2.1.md)
-7. [`CONTRIBUTING.md`](CONTRIBUTING.md)
+2. [`state/CURRENT.md`](state/CURRENT.md)
+3. [`state/HANDOVER.md`](state/HANDOVER.md)
+4. [`product/PRD.md`](product/PRD.md)
+5. [`governance/PROJECT-CONTROL-PLANE.yaml`](governance/PROJECT-CONTROL-PLANE.yaml)
+6. [`governance/BUILD-LIFECYCLE-COVERAGE.yaml`](governance/BUILD-LIFECYCLE-COVERAGE.yaml)
+7. [`governance/CONDITIONAL-GATEWAY-REGISTRY.md`](governance/CONDITIONAL-GATEWAY-REGISTRY.md)
+8. [`evidence/CLAIM-RUNTIME-EVIDENCE-GRAPH.yaml`](evidence/CLAIM-RUNTIME-EVIDENCE-GRAPH.yaml)
+9. [`evidence/REALITY-LEDGER.md`](evidence/REALITY-LEDGER.md)
+10. [`CONTRIBUTING.md`](CONTRIBUTING.md)
 
-The PRD is the product source of truth. `state/CURRENT.md` and `state/HANDOVER.md` preserve canonical continuity. The Conditional Gateway Registry governs promotion.
+The living PRD owns product intent. `state/CURRENT.md` and `state/HANDOVER.md` own project continuity. Central cross-project governance comes from `Faadil1/faadil-agent-system@main`; the project control-plane/lifecycle files record how it applies here.
 
 ## Status
 
@@ -26,7 +29,9 @@ The PRD is the product source of truth. `state/CURRENT.md` and `state/HANDOVER.m
 - Target: **Solana Mobile CLOCK IN 2026**
 - Network for current proof work: **Solana Devnet**
 - Mobile direction: **native Android / React Native + Mobile Wallet Adapter**
-- Current phase: **P0 vertical slice implemented → Android APK builds → runtime proof + mobile UX refinement**
+- Current phase: **P0 implementation → load-bearing live integration / live depth**
+- Last proven runtime gate: **MWA session on Android emulator — LOCAL / PARTIAL**
+- Exact next primary gate: **distinct CRESCO Key Devnet program deployment + deterministic bootstrap**
 
 ## Core product law
 
@@ -85,12 +90,17 @@ These are **build/code evidence**, not claims that the full hero flow has alread
 
 Runtime promotion still requires:
 
-- a distinct CRESCO Key program id deployed to Devnet;
+- a distinct CRESCO Key program id deployed to Devnet and bound to the source commit;
+- deterministic CRESCO payment state bootstrapped against that program;
 - live relay deployment;
-- verified app identity URI / Digital Asset Links for production-shaped wallet identity;
-- installable APK on device;
-- real MWA connect/reject/sign/send evidence;
-- repeatable two-device hero run with Devnet receipts and hostile negative cases.
+- real mobile MWA transaction through the CRESCO program;
+- in-bounds / boundary / Allow Once / changed-recipient / replay runtime consequences;
+- physical Android / production-wallet evidence where feasible for final proof;
+- clean-room / judge self-serve reproduction;
+- current Engineering Quality and TRACE/design assurance before terminal promotion;
+- repeatable two-device hero run with inspectable Devnet receipts.
+
+A generic Memo transaction through MWA is useful technical proof, but under Integration-First v1.3 it is **secondary** and is not the CRESCO live core.
 
 ## Truth boundary
 

@@ -1,7 +1,7 @@
 # CRESCO Key — Product Requirements Document
 
-Version: 0.2  
-Status: **CONCEPT LOCKED — P0 IMPLEMENTATION ACTIVE**  
+Version: 0.3  
+Status: **CONCEPT LOCKED — P0 IMPLEMENTATION ACTIVE — LIVE INTEGRATION / LIVE DEPTH**  
 Repository: `Faadil1/cresco-key`  
 Target: Solana Mobile CLOCK IN 2026
 
@@ -517,65 +517,91 @@ Do not build:
 
 ## 15. Conditional Gateway Registry
 
-Each relevant gateway must be marked ACTIVE, N/A, BLOCKED, or PROVEN.
+The detailed project registry is canonical at:
+
+- `governance/CONDITIONAL-GATEWAY-REGISTRY.md`
+
+From the 2026-10-01 System Control Plane reconciliation forward, operational gateway state may use:
+
+`PROVEN / ACTIVE / BLOCKED / PENDING / N/A / UNKNOWN`.
+
+This extends the earlier local four-state convention without rewriting historical records.
+
+Current P0 summary:
 
 | Gateway | P0 state | Rule |
 |---|---|---|
-| Solana authority program | DELTA CODE PROVEN / DEVNET BLOCKED | Exact amount + recipient + one-time semantics are implemented and Rust-tested; distinct CRESCO Key Devnet deployment remains #8. |
-| Mobile Wallet Adapter | CODE PROVEN / RUNTIME BLOCKED | Native provider, signing and transaction construction are implemented; physical-device proof remains #2. |
-| Android APK | ACTIVE | Installable debug-APK evidence gate is in PR #14; physical-device install/runtime remains separate. |
-| Two-device relay | CODE PROVEN / RELAY_LIVE BLOCKED | Coordination logic and deployment gate exist; real Cloudflare deployment receipt still required. |
-| Solana Pay / payment QR | CODE PROVEN / RUNTIME ACTIVE | Native QR parsing is implemented; hero runtime still requires live Devnet state. |
-| Seed Vault | INDIRECT | Wallet-layer security, not direct dApp API. |
-| SGT | N/A | Do not force into P0. |
-| SKR | N/A | Add only if meaningful product value is identified. |
-| x402 / nanopayments | N/A | Not required by concept. |
-| Cards / fiat off-ramp | N/A | Out of P0 scope. |
-| Mainnet | N/A for P0 | Do not imply production settlement. |
-| AI agent authority | ROADMAP | Chain of Keys, not P0. |
+| Solana authority program code | **PROVEN** | Exact amount + recipient + one-time semantics are implemented and Rust-tested. |
+| Distinct CRESCO Key Devnet program | **BLOCKED** | Exact next primary gate: new distinct program identity, Devnet deployment, receipt and commit binding. |
+| Mobile Wallet Adapter session | **PROVEN — LOCAL/PARTIAL** | Run `36699897176` proves decline → authorize/connect → signMessage → relaunch recovery in the emulator. |
+| Real MWA Devnet sign/send | **ACTIVE / NOT PROVEN** | Generic Memo proof is secondary technical evidence; it must not displace the actual CRESCO program path. |
+| Android standalone emulator runtime | **PROVEN — LOCAL/PARTIAL** | Run `36669206551`; physical Android remains separate. |
+| Two-device relay code | **PROVEN at code/test scope** | Coordination logic exists; live Cloudflare deployment remains BLOCKED. |
+| Solana Pay / payment QR | **ACTIVE** | Native parsing exists; real hero scan/payment execution remains unproven. |
+| Product Reality / Integration-First v1.3 | **ACTIVE** | Product value and real action outrank proof-only artifacts; evidence should exhaust the canonical product runtime. |
+| Claim → Runtime → Evidence Graph | **ACTIVE** | Material live/payment/recovery claims now trace through `evidence/CLAIM-RUNTIME-EVIDENCE-GRAPH.yaml`. |
+| Engineering Quality Assurance | **PENDING / BACKFILL_REQUIRED** | Must be completed before terminal-sensitive promotion. |
+| TRACE / Design Experience Assurance | **ACTIVE** | Evaluator-facing mobile UX makes the design-assurance route applicable. |
+| Seed Vault direct dApp access | **N/A** | CRESCO uses MWA; compatible wallets may use Seed Vault underneath. |
+| SGT | **N/A** | Do not force into P0. |
+| SKR | **N/A** | Add only if meaningful product value is identified. |
+| x402 / nanopayments | **N/A** | Not required by concept. |
+| Cards / fiat off-ramp | **N/A** | Out of P0 scope. |
+| Mainnet | **N/A for P0** | Do not imply production settlement. |
+| AI agent authority | **N/A P0** | Chain of Keys remains roadmap. |
 
 ---
 
 ## 16. Technical Reality Check
 
-### PROVEN
+### PROVEN at bounded code / local runtime scope
 
-- versioned Mandates;
-- in-bound autonomous action;
-- out-of-bound refusal;
+- versioned Mandates and standing authority semantics;
 - exact one-time grant;
-- changed-action refusal;
-- stale-authorization refusal;
+- amount / recipient mismatch refusal logic;
+- stale / expiry / replay enforcement logic;
+- canonical recipient ATA verification;
+- Android standalone emulator launch;
+- MWA authorize decline / authorize-connect / signMessage / app-relaunch behavior in the emulator;
+- Solana Pay SPL-token request parsing;
+- private relay code and tests;
+- fail-closed ALLOW / REFUSE / UNKNOWN classification;
+- deterministic two-wallet Devnet bootstrap tooling;
+- Rust / relay / mobile / Devnet-tooling CI.
+
+### ACTIVE / NOT YET PROVEN as integrated product runtime
+
+- distinct CRESCO Key program deployment to Devnet;
+- deterministic payment state bootstrapped against that distinct program;
+- real CRESCO payment transaction from the mobile MWA path;
+- in-bounds 5-unit ALLOW consequence;
+- 12-unit capital-path REFUSE;
+- guardian exact Allow Once confirmation;
+- changed-recipient runtime refusal;
+- exact one-use success;
 - replay refusal;
-- Solana Devnet receipts;
-- capital-path enforcement;
-- Pyth evidence in the prior investment lane.
+- standing Key unchanged before/after Allow Once;
+- live Cloudflare relay;
+- full two-device hero path;
+- runtime → receipt → commit → deployment binding;
+- clean-room / judge self-serve reproduction.
 
-### CODE PROVEN / RUNTIME PENDING
+### Secondary technical proof lane
 
-- native Expo/React Native Android prebuild;
-- MWA provider, local wallet connection and signing surfaces;
-- direct construction of standing-payment, exact-grant and exact-execution instructions;
-- Solana Pay SPL-token QR parsing;
-- private request relay with capability-protected request access;
-- exact recipient-wallet binding and canonical ATA verification;
-- fail-closed ALLOW / REFUSE / UNKNOWN transaction outcome handling;
-- deterministic two-wallet Devnet setup tooling;
-- Rust, relay, mobile and Devnet-tooling CI.
+A generic Memo transaction through MWA may prove wallet/RPC mechanics, but under Integration-First v1.3 it is **not** the CRESCO live core and must not displace the load-bearing program/payment path.
 
-### RUNTIME BLOCKED / ACTIVE
+Latest inspected generic transaction run `36761591880` failed before transaction runtime because its upstream fakewallet build required Android platform 37, which the CI SDK environment could not install. No transaction success is claimed from that run.
 
-- distinct CRESCO Key Devnet program deployment (#8);
-- physical-device MWA proof (#2);
-- live Cloudflare relay deployment (#4);
-- repeatable two-device hero run (#5);
-- canonical app identity URI + Digital Asset Links (#6);
-- installable APK evidence artifact and device install;
-- judge-visible transaction/program receipts.
+### UNKNOWN / later evidence
+
+- physical Android behavior;
+- production-wallet compatibility;
+- external user/operator usability;
+- production-like persistence/security/latency beyond the current bounded test environment.
 
 ### N/A for P0
 
-- remote MWA dependency;
+- remote MWA as a core dependency;
 - durable nonce requirement;
 - SGT family identity;
 - geofence authority;
@@ -583,7 +609,6 @@ Each relevant gateway must be marked ACTIVE, N/A, BLOCKED, or PROVEN.
 - mainnet production settlement.
 
 ---
-
 ## 17. Demo-First Architecture
 
 Target P0 flow:
@@ -693,51 +718,63 @@ P0 is not done until a reviewer can reproduce the following on the mobile build:
 
 ---
 
-## 20. Implementation state snapshot — 2026-09-26
+## 20. Implementation state snapshot — 2026-10-01
 
-The concept is locked; implementation has moved past architecture-only work.
+The concept remains locked. The project is **ACTIVE** and is now in live-integration / live-depth work.
 
-### Merged code evidence
+### Proven / merged evidence
 
 - native Android/React Native client with Mobile Wallet Adapter;
+- Android standalone emulator runtime — run `36669206551`;
+- emulator MWA decline / authorize / signMessage / relaunch behavior — run `36699897176`;
 - exact Solana Pay SPL-token request parsing;
 - CRESCO Key payment program delta:
   - standing in-Key payment;
   - exact Allow Once grant;
   - exact one-time payment;
-  - recipient mutation refusal;
-  - replay/stale/expiry enforcement;
-- private two-device boundary relay;
+  - amount / recipient mutation refusal;
+  - replay / stale / expiry enforcement;
+- private two-device boundary relay code;
 - direct native construction/submission of CRESCO Key instructions;
-- fail-closed transaction classification: unclassified failures remain UNKNOWN;
+- fail-closed transaction classification;
 - guarded relay deployment workflow;
 - guarded distinct-program provisioning script;
-- deterministic two-wallet Devnet demo bootstrap with recipient A/B ATAs.
+- deterministic two-wallet Devnet demo bootstrap with recipient A/B ATAs;
+- current Reality Ledger and Claim → Runtime → Evidence Graph.
 
-### Active evidence work
+### Current live-integration priority
 
-- PR #14 — Android debug APK build artifact + checksum receipt.
+The primary sequence is now:
+
+`DISTINCT CRESCO PROGRAM ID → DEVNET DEPLOY → DEPLOYMENT RECEIPT/COMMIT BINDING → DETERMINISTIC PAYMENT BOOTSTRAP → REAL MOBILE CRESCO ACTION → HERO NEGATIVE/BOUNDARY/REPLAY CASES`
+
+The open generic Memo/MWA transaction proof is secondary technical evidence. It is not the product's Definition of Done and is not a substitute for the actual CRESCO program path.
 
 ### Promotion blockers
 
-The product must not claim the complete CLOCK IN hero run until all of these exist:
+The product must not claim the complete CLOCK IN hero run until all materially applicable items are satisfied:
 
-1. distinct CRESCO Key program id deployed to Devnet;
-2. live relay deployment receipt;
-3. Android APK installed on the target device;
-4. local MWA connection/sign/send evidence;
-5. real in-bounds ALLOW transaction;
-6. real out-of-bounds REFUSE;
-7. guardian exact Allow Once confirmation;
-8. changed-recipient REFUSE;
-9. exact ALLOW ONCE;
-10. replay REFUSE;
-11. evidence that standing Mandate version/nonce did not change because of Allow Once.
+1. distinct CRESCO Key program id is deployed to Devnet;
+2. deterministic demo/payment state is bootstrapped against that program;
+3. live relay deployment receipt exists;
+4. mobile MWA path executes the real CRESCO program action;
+5. real in-bounds ALLOW consequence is observed;
+6. real out-of-bounds REFUSE is observed;
+7. guardian exact Allow Once is confirmed;
+8. changed-recipient REFUSE is observed without consuming the allowance;
+9. exact original action succeeds once;
+10. replay refuses;
+11. standing Mandate version/nonce remains unchanged because Allow Once is not Widen;
+12. runtime evidence binds through receipt → commit → deployment;
+13. failure/recovery and clean-room/self-serve paths are exercised;
+14. Engineering Quality backfill receipt exists;
+15. TRACE/design assurance is resolved when still triggered;
+16. Post-Vertical-Slice Product Exploitation / Depth Gap Review runs after the first live slice;
+17. Project Finisher performs terminal assurance before SUBMISSION_READY.
 
-Until then, code/CI evidence and runtime evidence must remain explicitly distinguished.
+Until then, technical, local, behavior, outcome and production evidence classes remain explicitly separated.
 
 ---
-
 ## 21. Collaboration rule
 
 This file is the canonical shared product source of truth for collaborators.
@@ -756,3 +793,76 @@ Changes that alter any of the following require a deliberate PRD update before o
 - definition of done.
 
 Implementation convenience must not silently change product law.
+
+
+---
+
+## 22. System Control Plane / Integration-First reconciliation — 2026-10-01
+
+This project predates System Control Plane v1. The new central canon is adopted **from this material touch forward** and is not backdated.
+
+### No product-law change
+
+This reconciliation does **not** change:
+
+- target user;
+- progressive-authority wedge;
+- standing authority + exact single-use exception primitive;
+- hero flow;
+- authority invariants;
+- Devnet truth boundary;
+- roadmap separation for agent delegation.
+
+### Build-priority change
+
+The product now explicitly follows Integration-First / Maximum Product Exploitation v1.3:
+
+- product value + real action outrank proof-only artifacts;
+- evidence should be generated from or bound to the canonical product runtime;
+- live product mode is primary; replay/deterministic mode is fallback;
+- read-only is not the default when a safe value-creating action is feasible;
+- the highest safe justified P0 action tier is **APPROVAL_GATED_WRITE**;
+- a generic wallet/RPC transaction spike is useful technical proof but is not the live CRESCO product loop.
+
+### Product Exploitation Loop
+
+Status:
+
+**ACTIVE — formal post-slice loop pending the first real live CRESCO vertical slice.**
+
+Immediately after the first integrated live slice works, run the Post-Vertical-Slice Depth Gap Review before heavy polish or submission packaging. Continue material product depth while marginal user value, differentiation, integration, consequence, resilience, or workflow completeness justifies cost/risk/deadline.
+
+### Evidence Graph
+
+Material live, payment, reliability/recovery and terminal claims must now trace through:
+
+`CLAIM → SCENARIO → RUNTIME_EXECUTION → DEPENDENCY → RECEIPT/TELEMETRY → COMMIT → DEPLOYMENT`
+
+Project graph:
+
+- `evidence/CLAIM-RUNTIME-EVIDENCE-GRAPH.yaml`
+
+A missing edge remains PARTIAL / MISSING / UNKNOWN; it is never silently promoted.
+
+### Lifecycle completeness
+
+Project lifecycle coverage now lives at:
+
+- `governance/BUILD-LIFECYCLE-COVERAGE.yaml`
+
+Earlier stages are reconstructed only where existing canonical evidence supports them and are explicitly labeled as such.
+
+### Quality / design / terminal routing
+
+- Engineering Quality Assurance: **BACKFILL_REQUIRED** before the next terminal-sensitive promotion.
+- TRACE / Design Experience Assurance: **triggered** for evaluator-facing mobile experience and must be resolved before a design-sensitive terminal transition.
+- Project Finisher: remains required only after BUILD_CANDIDATE_READY.
+- protected human actions remain human-owned.
+
+### Exact next gate
+
+**LIVE_CORE_G0 — DISTINCT CRESCO KEY DEVNET PROGRAM DEPLOYMENT + BOOTSTRAP**
+
+Exact next product action:
+
+`HUMAN-CONTROLLED DISTINCT PROGRAM KEY → DEVNET DEPLOY → RECEIPT/PROGRAM ID → COMMIT BINDING → DETERMINISTIC PAYMENT BOOTSTRAP → REAL MOBILE CRESCO TRANSACTION`

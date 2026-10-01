@@ -1,0 +1,108 @@
+version: 1.0.0
+project_control_plane:
+  project: CRESCO Key
+  repository: Faadil1/cresco-key
+  project_type: HACKATHON
+  profile: Faadil1/faadil-agent-system/project-profiles/hackathon.yaml
+  status: ACTIVE
+  reconciled_at: 2026-10-01
+  adoption_note: >-
+    System Control Plane v1 and Product Reality v1.3 are adopted from this reconciliation forward.
+    This file does not backdate those rules into earlier project history.
+
+  source_precedence:
+    central_policy: Faadil1/faadil-agent-system@main
+    project_state:
+      - state/CURRENT.md
+      - state/HANDOVER.md
+      - product/PRD.md
+    observed_runtime: >-
+      Observed GitHub Actions/runtime evidence may correct stale factual state but does not create authority.
+    official_rules: Solana Mobile CLOCK IN 2026 official rules control eligibility/submission requirements.
+
+  routing:
+    current_owner: pbpd_or_existing_product_owner
+    current_stage: DELIVER_TO_LIVE_DEPTH
+    exact_next_gate: LIVE_CORE_G0_DISTINCT_CRESCO_KEY_DEVNET_PROGRAM_DEPLOY_AND_BOOTSTRAP
+    exact_next_action: >-
+      Prepare the protected Devnet deployment path for a distinct CRESCO Key program identity, with
+      human-controlled program-key custody, then deploy the program and bootstrap the deterministic payment state.
+      Bind program id, network, deployment receipt and commit before resuming the actual mobile hero loop.
+    protected_authority_boundary: >-
+      Human retains wallet/program-key custody, external secrets, final submission and irreversible production actions.
+
+  activation:
+    lifecycle_manifest: governance/BUILD-LIFECYCLE-COVERAGE.yaml
+    conditional_gateway_registry: governance/CONDITIONAL-GATEWAY-REGISTRY.md
+    product_reality: ACTIVE
+    integration_first_product_exploitation_v1_3: ACTIVE
+    evidence_graph: ACTIVE
+    reference_intelligence_domains:
+      - solana_mobile_hackathon_rules
+      - mobile_wallet_adapter
+      - android_mobile_runtime
+      - solana_devnet_program_deployment
+    engineering_quality_assurance: BACKFILL_REQUIRED
+    pre_launch_ship_assurance: BLOCKED
+
+  truth_boundary:
+    observed:
+      - Android emulator standalone launch is proven at LOCAL/PARTIAL scope.
+      - MWA decline/authorize/signMessage/relaunch is proven at LOCAL/PARTIAL scope on run 36699897176.
+      - Mobile CI and APK evidence have successful runs for the current main lineage.
+      - Devnet MWA transaction proof is not proven; run 36761591880 failed before transaction runtime because the CI environment could not install Android platform 37 for the upstream fakewallet build.
+    inferred: []
+    unknown:
+      - distinct CRESCO Key Devnet program deployment
+      - real CRESCO payment-program mobile runtime
+      - live Cloudflare relay deployment
+      - full two-device hero loop
+      - physical Android and production-wallet compatibility
+      - external user/operator trial
+
+  contradictions:
+    - id: PROOF_FIRST_PRIORITY_DRIFT
+      status: RESOLVED_BY_PRIORITY_RECONCILIATION
+      detail: >-
+        The open generic Memo-based MWA transaction proof is useful technical evidence but is not the load-bearing product loop.
+        Under Product Reality v1.3 it remains secondary and must not displace distinct-program deployment and the real CRESCO action path.
+    - id: MISSING_LIFECYCLE_MANIFEST
+      status: REPAIRED_AT_THIS_RECONCILIATION
+      detail: >-
+        The project predates System Control Plane v1 and did not contain the required lifecycle coverage manifest.
+        The new manifest is created now without claiming it existed earlier.
+    - id: MISSING_EVIDENCE_GRAPH
+      status: REPAIRED_AT_THIS_RECONCILIATION
+      detail: >-
+        Material runtime and transaction claims existed before Claim-Runtime-Evidence Graph v1.
+        A project graph is created now and existing evidence is reused only at its true class.
+    - id: ENGINEERING_QUALITY_RECEIPT_MISSING
+      status: ACTIVE_BACKFILL_REQUIRED
+      detail: >-
+        The project is active and code-bearing with no current Engineering Quality receipt.
+        Backfill is required before BUILD_CANDIDATE_READY/submission-ready, but should not interrupt a current atomic runtime repair.
+
+  rule_lifecycle:
+    rule_lifecycle_decision: NO_CHANGE
+    reason: >-
+      This reconciliation adopts already-promoted central rules and adds project-local state/traceability only.
+      It does not propose a new universal rule from CRESCO-specific failures or successes.
+
+  cross_project_learning:
+    status: NOT_APPLICABLE_YET
+    reason: >-
+      CRESCO Key is still ACTIVE. Current runtime failures remain project evidence; no cross-project generalization
+      is made before post-mortem and comparable independent-project observations.
+
+  reference_intelligence:
+    status: ACTIVE_ADVISORY
+    registered_central_solana_mwa_packet_found: false
+    primary_sources:
+      - Solana Mobile CLOCK IN official rules
+      - solana-mobile/mobile-wallet-adapter
+      - solana-mobile/mock-mwa-wallet
+      - official Solana Mobile MWA documentation when material
+    current_gate_ossium_relevance: NOT_APPLICABLE_WITH_REASON
+    current_gate_ossium_reason: >-
+      The exact gate is Devnet program deployment/runtime integration; OSS discovery does not resolve the protected
+      program-key/deployment dependency and is therefore not material to this gate.
