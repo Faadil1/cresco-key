@@ -23,13 +23,15 @@ project_control_plane:
   routing:
     current_owner: pbpd_or_existing_product_owner
     current_stage: DELIVER_TO_LIVE_DEPTH
-    exact_next_gate: LIVE_CORE_G0_DISTINCT_CRESCO_KEY_DEVNET_PROGRAM_DEPLOY_AND_BOOTSTRAP
+    exact_next_gate: ENGINEERING_QUALITY_BACKFILL
     exact_next_action: >-
-      Prepare the protected Devnet deployment path for a distinct CRESCO Key program identity, with
-      human-controlled program-key custody, then deploy the program and bootstrap the deterministic payment state.
-      Bind program id, network, deployment receipt and commit before resuming the actual mobile hero loop.
+      Execute the bounded Engineering Quality Assurance backfill over the current material code state:
+      preconditions, baseline scan, triage, bounded fixes where justified, regression verification and receipt.
+      Preserve product behavior, authority/security contracts and evidence schemas. After the receipt is current,
+      resume LIVE_CORE_G0 distinct-program deployment and deterministic bootstrap.
     protected_authority_boundary: >-
       Human retains wallet/program-key custody, external secrets, final submission and irreversible production actions.
+    next_product_gate_after_system_repair: LIVE_CORE_G0_DISTINCT_CRESCO_KEY_DEVNET_PROGRAM_DEPLOY_AND_BOOTSTRAP
 
   activation:
     lifecycle_manifest: governance/BUILD-LIFECYCLE-COVERAGE.yaml

@@ -76,7 +76,7 @@ Do not upgrade these to:
 
 ## Latest failed / partial workstream
 
-Open PR: **#28 — P0: prove real Devnet transaction through MWA**
+Historical secondary PR: **#28 — P0: prove real Devnet transaction through MWA — CLOSED WITHOUT MERGE after v1.3 reconciliation**
 
 Latest material run inspected:
 
@@ -91,23 +91,31 @@ This failure remains evidence. It does not become a PASS.
 
 Under Integration-First v1.3, the generic Memo proof is now a **secondary technical proof lane**, not the primary product gate.
 
-## Exact next gate
+## Exact next system gate
+
+**ENGINEERING_QUALITY_BACKFILL**
+
+Reason: the project is ACTIVE, code-bearing, and lacks a current Engineering Quality receipt. The earlier atomic proof-repair lane is now stabilized/closed, so central rollout requires the bounded backfill before the next material implementation/deployment batch.
+
+Exact action:
+
+`PRECONDITIONS → BASELINE SCAN → TRIAGE → BOUNDED FIX LOOP → REGRESSION VERIFY → RECEIPT`
+
+Keep scope risk-bounded; preserve behavior and authority/security/evidence contracts.
+
+## Exact next product gate after EQA
 
 **LIVE_CORE_G0 — DISTINCT CRESCO KEY DEVNET PROGRAM DEPLOYMENT + BOOTSTRAP**
 
-## Exact next action
-
-Create/prepare the protected deployment path around the existing distinct-program provisioning logic, with human-controlled program-key custody.
-
 Then:
 
-`NEW DISTINCT PROGRAM ID → DEVNET DEPLOY → DEPLOYMENT RECEIPT → DETERMINISTIC PAYMENT BOOTSTRAP → MOBILE CRESCO TRANSACTION`
+`HUMAN-CONTROLLED NEW DISTINCT PROGRAM ID → DEVNET DEPLOY → DEPLOYMENT RECEIPT → COMMIT BINDING → DETERMINISTIC PAYMENT BOOTSTRAP → MOBILE CRESCO TRANSACTION`
 
 Required evidence graph binding:
 
 `CLAIM → PROGRAM DEPLOY SCENARIO → DEVNET RUNTIME EXECUTION → SOLANA DEPENDENCY → DEPLOY RECEIPT → SOURCE COMMIT → DEVNET PROGRAM ID`
 
-Do not spend another material iteration polishing or expanding a generic proof-only transaction path if it does not advance this chain.
+Do not revive or expand a separate generic proof-only transaction lane unless it materially helps this real product chain.
 
 ## Product Exploitation Loop
 

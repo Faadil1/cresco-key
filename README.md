@@ -31,7 +31,8 @@ The living PRD owns product intent. `state/CURRENT.md` and `state/HANDOVER.md` o
 - Mobile direction: **native Android / React Native + Mobile Wallet Adapter**
 - Current phase: **P0 implementation → load-bearing live integration / live depth**
 - Last proven runtime gate: **MWA session on Android emulator — LOCAL / PARTIAL**
-- Exact next primary gate: **distinct CRESCO Key Devnet program deployment + deterministic bootstrap**
+- Exact next system gate: **Engineering Quality Assurance backfill**
+- Next product gate after EQA: **distinct CRESCO Key Devnet program deployment + deterministic bootstrap**
 
 ## Core product law
 
