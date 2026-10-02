@@ -6,12 +6,12 @@ build_lifecycle_coverage:
   source_of_truth: GitHub
   current_owner: pbpd_or_existing_product_owner
   current_stage: DELIVER_TO_LIVE_DEPTH
-  exact_next_gate: ENGINEERING_QUALITY_BACKFILL
+  exact_next_gate: LIVE_CORE_G0_DISTINCT_CRESCO_KEY_DEVNET_PROGRAM_DEPLOY_AND_BOOTSTRAP
   exact_next_action: >-
-    Run Engineering Quality Assurance backfill now that the prior atomic runtime repair lane is stabilized:
-    preconditions, baseline scan, triage, bounded fix loop, regression verification and receipt.
-    After that, proceed to the distinct Devnet program deployment + deterministic payment bootstrap gate.
-  last_updated: 2026-10-01
+    Provision a new distinct CRESCO Key program identity under human-controlled key custody, deploy the rebuilt
+    program to Devnet, capture receipt/program-id/commit binding, bootstrap deterministic payment state, then
+    resume the real mobile CRESCO transaction path.
+  last_updated: 2026-10-02
 
   bootstrap:
     faadil_system_router_activated: true
@@ -80,9 +80,9 @@ build_lifecycle_coverage:
       reconstruction_note: Local technical/behavior evidence exists, but transaction/program/live-core claim edges remain incomplete.
     - capability: engineering_quality_assurance
       owner: pbpd_or_router_authorized_implementation_owner
-      status: MISSING
-      evidence_pointer: null
-      reconstruction_note: Active code-bearing project has no current Engineering Quality receipt; BACKFILL_REQUIRED before the next terminal-sensitive transition.
+      status: SATISFIED
+      evidence_pointer: evidence/engineering-quality/ENGINEERING-QUALITY-RECEIPT-2026-10-02.json
+      reconstruction_note: Bounded active-project backfill completed with PASS_WITH_ACCEPTED_DEBT; issue #33 remains explicit dependency/reproducibility debt for PRE_SUBMISSION / RELEASE.
     - capability: design_experience_assurance
       owner: trace
       status: MISSING
@@ -155,7 +155,6 @@ build_lifecycle_coverage:
       - changed-recipient and replay runtime refusals
       - physical Android / production-wallet evidence
       - external operator trial
-      - engineering quality receipt
       - TRACE/design terminal verdict
       - clean-room setup
 
@@ -177,7 +176,6 @@ build_lifecycle_coverage:
   missing:
     - product_reality_and_production_evidence
     - evidence_and_evaluation
-    - engineering_quality_assurance
     - design_experience_assurance
     - post_build_reconciliation
     - terminal_assurance
@@ -186,7 +184,6 @@ build_lifecycle_coverage:
     - live_core_loop
     - load_bearing_integration
     - real_consequence
-    - engineering_quality_backfill
     - TRACE_design_assurance
     - runtime_commit_deployment_binding
     - pre_launch_ship_assurance
