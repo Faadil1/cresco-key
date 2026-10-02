@@ -1,0 +1,163 @@
+name: CRESCO Key Devnet Live Gate
+
+on:
+  workflow_dispatch:
+    inputs:
+      phase:
+        description: "Protected phase to run"
+        required: true
+        type: choice
+        options:
+          - inspect_program_id
+          - deploy_program
+          - bootstrap_payment_state
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cresco-key-devnet-live-gate
+  cancel-in-progress: false
+
+jobs:
+  live-gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      ORIGINAL_CRESCO_PROGRAM_ID: ABjE6V5q9VbD3CAHDXxvztY5kXQmDXHRcEP1kZ4KSSfk
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22.13.0"
+
+      - name: Install Devnet tooling dependencies
+        working-directory: tools/devnet
+        run: npm install
+
+      - name: Materialize protected keypairs
+        env:
+          PROGRAM_JSON: ${{ secrets.CRESCO_KEY_PROGRAM_KEYPAIR_JSON }}
+          GUARDIAN_JSON: ${{ secrets.CRESCO_GUARDIAN_KEYPAIR_JSON }}
+          BENEFICIARY_JSON: ${{ secrets.CRESCO_BENEFICIARY_KEYPAIR_JSON }}
+          PHASE: ${{ inputs.phase }}
+        run: |
+          set -euo pipefail
+          umask 077
+
+          if [[ "$PHASE" == "inspect_program_id" || "$PHASE" == "deploy_program" ]]; then
+            if [[ -z "$PROGRAM_JSON" ]]; then
+              echo "::error::Missing repository secret CRESCO_KEY_PROGRAM_KEYPAIR_JSON"
+              exit 1
+            fi
+            printf '%s' "$PROGRAM_JSON" > "$RUNNER_TEMP/cresco-key-program.json"
+          fi
+
+          if [[ "$PHASE" == "deploy_program" || "$PHASE" == "bootstrap_payment_state" ]]; then
+            if [[ -z "$GUARDIAN_JSON" ]]; then
+              echo "::error::Missing repository secret CRESCO_GUARDIAN_KEYPAIR_JSON"
+              exit 1
+            fi
+            printf '%s' "$GUARDIAN_JSON" > "$RUNNER_TEMP/cresco-guardian.json"
+          fi
+
+          if [[ "$PHASE" == "bootstrap_payment_state" ]]; then
+            if [[ -z "$BENEFICIARY_JSON" ]]; then
+              echo "::error::Missing repository secret CRESCO_BENEFICIARY_KEYPAIR_JSON"
+              exit 1
+            fi
+            printf '%s' "$BENEFICIARY_JSON" > "$RUNNER_TEMP/cresco-beneficiary.json"
+          fi
+
+      - name: Inspect protected program public id
+        if: ${{ inputs.phase == 'inspect_program_id' }}
+        env:
+          PHASE: ${{ inputs.phase }}
+        run: |
+          set -euo pipefail
+          mkdir -p evidence/devnet-program-id-preflight
+
+          PROGRAM_ID="$(node tools/devnet/keypair-public-id.cjs "$RUNNER_TEMP/cresco-key-program.json")"
+          if [[ -z "$PROGRAM_ID" || "$PROGRAM_ID" == "$ORIGINAL_CRESCO_PROGRAM_ID" ]]; then
+            echo "::error::Protected program keypair is invalid or reuses the original CRESCO program id."
+            exit 1
+          fi
+
+          export PROGRAM_ID
+          python3 - <<'PY'
+          import json, os
+          receipt = {
+              "schema": "cresco-key/program-id-preflight/v1",
+              "networkTarget": "devnet",
+              "sourceCommit": os.environ.get("GITHUB_SHA"),
+              "programId": os.environ["PROGRAM_ID"],
+              "originalCrescoProgramId": os.environ["ORIGINAL_CRESCO_PROGRAM_ID"],
+              "distinctFromOriginal": True,
+              "privateKeyMaterialExported": False,
+              "nextRequiredState": "COMMIT_PUBLIC_PROGRAM_ID_BEFORE_DEPLOY"
+          }
+          with open("evidence/devnet-program-id-preflight/program-id-preflight.json","w",encoding="utf-8") as f:
+              json.dump(receipt,f,indent=2)
+              f.write("\n")
+          PY
+
+          echo "Distinct public program id: $PROGRAM_ID"
+          echo "No deployment performed. Commit this public id before deploy_program."
+
+      - name: Setup Rust
+        if: ${{ inputs.phase != 'inspect_program_id' }}
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install pinned Agave / Solana CLI 2.3.0
+        if: ${{ inputs.phase != 'inspect_program_id' }}
+        run: |
+          set -euo pipefail
+          ARCHIVE="$RUNNER_TEMP/solana-release.tar.bz2"
+          curl --fail --location --retry 3             "https://github.com/anza-xyz/agave/releases/download/v2.3.0/solana-release-x86_64-unknown-linux-gnu.tar.bz2"             --output "$ARCHIVE"
+          echo "56241fbe862495ff01b2b875195e44f94c22e9f2a504591a3ade1b9d82862730  $ARCHIVE" | sha256sum -c -
+          tar -xjf "$ARCHIVE" -C "$RUNNER_TEMP"
+          echo "$RUNNER_TEMP/solana-release/bin" >> "$GITHUB_PATH"
+
+      - name: Install pinned Anchor CLI 0.32.1
+        if: ${{ inputs.phase != 'inspect_program_id' }}
+        run: |
+          set -euo pipefail
+          cargo install             --git https://github.com/solana-foundation/anchor             --tag v0.32.1             anchor-cli             --locked             --force
+          anchor --version
+
+      - name: Deploy distinct CRESCO Key program to Devnet
+        if: ${{ inputs.phase == 'deploy_program' }}
+        env:
+          CRESCO_KEY_PROGRAM_KEYPAIR_PATH: ${{ runner.temp }}/cresco-key-program.json
+          CRESCO_KEY_DEPLOYER_KEYPAIR_PATH: ${{ runner.temp }}/cresco-guardian.json
+          CRESCO_KEY_DEPLOY_EVIDENCE_DIR: ${{ github.workspace }}/evidence/devnet-program-deploy
+        run: bash scripts/devnet-program-deploy-evidence.sh
+
+      - name: Bootstrap deterministic CRESCO Key payment state
+        if: ${{ inputs.phase == 'bootstrap_payment_state' }}
+        env:
+          CRESCO_GUARDIAN_KEYPAIR_PATH: ${{ runner.temp }}/cresco-guardian.json
+          CRESCO_BENEFICIARY_KEYPAIR_PATH: ${{ runner.temp }}/cresco-beneficiary.json
+          CRESCO_KEY_BOOTSTRAP_EVIDENCE_DIR: ${{ github.workspace }}/evidence/devnet-payment-bootstrap
+        run: bash scripts/devnet-payment-bootstrap-evidence.sh
+
+      - name: Remove protected keypair files
+        if: always()
+        run: |
+          rm -f             "$RUNNER_TEMP/cresco-key-program.json"             "$RUNNER_TEMP/cresco-guardian.json"             "$RUNNER_TEMP/cresco-beneficiary.json"
+
+      - name: Upload public gate evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cresco-key-devnet-${{ inputs.phase }}-evidence
+          path: |
+            evidence/devnet-program-id-preflight/
+            evidence/devnet-program-deploy/
+            evidence/devnet-payment-bootstrap/
+          if-no-files-found: warn
+          retention-days: 30
