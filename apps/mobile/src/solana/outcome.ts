@@ -41,7 +41,7 @@ type RpcLike = {
       | {
           meta?: {
             err?: unknown;
-            logMessages?: string[] | null;
+            logMessages?: ReadonlyArray<string> | null;
           } | null;
         }
       | null
