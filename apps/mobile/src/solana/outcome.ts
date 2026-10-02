@@ -20,11 +20,11 @@ export type TransactionOutcome =
 type RpcLike = {
   getSignatureStatuses(signatures: Signature[]): {
     send(): Promise<{
-      value: Array<
-        | {
+      value: ReadonlyArray<
+        | Readonly<{
             err: unknown;
             confirmationStatus?: string | null;
-          }
+          }>
         | null
       >;
     }>;
