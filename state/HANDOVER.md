@@ -1,6 +1,6 @@
 # CRESCO Key — HANDOVER
 
-Updated: 2026-10-01
+Updated: 2026-10-02
 
 ## Resume rule
 
@@ -91,23 +91,33 @@ This failure remains evidence. It does not become a PASS.
 
 Under Integration-First v1.3, the generic Memo proof is now a **secondary technical proof lane**, not the primary product gate.
 
-## Exact next system gate
+## Engineering Quality Assurance
 
-**ENGINEERING_QUALITY_BACKFILL**
+Status:
 
-Reason: the project is ACTIVE, code-bearing, and lacks a current Engineering Quality receipt. The earlier atomic proof-repair lane is now stabilized/closed, so central rollout requires the bounded backfill before the next material implementation/deployment batch.
+**PROVEN — PASS_WITH_ACCEPTED_DEBT**
 
-Exact action:
+Receipt:
 
-`PRECONDITIONS → BASELINE SCAN → TRIAGE → BOUNDED FIX LOOP → REGRESSION VERIFY → RECEIPT`
+- `evidence/engineering-quality/ENGINEERING-QUALITY-RECEIPT-2026-10-02.json`
 
-Keep scope risk-bounded; preserve behavior and authority/security/evidence contracts.
+Material repairs:
 
-## Exact next product gate after EQA
+- relay terminal states made monotonic;
+- expiry enforced before event application;
+- unsafe mobile RPC double-cast removed through a typed adapter / readonly-compatible response boundary.
+
+Accepted debt:
+
+- issue #33 — dependency locking + Expo transitive audit findings;
+- no breaking force-fix;
+- broad structural refactors deferred unless materially justified.
+
+## Exact next gate
 
 **LIVE_CORE_G0 — DISTINCT CRESCO KEY DEVNET PROGRAM DEPLOYMENT + BOOTSTRAP**
 
-Then:
+Exact chain:
 
 `HUMAN-CONTROLLED NEW DISTINCT PROGRAM ID → DEVNET DEPLOY → DEPLOYMENT RECEIPT → COMMIT BINDING → DETERMINISTIC PAYMENT BOOTSTRAP → MOBILE CRESCO TRANSACTION`
 
@@ -157,7 +167,6 @@ Material unresolved capabilities:
 
 - Product Reality / live depth
 - Evidence & Evaluation
-- Engineering Quality Assurance backfill
 - TRACE / Design Experience Assurance
 - post-build reconciliation
 - Project Finisher terminal assurance
@@ -167,13 +176,11 @@ Material unresolved capabilities:
 
 Status:
 
-**BACKFILL_REQUIRED**
+**PROVEN — PASS_WITH_ACCEPTED_DEBT**
 
-The project is active and code-bearing and has no current Engineering Quality receipt.
+Receipt: `evidence/engineering-quality/ENGINEERING-QUALITY-RECEIPT-2026-10-02.json`
 
-Do not interrupt an atomic runtime repair mid-operation. At the next safe boundary, run bounded quality scan/triage/fix/regression/receipt. This must be complete before BUILD_CANDIDATE_READY, release-candidate, submission-ready, or PROJECT_COMPLETE.
-
-A quality score is evidence only, never a terminal verdict.
+Issue #33 remains explicit accepted/deferred dependency debt and must be revisited before PRE_SUBMISSION / RELEASE. A quality score or audit result remains evidence only, never terminal authority.
 
 ## Reference Intelligence
 
@@ -223,7 +230,7 @@ CRESCO Key is not yet SUBMISSION_READY.
 Before terminal promotion:
 
 - close live-core and real-consequence gaps;
-- close Engineering Quality backfill;
+- re-evaluate dependency/reproducibility debt #33 before release/submission;
 - complete TRACE/design assurance if still triggered;
 - verify clean-room / judge self-serve setup;
 - update Reality Ledger + Evidence Graph;
