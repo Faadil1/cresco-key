@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "bootstrap": "node bootstrap-payment-demo.cjs",
-    "check": "node --check bootstrap-payment-demo.cjs"
+    "check": "node --check bootstrap-payment-demo.cjs && node --check keypair-public-id.cjs"
   },
   "dependencies": {
     "@coral-xyz/anchor": "0.32.1",
