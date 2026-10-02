@@ -1,6 +1,6 @@
 # CRESCO Key — Current State
 
-Updated: 2026-10-01
+Updated: 2026-10-02
 
 This file is a collaborator-facing pointer, **not an independent canonical state document**.
 
@@ -25,6 +25,11 @@ Last materially proven runtime gate:
 
 **MWA session — PROVEN at LOCAL / PARTIAL scope**  
 GitHub Actions run: `36699897176`.
+
+Engineering Quality Assurance:
+
+**PROVEN — PASS_WITH_ACCEPTED_DEBT**  
+Receipt: `evidence/engineering-quality/ENGINEERING-QUALITY-RECEIPT-2026-10-02.json`
 
 Exact next primary gate:
 

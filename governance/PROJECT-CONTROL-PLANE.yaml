@@ -23,12 +23,11 @@ project_control_plane:
   routing:
     current_owner: pbpd_or_existing_product_owner
     current_stage: DELIVER_TO_LIVE_DEPTH
-    exact_next_gate: ENGINEERING_QUALITY_BACKFILL
+    exact_next_gate: LIVE_CORE_G0_DISTINCT_CRESCO_KEY_DEVNET_PROGRAM_DEPLOY_AND_BOOTSTRAP
     exact_next_action: >-
-      Execute the bounded Engineering Quality Assurance backfill over the current material code state:
-      preconditions, baseline scan, triage, bounded fixes where justified, regression verification and receipt.
-      Preserve product behavior, authority/security contracts and evidence schemas. After the receipt is current,
-      resume LIVE_CORE_G0 distinct-program deployment and deterministic bootstrap.
+      Prepare the protected distinct-program path under human-controlled key custody, provision a new program id,
+      hard-stop if it matches the original CRESCO id, deploy the rebuilt program to Devnet, capture deployment receipt
+      plus source-commit binding, then bootstrap deterministic payment state and resume the real mobile CRESCO action path.
     protected_authority_boundary: >-
       Human retains wallet/program-key custody, external secrets, final submission and irreversible production actions.
     next_product_gate_after_system_repair: LIVE_CORE_G0_DISTINCT_CRESCO_KEY_DEVNET_PROGRAM_DEPLOY_AND_BOOTSTRAP
@@ -44,7 +43,7 @@ project_control_plane:
       - mobile_wallet_adapter
       - android_mobile_runtime
       - solana_devnet_program_deployment
-    engineering_quality_assurance: BACKFILL_REQUIRED
+    engineering_quality_assurance: PASS_WITH_ACCEPTED_DEBT
     pre_launch_ship_assurance: BLOCKED
 
   truth_boundary:
@@ -79,10 +78,11 @@ project_control_plane:
         Material runtime and transaction claims existed before Claim-Runtime-Evidence Graph v1.
         A project graph is created now and existing evidence is reused only at its true class.
     - id: ENGINEERING_QUALITY_RECEIPT_MISSING
-      status: ACTIVE_BACKFILL_REQUIRED
+      status: RESOLVED_WITH_ACCEPTED_DEBT
       detail: >-
-        The project is active and code-bearing with no current Engineering Quality receipt.
-        Backfill is required before BUILD_CANDIDATE_READY/submission-ready, but should not interrupt a current atomic runtime repair.
+        Bounded Engineering Quality backfill completed on 2026-10-02 with verdict PASS_WITH_ACCEPTED_DEBT.
+        Canonical receipt: evidence/engineering-quality/ENGINEERING-QUALITY-RECEIPT-2026-10-02.json.
+        Dependency/reproducibility debt remains tracked in issue #33 for PRE_SUBMISSION / RELEASE review.
 
   rule_lifecycle:
     rule_lifecycle_decision: NO_CHANGE

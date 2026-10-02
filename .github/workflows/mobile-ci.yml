@@ -31,6 +31,10 @@ jobs:
       - name: Install dependencies
         run: npm install
 
+      - name: Audit runtime dependency exposure
+        continue-on-error: true
+        run: npm audit --omit=dev --audit-level=high
+
       - name: Typecheck
         run: npm run typecheck
 

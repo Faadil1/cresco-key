@@ -34,6 +34,18 @@ The token is returned only when the request is created. P0 clients may carry it 
 
 This protects request metadata from casual enumeration. Production hardening may split requester/guardian capabilities and add wallet-authenticated access.
 
+## State semantics
+
+Relay coordination state is monotonic:
+
+`PENDING → REFUSED | ALLOWANCE_SUBMITTED | EXPIRED`
+
+Once a request leaves `PENDING`, later bearer-capability events cannot rewrite that terminal coordination state.
+
+Expiry is checked before reads and event application. A request at or beyond its `expiresAt` second becomes `EXPIRED` before a later coordination event can move it forward.
+
+`ALLOWANCE_SUBMITTED` is only a marker that a guardian transaction was confirmed and reported to the relay. It is **not** an ALLOW decision and does not execute the payment.
+
 ## API
 
 ### Create
@@ -53,9 +65,11 @@ Required:
 
 Optional:
 
-- `expiresAt` — Unix seconds;
+- `expiresAt` — future Unix seconds;
 - private `display.label`;
 - private `display.reason`.
+
+A create request whose `expiresAt` is already reached is rejected as `INVALID_EXPIRES_AT`.
 
 Response returns the request plus a one-time `relayToken`.
 

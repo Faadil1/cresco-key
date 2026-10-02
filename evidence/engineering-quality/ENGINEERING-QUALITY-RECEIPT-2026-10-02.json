@@ -1,0 +1,147 @@
+{
+  "schema_version": "1.0.0",
+  "project": "CRESCO Key",
+  "repository": "Faadil1/cresco-key",
+  "commit": "4c8811b5adf867244fffb3122e69f80c1caccd66",
+  "activation_reason": "System Control Plane v1 active-project backfill: ACTIVE code-bearing project had no current Engineering Quality receipt at the next safe boundary before the next live-integration/deployment batch.",
+  "provider": {
+    "name": "manual_static_review+native_ci",
+    "version": null,
+    "authority": "NONE",
+    "status_json_pointer": null
+  },
+  "scan_scope": {
+    "paths": [
+      "apps/mobile/",
+      "programs/keys/",
+      "services/relay/",
+      "tools/devnet/",
+      "scripts/",
+      ".github/workflows/mobile-ci.yml"
+    ],
+    "excluded_paths": [
+      "node_modules/",
+      "apps/mobile/android/",
+      "apps/mobile/.expo/",
+      "apps/mobile/dist/",
+      "services/relay/dist/",
+      "vendor/",
+      "generated build artifacts"
+    ],
+    "languages": [
+      "TypeScript",
+      "JavaScript",
+      "Rust",
+      "Bash",
+      "PowerShell",
+      "YAML"
+    ],
+    "language_policy": "Central ENGINEERING-QUALITY-ASSURANCE-POLICY v1.1.0; language-native checks and bounded manual review. Desloppify not required for correctness and not used as authority."
+  },
+  "quality_signals": {
+    "baseline": {
+      "strict_score": null,
+      "objective_score": null,
+      "open_findings": 5
+    },
+    "after": {
+      "strict_score": null,
+      "objective_score": null,
+      "open_findings": 3
+    },
+    "score_interpretation": "SIGNAL_NOT_TERMINAL_AUTHORITY"
+  },
+  "material_findings_fixed": [
+    {
+      "id": "EQA-001",
+      "class": "correctness_or_bug_risk",
+      "severity": "high",
+      "summary": "Relay ALLOWANCE_SUBMITTED state could be rewritten later by REFUSED or EXPIRED, allowing coordination history to contradict a previously reported confirmed allowance transaction.",
+      "evidence_pointer": "PR #32; services/relay/src/model.mjs; Boundary Relay CI run 37039621677"
+    },
+    {
+      "id": "EQA-002",
+      "class": "correctness_or_bug_risk",
+      "severity": "high",
+      "summary": "Relay expiry was enforced on reads but not before event application, so a stale PENDING request could accept a later coordination event until a read occurred.",
+      "evidence_pointer": "PR #32; services/relay/src/worker.mjs; services/relay/test/model.test.mjs; Boundary Relay CI run 37039621677"
+    },
+    {
+      "id": "EQA-003",
+      "class": "test_or_type_health",
+      "severity": "medium",
+      "summary": "Mobile RPC integration used an unsafe double type assertion. It was replaced by a typed adapter and readonly-compatible RPC response shapes without changing runtime product semantics.",
+      "evidence_pointer": "PR #32; apps/mobile/src/BoundaryWorkspace.tsx; apps/mobile/src/solana/outcome.ts; Mobile CI run 37039621579"
+    }
+  ],
+  "unresolved_findings": [
+    {
+      "id": "EQA-D01",
+      "class": "security_or_dependency_risk",
+      "severity": "high",
+      "summary": "Mobile dependency audit reports 13 transitive findings (8 moderate, 5 high), including node-forge through Expo CLI/config/code-signing packages and uuid through Expo/xcode tooling.",
+      "evidence_pointer": "Mobile CI run 37039621579; issue #33",
+      "disposition": "DEFERRED_WITH_GATE",
+      "reason": "npm's force-fix path proposes a breaking Expo 44 downgrade from the current Expo 57 stack. Breaking or validator-bypassing remediation is prohibited. The finding is tracked as explicit build-chain/dependency debt and must be re-evaluated with deterministic dependency locking before PRE_SUBMISSION/RELEASE.",
+      "next_gate": "PRE_LAUNCH_SHIP_ASSURANCE / issue #33"
+    },
+    {
+      "id": "EQA-D02",
+      "class": "maintainability_or_complexity",
+      "severity": "medium",
+      "summary": "apps/mobile/src/BoundaryWorkspace.tsx remains a large mixed-responsibility component.",
+      "evidence_pointer": "manual scoped review during #30",
+      "disposition": "ACCEPTED_DEBT",
+      "reason": "No demonstrated correctness regression currently requires a broad refactor. During the deadline window, behavior-preserving live integration has higher value than a risky structural rewrite.",
+      "next_gate": "POST_VERTICAL_SLICE_DEPTH_GAP_REVIEW"
+    },
+    {
+      "id": "EQA-D03",
+      "class": "maintainability_or_complexity",
+      "severity": "medium",
+      "summary": "programs/keys/src/lib.rs remains a large monolithic onchain program module.",
+      "evidence_pointer": "manual scoped review during #30",
+      "disposition": "ACCEPTED_DEBT",
+      "reason": "The onchain program is security-sensitive and already test-backed. Broad structural refactoring immediately before distinct-program deployment would add deployment risk without a demonstrated product/reliability gain.",
+      "next_gate": "POST_VERTICAL_SLICE_DEPTH_GAP_REVIEW"
+    }
+  ],
+  "regression_verification": {
+    "functional_tests": "PASS",
+    "build_or_typecheck": "PASS",
+    "lint_or_static_analysis": "PASS",
+    "behavior_receipts_preserved": "PASS",
+    "notes": "Boundary Relay CI run 37039621677 passed tests + Worker dry-run. Mobile CI run 37039621579 passed typecheck + Expo Android prebuild after the typed RPC adapter. Rust program and Devnet tooling source trees were unchanged from prior successful CI-proven states. Existing canonical Android-emulator and MWA-session receipts are not upgraded or reclassified by this EQA gate; the EQA changes do not alter their authority semantics."
+  },
+  "protected_contracts": {
+    "public_api": "PRESERVED",
+    "evidence_schema": "PRESERVED",
+    "deterministic_scenario": "PRESERVED",
+    "security_controls": "PRESERVED",
+    "other": [
+      "standing authority / Allow Once semantics preserved",
+      "exact amount and recipient binding preserved",
+      "UNKNOWN remains non-success",
+      "relay remains coordination-only",
+      "program/wallet key custody remains human-protected",
+      "no product requirement changed for quality-score purposes"
+    ]
+  },
+  "scope_protection": {
+    "product_scope_expanded_for_score": false,
+    "broad_rewrite_during_freeze": false,
+    "exceptions": [
+      "Dependency-audit debt is tracked in issue #33 rather than force-fixed through a breaking Expo downgrade."
+    ]
+  },
+  "evidence_pointers": [
+    "https://github.com/Faadil1/cresco-key/pull/32",
+    "https://github.com/Faadil1/cresco-key/actions/runs/37039621579",
+    "https://github.com/Faadil1/cresco-key/actions/runs/37039621677",
+    "https://github.com/Faadil1/cresco-key/issues/33",
+    "evidence/mwa-session/MWA-SESSION-CANONICAL-PROOF-2026-09-30.md",
+    "evidence/emulator/ANDROID-EMULATOR-SMOKE-PROOF-2026-09-30.md"
+  ],
+  "verdict": "PASS_WITH_ACCEPTED_DEBT",
+  "verdict_reason": "The bounded EQA cycle found and repaired two relay correctness risks and one mobile type-safety defect, and current relay/mobile CI passes. Remaining dependency and structural findings are explicitly dispositioned; none justifies a breaking force-fix or broad pre-deployment rewrite. This verdict does not promote Product Reality, live integration, or submission readiness."
+}

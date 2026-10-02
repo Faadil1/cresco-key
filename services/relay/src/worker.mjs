@@ -1,4 +1,5 @@
 import {
+  isRequestExpired,
   publicRequest,
   statusAfterEvent,
   validateCreatePayload,
@@ -35,6 +36,25 @@ function bearerToken(request) {
   return match?.[1]?.toLowerCase() ?? null;
 }
 
+function expirePendingRecord(record, nowMs) {
+  if (
+    record.status !== "PENDING" ||
+    !isRequestExpired(record.expiresAt, Math.floor(nowMs / 1000))
+  ) {
+    return null;
+  }
+
+  return {
+    ...record,
+    status: "EXPIRED",
+    updatedAt: nowMs,
+    events: [
+      ...record.events,
+      { type: "EXPIRED", at: nowMs, txSignature: null },
+    ],
+  };
+}
+
 export class BoundaryRequestObject {
   constructor(state) {
     this.state = state;
@@ -65,6 +85,11 @@ export class BoundaryRequestObject {
       try {
         const payload = validateCreatePayload(await request.json());
         const now = Date.now();
+
+        if (isRequestExpired(payload.expiresAt, Math.floor(now / 1000))) {
+          return json({ error: "INVALID_EXPIRES_AT" }, 400);
+        }
+
         const token = randomToken();
         const relayTokenHash = await sha256Hex(token);
 
@@ -100,21 +125,10 @@ export class BoundaryRequestObject {
       const auth = await this.authorizedRecord(request);
       if (auth.response) return auth.response;
 
-      const nowSeconds = Math.floor(Date.now() / 1000);
       let record = auth.record;
-
-      if (
-        record.status === "PENDING" &&
-        record.expiresAt !== null &&
-        nowSeconds > record.expiresAt
-      ) {
-        const at = Date.now();
-        record = {
-          ...record,
-          status: "EXPIRED",
-          updatedAt: at,
-          events: [...record.events, { type: "EXPIRED", at, txSignature: null }],
-        };
+      const expired = expirePendingRecord(record, Date.now());
+      if (expired) {
+        record = expired;
         await this.state.storage.put("request", record);
       }
 
@@ -128,11 +142,24 @@ export class BoundaryRequestObject {
       try {
         const event = validateRelayEvent(await request.json());
         const at = Date.now();
+
+        let current = auth.record;
+        const expired = expirePendingRecord(current, at);
+        if (expired) {
+          current = expired;
+          await this.state.storage.put("request", current);
+          return json({ request: publicRequest(current) });
+        }
+
+        if (current.status !== "PENDING") {
+          return json({ request: publicRequest(current) });
+        }
+
         const record = {
-          ...auth.record,
-          status: statusAfterEvent(auth.record.status, event.type),
+          ...current,
+          status: statusAfterEvent(current.status, event.type),
           updatedAt: at,
-          events: [...auth.record.events, { ...event, at }],
+          events: [...current.events, { ...event, at }],
         };
 
         await this.state.storage.put("request", record);

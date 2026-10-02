@@ -1,6 +1,6 @@
 # CRESCO Key — CURRENT
 
-Updated: 2026-10-01
+Updated: 2026-10-02
 
 ## Project status
 
@@ -85,27 +85,41 @@ Primary build priority is the load-bearing product path:
 
 Evidence should be emitted from that real path wherever practical instead of creating a parallel proof-only product.
 
-## Exact next system gate
+## Engineering Quality Assurance gate
 
-**ENGINEERING_QUALITY_BACKFILL — ACTIVE / REQUIRED AT THIS SAFE BOUNDARY**
+**PROVEN — PASS_WITH_ACCEPTED_DEBT**
 
-Central Engineering Quality Assurance requires active code-bearing projects without a current receipt to complete bounded backfill at the next safe boundary. The prior generic transaction repair lane is now stabilized/closed, so this is the smallest valid system handoff before the next material code/deploy batch.
+Receipt:
 
-## Exact next action
+- `evidence/engineering-quality/ENGINEERING-QUALITY-RECEIPT-2026-10-02.json`
+- covered material code commit: `4c8811b5adf867244fffb3122e69f80c1caccd66`
 
-Run a bounded Engineering Quality Assurance cycle over the current material code state:
+The bounded backfill repaired relay state/expiry correctness risks and removed an unsafe mobile RPC type escape without changing product law, authority semantics or evidence contracts.
 
-`PRECONDITIONS → BASELINE SCAN → TRIAGE → BOUNDED FIX LOOP → REGRESSION VERIFY → RECEIPT`
+Accepted debt is explicit, not hidden:
 
-Scope must preserve product behavior, authority/security contracts, evidence schemas and the locked PRD. Do not chase a score or start a broad refactor.
+- issue #33 tracks mobile dependency reproducibility + Expo transitive audit findings;
+- no `npm audit fix --force` or breaking Expo downgrade was applied;
+- large mixed-responsibility files remain deferred unless a material correctness/reliability reason justifies refactor.
 
-## Exact next product gate after EQA
+## Exact next gate
 
 **LIVE_CORE_G0 — DISTINCT CRESCO KEY DEVNET PROGRAM DEPLOYMENT + BOOTSTRAP**
 
-Then prepare the protected Devnet deployment path for a **new distinct CRESCO Key program identity** under human-controlled key custody, deploy it, capture program/network/deployment receipt + commit binding, bootstrap deterministic two-wallet payment state, and resume the actual mobile CRESCO path.
+## Exact next action
 
-The generic Memo/MWA proof is deferred as a standalone lane. Its useful pieces may be recovered later only if they materially help the real CRESCO path.
+Prepare the protected Devnet deployment path for a **new distinct CRESCO Key program identity** under human-controlled key custody, then:
+
+1. provision a new external program keypair / program id without exposing private key material;
+2. hard-stop if it matches the original CRESCO id;
+3. update the program id mapping and rebuild;
+4. deploy the distinct program to Devnet;
+5. capture program id, network, deployment receipt and source commit;
+6. bootstrap deterministic two-wallet payment state;
+7. bind the new runtime/deployment edges in the Evidence Graph;
+8. resume the actual mobile CRESCO payment path.
+
+The generic Memo/MWA proof remains deferred as a standalone lane.
 
 ## Product Exploitation Loop
 
@@ -149,10 +163,9 @@ Lifecycle coverage:
 
 Engineering Quality Assurance:
 
-- **BACKFILL_REQUIRED**
-- reason: active code-bearing project with no current Engineering Quality receipt
-- does not interrupt an atomic runtime repair mid-operation
-- **must be resolved before BUILD_CANDIDATE_READY / release candidate / submission-ready**
+- **PROVEN — PASS_WITH_ACCEPTED_DEBT**
+- current receipt: `evidence/engineering-quality/ENGINEERING-QUALITY-RECEIPT-2026-10-02.json`
+- dependency/reproducibility debt remains tracked in issue #33 and must be re-evaluated before PRE_SUBMISSION / RELEASE
 
 TRACE / Design Experience Assurance:
 
@@ -208,7 +221,6 @@ Ossium is not material to the current runtime/deployment gate.
 - standing Key unchanged before/after Allow Once in the mobile live loop;
 - clean-room reproduction;
 - external user/operator trial;
-- current Engineering Quality receipt;
 - terminal TRACE/design verdict;
 - Project Finisher terminal assurance;
 - final release-signed APK / dApp Store readiness.
@@ -248,7 +260,7 @@ Before BUILD_CANDIDATE_READY or equivalent terminal promotion, applicable materi
 5. real in-bounds / boundary / Allow Once / mutation / replay consequences;
 6. runtime → receipt → commit → deployment binding;
 7. failure/recovery coverage;
-8. Engineering Quality backfill receipt;
+8. dependency/reproducibility debt #33 re-evaluated before PRE_SUBMISSION / RELEASE;
 9. TRACE/design assurance when still triggered;
 10. clean-room / judge self-serve path;
 11. post-first-live-slice Product Exploitation / Depth Gap Review;
