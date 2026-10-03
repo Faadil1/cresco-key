@@ -25,6 +25,7 @@ jobs:
       PROGRAM_KEYPAIR_JSON: ${{ secrets.CRESCO_KEY_PROGRAM_KEYPAIR_JSON }}
       GUARDIAN_KEYPAIR_JSON: ${{ secrets.CRESCO_GUARDIAN_KEYPAIR_JSON }}
       BENEFICIARY_KEYPAIR_JSON: ${{ secrets.CRESCO_BENEFICIARY_KEYPAIR_JSON }}
+      CARGO_RESOLVER_INCOMPATIBLE_RUST_VERSIONS: fallback
 
     steps:
       - name: Checkout exact source
@@ -43,10 +44,6 @@ jobs:
         run: |
           sh -c "$(curl -sSfL https://release.anza.xyz/v2.3.0/install)"
           echo "$HOME/.local/share/solana/install/active_release/bin" >> "$GITHUB_PATH"
-
-      - name: Install SBF platform tools v1.57
-        shell: bash
-        run: cargo build-sbf --tools-version v1.57
 
       - name: Install Anchor CLI 0.32.1
         shell: bash
