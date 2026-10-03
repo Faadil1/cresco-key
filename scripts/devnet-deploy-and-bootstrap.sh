@@ -98,10 +98,42 @@ test -f "$PROGRAM_BINARY"
 sha256sum "$PROGRAM_BINARY" > "$EVIDENCE/program-binary-sha256.txt"
 
 echo "Deploying distinct CRESCO Key program to Devnet..."
-solana program deploy "$PROGRAM_BINARY"   --program-id "$PROGRAM_KEY"   --url devnet   --keypair "$GUARDIAN_KEY"   2>&1 | tee "$EVIDENCE/deploy-output.txt"
+DEPLOY_RAW="$TMP_DIR/deploy-output.raw"
+set +e
+solana program deploy "$PROGRAM_BINARY" \
+  --program-id "$PROGRAM_KEY" \
+  --url devnet \
+  --keypair "$GUARDIAN_KEY" \
+  > "$DEPLOY_RAW" 2>&1
+DEPLOY_STATUS=$?
+set -e
+
+# Solana prints a temporary buffer recovery phrase on failed deploys; never publish it.
+awk '
+  /^Recover the intermediate account/ {
+    redacting = 1
+    print "REDACTED_SOLANA_DEPLOY_BUFFER_RECOVERY_BLOCK"
+    next
+  }
+  redacting && /^Error:/ {
+    redacting = 0
+    print
+    next
+  }
+  redacting {
+    next
+  }
+  { print }
+' "$DEPLOY_RAW" | tee "$EVIDENCE/deploy-output.txt"
+
+if [ "$DEPLOY_STATUS" -ne 0 ]; then
+  exit "$DEPLOY_STATUS"
+fi
 
 echo "Verifying deployed program account..."
-solana program show "$PROGRAM_ID"   --url devnet   --output json > "$EVIDENCE/program-show.json"
+solana program show "$PROGRAM_ID" \
+  --url devnet \
+  --output json > "$EVIDENCE/program-show.json"
 
 echo "Refreshing bounded Devnet funding before deterministic bootstrap."
 for attempt in 1 2; do
@@ -124,7 +156,8 @@ export CRESCO_KEY_EXPECTED_PROGRAM_ID="$PROGRAM_ID"
 export CRESCO_KEY_DEMO_STATE="$EVIDENCE/cresco-key-demo-state.json"
 export SOLANA_RPC_URL="https://api.devnet.solana.com"
 
-node "$ROOT/tools/devnet/bootstrap-payment-demo.cjs"   > "$EVIDENCE/bootstrap-output.txt"
+node "$ROOT/tools/devnet/bootstrap-payment-demo.cjs" \
+  > "$EVIDENCE/bootstrap-output.txt"
 
 test -f "$EVIDENCE/cresco-key-demo-state.json"
 
