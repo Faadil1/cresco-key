@@ -532,7 +532,7 @@ Current P0 summary:
 | Gateway | P0 state | Rule |
 |---|---|---|
 | Solana authority program code | **PROVEN** | Exact amount + recipient + one-time semantics are implemented and Rust-tested. |
-| Distinct CRESCO Key Devnet program | **BLOCKED** | Exact next primary gate: new distinct program identity, Devnet deployment, receipt and commit binding. |
+| Distinct CRESCO Key Devnet program | **ACTIVE** | Public program identity `6SoGabSLX2YHMjFx1ynbz5nLFtd8Z7hURmszddU6DeJP` is committed for the secret-backed keypair; next gate is Devnet deployment, receipt and commit binding. |
 | Mobile Wallet Adapter session | **PROVEN — LOCAL/PARTIAL** | Run `36699897176` proves decline → authorize/connect → signMessage → relaunch recovery in the emulator. |
 | Real MWA Devnet sign/send | **ACTIVE / NOT PROVEN** | Generic Memo proof is secondary technical evidence; it must not displace the actual CRESCO program path. |
 | Android standalone emulator runtime | **PROVEN — LOCAL/PARTIAL** | Run `36669206551`; physical Android remains separate. |
