@@ -108,16 +108,24 @@ Accepted debt is explicit, not hidden:
 
 ## Exact next action
 
-Prepare the protected Devnet deployment path for a **new distinct CRESCO Key program identity** under human-controlled key custody, then:
+**Protected human setup is now the only immediate blocker.**
 
-1. provision a new external program keypair / program id without exposing private key material;
-2. hard-stop if it matches the original CRESCO id;
-3. update the program id mapping and rebuild;
-4. deploy the distinct program to Devnet;
-5. capture program id, network, deployment receipt and source commit;
-6. bootstrap deterministic two-wallet payment state;
-7. bind the new runtime/deployment edges in the Evidence Graph;
-8. resume the actual mobile CRESCO payment path.
+The repository now contains:
+
+- `scripts/seed-devnet-repo-secrets.sh` — browser/Codespaces helper that generates three Devnet-only keypairs outside git and uploads them as encrypted repository secrets without printing private key material;
+- `scripts/devnet-deploy-and-bootstrap.sh` — guarded deploy/bootstrap harness;
+- `.github/workflows/deploy-distinct-devnet-program.yml` — manual GitHub Actions deployment gate;
+- `docs/DEVNET-DISTINCT-PROGRAM-GATE.md`.
+
+Human action:
+
+1. open a private GitHub Codespace for this repository;
+2. run `bash scripts/seed-devnet-repo-secrets.sh`;
+3. provide **only the PUBLIC PROGRAM ID** printed by the helper.
+
+After that public id is supplied, bind it in `declare_id!` + `Anchor.toml`, merge that public-only change, then dispatch the protected deployment workflow.
+
+Private key material must not be pasted into chat, committed, or uploaded as a public artifact.
 
 The generic Memo/MWA proof remains deferred as a standalone lane.
 
