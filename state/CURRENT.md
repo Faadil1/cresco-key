@@ -108,7 +108,7 @@ Accepted debt is explicit, not hidden:
 
 ## Exact next action
 
-**Protected human setup is now the only immediate blocker.**
+**Protected human setup is complete; public identity binding is now the immediate step.**
 
 The repository now contains:
 
@@ -117,13 +117,14 @@ The repository now contains:
 - `.github/workflows/deploy-distinct-devnet-program.yml` — manual GitHub Actions deployment gate;
 - `docs/DEVNET-DISTINCT-PROGRAM-GATE.md`.
 
-Human action:
+Completed human action:
 
 1. open a private GitHub Codespace for this repository;
 2. run `bash scripts/seed-devnet-repo-secrets.sh`;
-3. provide **only the PUBLIC PROGRAM ID** printed by the helper.
+3. provide **only the PUBLIC PROGRAM ID** printed by the helper:
+   `6SoGabSLX2YHMjFx1ynbz5nLFtd8Z7hURmszddU6DeJP`.
 
-After that public id is supplied, bind it in `declare_id!` + `Anchor.toml`, merge that public-only change, then dispatch the protected deployment workflow.
+Next action: merge the public-only `declare_id!` + `Anchor.toml` binding, then dispatch the protected deployment workflow with expected program id `6SoGabSLX2YHMjFx1ynbz5nLFtd8Z7hURmszddU6DeJP`.
 
 Private key material must not be pasted into chat, committed, or uploaded as a public artifact.
 
