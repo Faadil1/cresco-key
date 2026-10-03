@@ -46,7 +46,7 @@ jobs:
 
       - name: Install SBF platform tools v1.57
         shell: bash
-        run: cargo build-sbf --tools-version v1.57 --install-only
+        run: cargo build-sbf --tools-version v1.57
 
       - name: Install Anchor CLI 0.32.1
         shell: bash
