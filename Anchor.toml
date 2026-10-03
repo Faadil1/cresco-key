@@ -7,12 +7,14 @@ package_manager = "npm"
 resolution = true
 skip-lint = false
 
-# IMPORTANT: this branch intentionally has no Devnet program mapping yet.
-# The copied baseline declare_id is compile-only until a distinct CRESCO Key
-# program keypair/id is provisioned. Do not deploy over the original CRESCO
-# Devnet proof program.
+# IMPORTANT: the Devnet mapping below is the public id of the distinct
+# CRESCO Key program keypair stored in GitHub encrypted repository secrets.
+# Do not deploy over the original CRESCO Devnet proof program.
 [programs.localnet]
 keys = "ABjE6V5q9VbD3CAHDXxvztY5kXQmDXHRcEP1kZ4KSSfk"
+
+[programs.devnet]
+keys = "6SoGabSLX2YHMjFx1ynbz5nLFtd8Z7hURmszddU6DeJP"
 
 [provider]
 cluster = "Localnet"

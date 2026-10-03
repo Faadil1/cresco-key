@@ -120,6 +120,7 @@ claim_runtime_evidence_graph:
       statement: A distinct CRESCO Key program identity is deployed on Solana Devnet and bound to the current code.
       evidence_class: LIVE_INTEGRATION_TARGET
       truth_state: MISSING
+      expected_program_id: 6SoGabSLX2YHMjFx1ynbz5nLFtd8Z7hURmszddU6DeJP
       scenarios:
         - scenario_id: CK_PROGRAM_DEPLOY
           scenario_type: SUCCESS

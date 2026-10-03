@@ -91,7 +91,7 @@ These are **build/code evidence**, not claims that the full hero flow has alread
 
 Runtime promotion still requires:
 
-- a distinct CRESCO Key program id deployed to Devnet and bound to the source commit;
+- distinct CRESCO Key program id `6SoGabSLX2YHMjFx1ynbz5nLFtd8Z7hURmszddU6DeJP` deployed to Devnet and bound to the source commit;
 - deterministic CRESCO payment state bootstrapped against that program;
 - live relay deployment;
 - real mobile MWA transaction through the CRESCO program;
