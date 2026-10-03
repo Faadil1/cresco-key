@@ -3,6 +3,7 @@ name = "keys"
 version = "0.3.0"
 description = "CRESCO Key — exact mobile payment authority on Solana."
 edition = "2021"
+rust-version = "1.84"
 license = "Apache-2.0"
 
 [lib]
