@@ -9,7 +9,7 @@ use anchor_spl::associated_token::get_associated_token_address_with_program_id;
 use anchor_spl::token_interface::{
     self, Mint, TokenAccount, TokenInterface, TransferChecked,
 };
-declare_id!("ABjE6V5q9VbD3CAHDXxvztY5kXQmDXHRcEP1kZ4KSSfk");
+declare_id!("6SoGabSLX2YHMjFx1ynbz5nLFtd8Z7hURmszddU6DeJP");
 
 pub const STAGE_LEARN: u8 = 0;
 pub const STAGE_PRACTICE: u8 = 1;
