@@ -121,6 +121,15 @@ Exact chain:
 
 `HUMAN-CONTROLLED NEW DISTINCT PROGRAM ID → DEVNET DEPLOY → DEPLOYMENT RECEIPT → COMMIT BINDING → DETERMINISTIC PAYMENT BOOTSTRAP → MOBILE CRESCO TRANSACTION`
 
+Prepared automation:
+
+- `scripts/seed-devnet-repo-secrets.sh`
+- `scripts/devnet-deploy-and-bootstrap.sh`
+- `.github/workflows/deploy-distinct-devnet-program.yml`
+- `docs/DEVNET-DISTINCT-PROGRAM-GATE.md`
+
+**Immediate human handoff:** run the secret-seeding helper in a private GitHub Codespace and return only the PUBLIC PROGRAM ID. The repository source cannot be commit-bound to the secret-backed deployment identity until that public id exists.
+
 Required evidence graph binding:
 
 `CLAIM → PROGRAM DEPLOY SCENARIO → DEVNET RUNTIME EXECUTION → SOLANA DEPENDENCY → DEPLOY RECEIPT → SOURCE COMMIT → DEVNET PROGRAM ID`

@@ -1,0 +1,73 @@
+name: Deploy Distinct CRESCO Key Devnet Program
+
+on:
+  workflow_dispatch:
+    inputs:
+      expected_program_id:
+        description: Public CRESCO Key program id already committed in declare_id!/Anchor.toml
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cresco-key-devnet-program-deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy-and-bootstrap:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    environment: devnet-deploy
+    env:
+      EXPECTED_PROGRAM_ID: ${{ inputs.expected_program_id }}
+      PROGRAM_KEYPAIR_JSON: ${{ secrets.CRESCO_KEY_PROGRAM_KEYPAIR_JSON }}
+      GUARDIAN_KEYPAIR_JSON: ${{ secrets.CRESCO_GUARDIAN_KEYPAIR_JSON }}
+      BENEFICIARY_KEYPAIR_JSON: ${{ secrets.CRESCO_BENEFICIARY_KEYPAIR_JSON }}
+
+    steps:
+      - name: Checkout exact source
+        uses: actions/checkout@v4
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22.13.0"
+
+      - name: Install Solana CLI 2.3.0
+        shell: bash
+        run: |
+          sh -c "$(curl -sSfL https://release.anza.xyz/v2.3.0/install)"
+          echo "$HOME/.local/share/solana/install/active_release/bin" >> "$GITHUB_PATH"
+
+      - name: Install Anchor CLI 0.32.1
+        shell: bash
+        run: |
+          cargo install --git https://github.com/otter-sec/anchor avm --force
+          avm install 0.32.1
+          avm use 0.32.1
+          echo "$HOME/.avm/bin" >> "$GITHUB_PATH"
+
+      - name: Verify toolchain
+        shell: bash
+        run: |
+          solana --version
+          anchor --version
+          node --version
+
+      - name: Deploy distinct program and bootstrap deterministic state
+        shell: bash
+        run: bash scripts/devnet-deploy-and-bootstrap.sh
+
+      - name: Upload public deployment evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cresco-key-distinct-devnet-program-evidence
+          path: evidence/devnet-distinct-program/
+          if-no-files-found: warn
+          retention-days: 30

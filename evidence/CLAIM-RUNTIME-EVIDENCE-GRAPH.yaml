@@ -176,5 +176,6 @@ claim_runtime_evidence_graph:
     claim_id: CK_DISTINCT_DEVNET_PROGRAM
     edge: SCENARIO_TO_RUNTIME_EXECUTION
     action: >-
-      Complete protected program-key setup, deploy the distinct CRESCO Key program to Devnet, capture the
-      deployment receipt/program id/network, and bind it to the source commit.
+      Run the protected Codespaces secret-seeding helper, return only the PUBLIC PROGRAM ID, commit that public id
+      into declare_id!/Anchor.toml, then dispatch the guarded GitHub Actions deploy/bootstrap workflow. Capture the
+      deployment receipt/program id/network and bind the runtime to the source commit.
