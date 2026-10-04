@@ -46,6 +46,13 @@ import {
 
 type Mode = "YOUNG" | "GUARDIAN" | null;
 type ExactExecutionState = "IDLE" | "ALLOW" | "REFUSE" | "UNKNOWN";
+type G1ReceiptScenario =
+  | "WALLET_PROOF"
+  | "STANDING_PAYMENT"
+  | "BOUNDARY_REQUEST"
+  | "GUARDIAN_ALLOW_ONCE"
+  | "EXACT_ALLOWANCE_EXECUTION"
+  | "CHANGED_RECIPIENT_MUTATION";
 
 function randomRequestId(): string {
   return randomBytes(32).toString("hex");
@@ -112,6 +119,42 @@ function outcomeLabel(outcome: TransactionOutcome): string {
   }`;
 }
 
+function outcomeReceipt(outcome: TransactionOutcome) {
+  if (outcome.state === "ALLOW") {
+    return {
+      state: outcome.state,
+      signature: outcome.signature.toString(),
+      confirmationStatus: outcome.confirmationStatus,
+    };
+  }
+
+  if (outcome.state === "REFUSE") {
+    return {
+      state: outcome.state,
+      signature: outcome.signature?.toString() ?? null,
+      evidence: outcome.evidence,
+    };
+  }
+
+  return {
+    state: outcome.state,
+    signature: outcome.signature?.toString() ?? null,
+    error: outcome.error instanceof Error ? outcome.error.message : outcome.error,
+  };
+}
+
+function receiptValue(value: unknown): unknown {
+  if (typeof value === "bigint") return value.toString();
+  if (value instanceof Error) return { name: value.name, message: value.message };
+  if (Array.isArray(value)) return value.map(receiptValue);
+  if (value && typeof value === "object") {
+    return Object.fromEntries(
+      Object.entries(value).map(([key, entry]) => [key, receiptValue(entry)]),
+    );
+  }
+  return value;
+}
+
 function demoIntentOptions(config: ReturnType<typeof demoConfig>) {
   return [
     {
@@ -151,6 +194,9 @@ export function BoundaryWorkspace() {
   const [walletProof, setWalletProof] = useState(
     "Wallet connected. Signature proof not attempted on this session.",
   );
+  const [latestReceiptJson, setLatestReceiptJson] = useState<string | null>(
+    null,
+  );
   const [exactExecutionState, setExactExecutionState] =
     useState<ExactExecutionState>("IDLE");
 
@@ -173,6 +219,53 @@ export function BoundaryWorkspace() {
       client.rpc.getSignatureStatuses(signatures),
     getTransaction: (signature, options) =>
       client.rpc.getTransaction(signature, options),
+  };
+
+  const recordReceipt = (
+    scenario: G1ReceiptScenario,
+    details: Record<string, unknown>,
+  ) => {
+    const receipt = {
+      schema: "cresco-key.mobile-g1-runtime-receipt.v1",
+      capturedAt: new Date().toISOString(),
+      scenario,
+      truthBoundary:
+        "Public runtime receipt only. It does not contain private keys, seed phrases, wallet secrets, or custody material.",
+      wallet: {
+        address: account?.address?.toString() ?? null,
+        chain,
+      },
+      program: {
+        programId:
+          process.env.EXPO_PUBLIC_CRESCO_KEY_PROGRAM_ID?.trim() ?? null,
+        mandateNonce: config.mandateNonce || null,
+        tokenProgramId:
+          process.env.EXPO_PUBLIC_DEMO_TOKEN_PROGRAM_ID?.trim() ?? null,
+      },
+      intent: intent
+        ? {
+            amountUi: intent.amountUi,
+            mint: intent.mint,
+            recipient: intent.recipient,
+            label: intent.label ?? null,
+          }
+        : null,
+      relay: relayRequest
+        ? {
+            requestId: relayRequest.requestId,
+            status: relayRequest.status,
+            mandate: relayRequest.mandate,
+            mint: relayRequest.mint,
+            recipient: relayRequest.recipient,
+            amountBaseUnits: relayRequest.amountBaseUnits,
+            requesterWallet: relayRequest.requesterWallet,
+            guardianWallet: relayRequest.guardianWallet,
+          }
+        : null,
+      details,
+    };
+
+    setLatestReceiptJson(JSON.stringify(receiptValue(receipt), null, 2));
   };
 
   const loadGuardianLink = async (url: string) => {
@@ -226,12 +319,20 @@ export function BoundaryWorkspace() {
       );
       const signature = await signMessages(payload);
       setWalletProof(`SIGNED · ${signature.length} signature bytes`);
+      recordReceipt("WALLET_PROOF", {
+        state: "SIGNED",
+        signatureByteLength: signature.length,
+      });
     } catch (error) {
       setWalletProof(
         error instanceof Error
           ? `REFUSED/FAILED · ${error.message}`
           : "UNKNOWN · signing did not complete",
       );
+      recordReceipt("WALLET_PROOF", {
+        state: "REFUSED",
+        error: error instanceof Error ? error.message : String(error),
+      });
     } finally {
       setBusy(false);
     }
@@ -316,6 +417,12 @@ export function BoundaryWorkspace() {
     setRelayRequest(created.request);
     setShareLink(link);
     setExactExecutionState("IDLE");
+    recordReceipt("BOUNDARY_REQUEST", {
+      state: "PENDING",
+      requestId,
+      refusal: outcomeReceipt(refusal),
+      relayStatus: created.request.status,
+    });
     setStatus(
       "REFUSE is verified. A private PENDING request now carries the exact action to the guardian; the standing Key has not moved.",
     );
@@ -357,6 +464,9 @@ export function BoundaryWorkspace() {
       }
 
       setStatus(outcomeLabel(outcome));
+      recordReceipt("STANDING_PAYMENT", {
+        outcome: outcomeReceipt(outcome),
+      });
 
       if (outcome.state === "REFUSE") {
         await createBoundaryFromVerifiedRefusal(outcome);
@@ -479,6 +589,10 @@ export function BoundaryWorkspace() {
       );
 
       setRelayRequest(request);
+      recordReceipt("GUARDIAN_ALLOW_ONCE", {
+        outcome: outcomeReceipt(outcome),
+        relayStatus: request.status,
+      });
       setStatus(
         `Allowance transaction confirmed onchain · ${outcome.signature}. Relay marker recorded; no payment has executed yet.`,
       );
@@ -534,6 +648,15 @@ export function BoundaryWorkspace() {
       }
 
       setExactExecutionState(outcome.state);
+      recordReceipt(
+        recipientOverride
+          ? "CHANGED_RECIPIENT_MUTATION"
+          : "EXACT_ALLOWANCE_EXECUTION",
+        {
+          outcome: outcomeReceipt(outcome),
+          recipientOverride: recipientOverride ?? null,
+        },
+      );
       setStatus(outcomeLabel(outcome));
     } catch (error) {
       setExactExecutionState("UNKNOWN");
@@ -583,6 +706,7 @@ export function BoundaryWorkspace() {
             <Text style={styles.buttonText}>Sign TRC-01 proof message</Text>
           </Pressable>
         </View>
+        <LatestReceiptCard receiptJson={latestReceiptJson} busy={busy} />
         <Pressable style={styles.button} onPress={() => setMode("YOUNG")}>
           <Text style={styles.buttonText}>Young person flow</Text>
         </Pressable>
@@ -650,6 +774,7 @@ export function BoundaryWorkspace() {
           <Text>Change role</Text>
         </Pressable>
         <Text style={styles.status}>{status}</Text>
+        <LatestReceiptCard receiptJson={latestReceiptJson} busy={busy} />
       </ScrollView>
     );
   }
@@ -717,6 +842,8 @@ export function BoundaryWorkspace() {
         </View>
       ) : null}
 
+      <LatestReceiptCard receiptJson={latestReceiptJson} busy={busy} />
+
       {shareLink ? (
         <Pressable
           style={styles.button}
@@ -776,6 +903,37 @@ export function BoundaryWorkspace() {
   );
 }
 
+function LatestReceiptCard({
+  receiptJson,
+  busy,
+}: {
+  receiptJson: string | null;
+  busy: boolean;
+}) {
+  if (!receiptJson) return null;
+
+  return (
+    <View style={styles.receiptCard}>
+      <Text style={styles.truthTitle}>Latest G1 runtime receipt</Text>
+      <Text style={styles.receiptText} numberOfLines={8}>
+        {receiptJson}
+      </Text>
+      <Pressable
+        disabled={busy}
+        style={styles.button}
+        onPress={() =>
+          Share.share({
+            message: receiptJson,
+            title: "CRESCO Key G1 runtime receipt",
+          })
+        }
+      >
+        <Text style={styles.buttonText}>Share latest receipt JSON</Text>
+      </Pressable>
+    </View>
+  );
+}
+
 function Row({ label, value }: { label: string; value: string }) {
   return (
     <View style={styles.row}>
@@ -820,6 +978,17 @@ const styles = StyleSheet.create({
     borderRadius: 18,
     padding: 16,
     gap: 8,
+  },
+  receiptCard: {
+    borderWidth: 1,
+    borderRadius: 18,
+    padding: 16,
+    gap: 10,
+  },
+  receiptText: {
+    fontSize: 11,
+    lineHeight: 16,
+    opacity: 0.7,
   },
   truthTitle: {
     fontSize: 14,
