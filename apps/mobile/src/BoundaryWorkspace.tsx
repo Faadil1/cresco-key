@@ -15,6 +15,7 @@ import {
 import { PaymentScanner } from "./payment/PaymentScanner";
 import {
   decimalToBaseUnits,
+  parseSolanaPayTransferRequest,
   type SolanaPayTransferIntent,
 } from "./payment/solanaPay";
 import {
@@ -58,6 +59,15 @@ function demoConfig() {
     guardianWallet: process.env.EXPO_PUBLIC_DEMO_GUARDIAN_WALLET?.trim() ?? "",
     mutatedRecipient:
       process.env.EXPO_PUBLIC_DEMO_MUTATED_RECIPIENT?.trim() ?? "",
+    demoSolanaPay: {
+      inBounds5:
+        process.env.EXPO_PUBLIC_DEMO_SOLANA_PAY_IN_BOUNDS_5?.trim() ?? "",
+      boundary12:
+        process.env.EXPO_PUBLIC_DEMO_SOLANA_PAY_BOUNDARY_12?.trim() ?? "",
+      changedRecipient12:
+        process.env.EXPO_PUBLIC_DEMO_SOLANA_PAY_CHANGED_RECIPIENT_12?.trim() ??
+        "",
+    },
     tokenDecimals: decimals,
   };
 }
@@ -102,6 +112,19 @@ function outcomeLabel(outcome: TransactionOutcome): string {
   }`;
 }
 
+function demoIntentOptions(config: ReturnType<typeof demoConfig>) {
+  return [
+    {
+      label: "Load 5-unit in-bounds demo intent",
+      value: config.demoSolanaPay.inBounds5,
+    },
+    {
+      label: "Load 12-unit boundary demo intent",
+      value: config.demoSolanaPay.boundary12,
+    },
+  ].filter((option) => option.value.length > 0);
+}
+
 export function BoundaryWorkspace() {
   const {
     account,
@@ -138,6 +161,10 @@ export function BoundaryWorkspace() {
   );
   const relayConfigMissing = useMemo(
     () => missingRelayConfig(config),
+    [config],
+  );
+  const configuredDemoIntents = useMemo(
+    () => demoIntentOptions(config),
     [config],
   );
 
@@ -207,6 +234,24 @@ export function BoundaryWorkspace() {
       );
     } finally {
       setBusy(false);
+    }
+  };
+
+  const loadDemoIntent = (raw: string) => {
+    try {
+      const nextIntent = parseSolanaPayTransferRequest(raw);
+      setIntent(nextIntent);
+      setRelayRequest(null);
+      setYoungCapability(null);
+      setShareLink(null);
+      setExactExecutionState("IDLE");
+      setStatus(
+        "Deterministic Devnet payment intent loaded. No authority decision has been made yet.",
+      );
+    } catch (error) {
+      setStatus(
+        error instanceof Error ? error.message : "DEMO_INTENT_LOAD_FAILED",
+      );
     }
   };
 
@@ -621,6 +666,27 @@ export function BoundaryWorkspace() {
       <Pressable style={styles.button} onPress={() => setScanning(true)}>
         <Text style={styles.buttonText}>Scan Solana Pay QR</Text>
       </Pressable>
+
+      {configuredDemoIntents.length > 0 ? (
+        <View style={styles.truthCard}>
+          <Text style={styles.truthTitle}>Deterministic Devnet intents</Text>
+          <Text style={styles.body}>
+            These public G1 helpers load the same Solana Pay actions emitted by
+            the distinct Devnet bootstrap receipt. They do not approve,
+            execute, or simulate authority.
+          </Text>
+          {configuredDemoIntents.map((option) => (
+            <Pressable
+              key={option.label}
+              disabled={busy}
+              style={styles.button}
+              onPress={() => loadDemoIntent(option.value)}
+            >
+              <Text style={styles.buttonText}>{option.label}</Text>
+            </Pressable>
+          ))}
+        </View>
+      ) : null}
 
       {intent ? (
         <View style={styles.card}>

@@ -30,9 +30,9 @@ The living PRD owns product intent. `state/CURRENT.md` and `state/HANDOVER.md` o
 - Network for current proof work: **Solana Devnet**
 - Mobile direction: **native Android / React Native + Mobile Wallet Adapter**
 - Current phase: **P0 implementation → load-bearing live integration / live depth**
-- Last proven runtime gate: **MWA session on Android emulator — LOCAL / PARTIAL**
+- Last proven runtime gate: **distinct CRESCO Key Devnet program + deterministic bootstrap — LIVE_INTEGRATION**
 - Engineering Quality Assurance: **PROVEN — PASS_WITH_ACCEPTED_DEBT**
-- Exact next gate: **distinct CRESCO Key Devnet program deployment + deterministic bootstrap**
+- Exact next gate: **mobile CRESCO transaction against the distinct Devnet program**
 
 ## Core product law
 
@@ -91,8 +91,6 @@ These are **build/code evidence**, not claims that the full hero flow has alread
 
 Runtime promotion still requires:
 
-- distinct CRESCO Key program id `6SoGabSLX2YHMjFx1ynbz5nLFtd8Z7hURmszddU6DeJP` deployed to Devnet and bound to the source commit;
-- deterministic CRESCO payment state bootstrapped against that program;
 - live relay deployment;
 - real mobile MWA transaction through the CRESCO program;
 - in-bounds / boundary / Allow Once / changed-recipient / replay runtime consequences;

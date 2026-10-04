@@ -1,0 +1,54 @@
+{
+  "schema": "cresco-key/devnet-payment-demo/v1",
+  "status": "READY_FOR_MOBILE_RUNTIME",
+  "network": "devnet",
+  "rpcUrl": "https://api.devnet.solana.com",
+  "programId": "6SoGabSLX2YHMjFx1ynbz5nLFtd8Z7hURmszddU6DeJP",
+  "tokenProgramId": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+  "guardian": "Fsm2vU1vzWkowmkU9bRpCfaR8Q5vETCFXtofUCRZUnov",
+  "beneficiary": "DD1T86b6vSJd7avUVn23f8TaZxdKEzjRF14XzgffDRSZ",
+  "charter": "9FjR5U3ELz6oRmMJN8VoH6M2795bBSnkEN6kgz7Y8ZQS",
+  "mandate": "C6H6bUXTZBqBJVBSVNx3m2pXXDhuySZVnbWcrVgP6qaE",
+  "mandateVersion": 3,
+  "mandateNonce": 2,
+  "mint": "B5G9WPQrgrvoFuJm53ZmT5gyJb5k1g9VdqLLeh4eK9V5",
+  "tokenDecimals": 6,
+  "assetRule": "Hbtr91nuvACMu8X3jRd5tkmCcRx723wqHXfBxVKvceXc",
+  "vaultTokenAccount": "G6cVUCTs7qQUDG3KHoWVmPfbxMMxs7rWepL882PdvGRg",
+  "vaultBalanceBaseUnits": 100000000,
+  "standingMaxActionBaseUnits": 10000000,
+  "standingMaxPeriodBaseUnits": 100000000,
+  "recipientA": "AkYcJZkup5jSo643kdYFFbTBHmN65WpAYQj8m6CQG8Bn",
+  "recipientAAta": "CZPVUSQpy9W5xSRi1E1ZHUZQQKT6cbfykukYHJQ9a7T4",
+  "recipientB": "EH6kAsUZDGBQBU7Zm41zbXKZ3TEvDjEdL66gHTAjqUeV",
+  "recipientBAta": "CrQMYHXNqrP3gJxPSVfMc3yqQp3KEtBRgFJZif56h9EL",
+  "solanaPay": {
+    "inBounds5": "solana:AkYcJZkup5jSo643kdYFFbTBHmN65WpAYQj8m6CQG8Bn?amount=5&spl-token=B5G9WPQrgrvoFuJm53ZmT5gyJb5k1g9VdqLLeh4eK9V5&label=CRESCO%20Key%20Demo",
+    "boundary12": "solana:AkYcJZkup5jSo643kdYFFbTBHmN65WpAYQj8m6CQG8Bn?amount=12&spl-token=B5G9WPQrgrvoFuJm53ZmT5gyJb5k1g9VdqLLeh4eK9V5&label=CRESCO%20Key%20Demo",
+    "changedRecipient12": "solana:EH6kAsUZDGBQBU7Zm41zbXKZ3TEvDjEdL66gHTAjqUeV?amount=12&spl-token=B5G9WPQrgrvoFuJm53ZmT5gyJb5k1g9VdqLLeh4eK9V5&label=CRESCO%20Key%20Demo"
+  },
+  "mobileEnv": {
+    "EXPO_PUBLIC_CRESCO_KEY_PROGRAM_ID": "6SoGabSLX2YHMjFx1ynbz5nLFtd8Z7hURmszddU6DeJP",
+    "EXPO_PUBLIC_DEMO_TOKEN_PROGRAM_ID": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+    "EXPO_PUBLIC_DEMO_TOKEN_DECIMALS": "6",
+    "EXPO_PUBLIC_DEMO_MANDATE_NONCE": "2",
+    "EXPO_PUBLIC_DEMO_GUARDIAN_WALLET": "Fsm2vU1vzWkowmkU9bRpCfaR8Q5vETCFXtofUCRZUnov",
+    "EXPO_PUBLIC_DEMO_MUTATED_RECIPIENT": "EH6kAsUZDGBQBU7Zm41zbXKZ3TEvDjEdL66gHTAjqUeV"
+  },
+  "source": {
+    "githubActionsRun": "37182728261",
+    "artifact": "11295688079",
+    "artifactDigest": "sha256:45c8031ed62c0b218e865b51ee1e855f8e8e26868c55e1a21af5695b46f3f819",
+    "sourceCommit": "0db1f52ff35961fdd1191cff61f8324fe470f504"
+  },
+  "truthBoundary": {
+    "demoToken": true,
+    "realStablecoin": false,
+    "realFiatSettlement": false,
+    "realMinorFinancialAccount": false,
+    "guardianAndBeneficiaryDistinct": true,
+    "mobileCrescoTransactionProven": false,
+    "fullLiveCoreLoopProven": false
+  },
+  "generatedAt": "2026-10-04T06:32:25.752Z"
+}

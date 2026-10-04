@@ -74,3 +74,23 @@ If recipient B had no token account, the runtime could fail earlier during accou
 `READY_FOR_MOBILE_RUNTIME` is setup evidence only.
 
 It becomes hero-flow evidence only after the mobile client produces real Devnet transaction signatures for ALLOW and the required REFUSE cases.
+
+## Generate mobile G1 environment
+
+After the distinct Devnet deploy/bootstrap run is recorded, generate the mobile runtime environment from the public receipt:
+
+```bash
+node tools/devnet/write-mobile-env-from-demo-state.cjs \
+  evidence/devnet-distinct-program/cresco-key-demo-state-37182728261.json \
+  apps/mobile/.env
+```
+
+The generated file contains public Devnet addresses and Solana Pay intents only. It does not contain private key material.
+
+This enables the mobile app's deterministic G1 helpers:
+
+- 5-unit in-bounds intent;
+- 12-unit boundary intent;
+- changed-recipient hostile intent.
+
+The generated configuration is still not a Live Core Loop receipt. Promotion requires wallet-mediated mobile transactions against the deployed program.
