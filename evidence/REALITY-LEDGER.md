@@ -1,6 +1,6 @@
 # CRESCO Key — Reality Ledger
 
-Updated: 2026-10-02
+Updated: 2026-10-04
 
 Purpose: distinguish what is **LIVE / TESTED / LOCAL / MOCKED / PLANNED / NOT PROVEN** today. The ledger is factual state, not marketing copy.
 
@@ -26,8 +26,8 @@ Purpose: distinguish what is **LIVE / TESTED / LOCAL / MOCKED / PLANNED / NOT PR
 | Production-wallet compatibility | NOT_IMPLEMENTED | UNKNOWN | Official test-wallet evidence only | Real compatible wallet/device |
 | Solana Pay QR parsing exists | LOCAL | OBSERVED | Mobile parser/scanner code | Integrated scan + product transaction |
 | Exact amount + recipient allowance logic exists | LOCAL / TECHNICAL_PROOF | OBSERVED | Anchor code + Rust tests | Distinct Devnet deployment + mobile runtime |
-| Distinct CRESCO Key Devnet program exists | NOT_IMPLEMENTED / LIVE TARGET | UNKNOWN | Provisioning script exists only | **Exact next gate:** human-controlled distinct key + Devnet deploy + receipt/commit binding |
-| Deterministic CRESCO payment state bootstrapped against distinct program | NOT_IMPLEMENTED | UNKNOWN | Bootstrap tooling exists | Deploy distinct program first |
+| Distinct CRESCO Key Devnet program exists | LIVE_INTEGRATION | OBSERVED | Run `37182728261`; program `6SoGabSLX2YHMjFx1ynbz5nLFtd8Z7hURmszddU6DeJP`; deploy signature `5o2zN6qo9KY9Jhz5VNuuvaRr95p7gdSj858e28nW1PRDYHgpPx88uE2y4Kw4Funh4bzm3evEicmAY1Pf5Ygej2g8`; commit `0db1f52ff35961fdd1191cff61f8324fe470f504`; artifact digest `sha256:45c8031ed62c0b218e865b51ee1e855f8e8e26868c55e1a21af5695b46f3f819` | None for this bounded claim |
+| Deterministic CRESCO payment state bootstrapped against distinct program | LIVE_INTEGRATION | OBSERVED | Run `37182728261`; status `READY_FOR_MOBILE_RUNTIME`; charter `9FjR5U3ELz6oRmMJN8VoH6M2795bBSnkEN6kgz7Y8ZQS`; mandate `C6H6bUXTZBqBJVBSVNx3m2pXXDhuySZVnbWcrVgP6qaE`; mint `B5G9WPQrgrvoFuJm53ZmT5gyJb5k1g9VdqLLeh4eK9V5` | Mobile runtime must now consume this state |
 | In-bounds 5-unit payment executes through CRESCO program from mobile | NOT_IMPLEMENTED | UNKNOWN | Product/code path exists; no integrated runtime receipt | Deploy/bootstrap + mobile MWA |
 | 12-unit boundary refuses in real CRESCO capital path | NOT_IMPLEMENTED | UNKNOWN | Negative semantics exist in code | Integrated hero run |
 | Guardian exact Allow Once is confirmed onchain in mobile loop | NOT_IMPLEMENTED | UNKNOWN | Grant instruction/code exists | Live relay + guardian wallet + deployed program |
@@ -39,7 +39,7 @@ Purpose: distinguish what is **LIVE / TESTED / LOCAL / MOCKED / PLANNED / NOT PR
 | Boundary relay is live | NOT_IMPLEMENTED | UNKNOWN | Deployment workflow exists | Cloudflare deployment receipt/runtime identity |
 | Full two-device Live Core Loop | NOT_IMPLEMENTED / LIVE TARGET | UNKNOWN | Components exist separately; no same-product integrated run | Program + bootstrap + relay + mobile + representative scenarios + binding |
 | Failure/recovery on full product loop | PARTIAL | UNKNOWN | Wallet cancellation and app relaunch are locally observed; RPC/relay/product-state recovery not yet integrated | Representative recovery run |
-| Runtime → receipt → commit → deployment binding for live product | NOT_IMPLEMENTED | UNKNOWN | Evidence Graph identifies missing edges | Deployed program/relay + canonical run |
+| Runtime → receipt → commit → deployment binding for live product | PARTIAL LIVE_INTEGRATION | OBSERVED_FOR_PROGRAM_AND_BOOTSTRAP | Evidence Graph binds run `37182728261`, artifact `11295688079`, commit `0db1f52ff35961fdd1191cff61f8324fe470f504`, program `6SoGabSLX2YHMjFx1ynbz5nLFtd8Z7hURmszddU6DeJP` | Need equivalent relay/mobile hero binding |
 | Engineering Quality receipt | GOVERNANCE / QUALITY | OBSERVED | `evidence/engineering-quality/ENGINEERING-QUALITY-RECEIPT-2026-10-02.json` — **PASS_WITH_ACCEPTED_DEBT**; Mobile CI `37039621579` and Relay CI `37039621677` pass | Issue #33 dependency/reproducibility debt must be re-evaluated before PRE_SUBMISSION / RELEASE |
 | Mobile dependency audit debt | GOVERNANCE / SECURITY-DEBT | OBSERVED | Mobile CI `37039621579`: 13 transitive audit findings (8 moderate / 5 high), including node-forge via Expo tooling; issue #33 tracks remediation | Do not force-downgrade Expo; add deterministic dependency locking and re-evaluate before PRE_SUBMISSION / RELEASE |
 | TRACE / Design Experience terminal verdict | NOT_IMPLEMENTED / GOVERNANCE | UNKNOWN | Design collaboration exists; no TRACE verdict | Run before design-sensitive terminal transition |
@@ -52,6 +52,7 @@ Purpose: distinguish what is **LIVE / TESTED / LOCAL / MOCKED / PLANNED / NOT PR
 ## Current proof-class summary
 
 - **TECHNICAL / LOCAL proof exists** for substantial program/mobile/relay mechanisms.
+- **LIVE_INTEGRATION proof exists** for distinct Devnet program deployment and deterministic payment state readiness.
 - **BEHAVIOR proof exists at LOCAL/PARTIAL scope** for Android launch and MWA decline/authorize/signMessage/relaunch.
 - **No OUTCOME proof is claimed.**
 - **No PRODUCTION_EVIDENCE is claimed.**

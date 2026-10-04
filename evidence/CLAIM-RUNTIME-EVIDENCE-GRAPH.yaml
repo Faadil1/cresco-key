@@ -117,20 +117,73 @@ claim_runtime_evidence_graph:
         the load-bearing CRESCO program deployment and real product transaction path.
 
     - claim_id: CK_DISTINCT_DEVNET_PROGRAM
-      statement: A distinct CRESCO Key program identity is deployed on Solana Devnet and bound to the current code.
-      evidence_class: LIVE_INTEGRATION_TARGET
-      truth_state: MISSING
+      statement: A distinct CRESCO Key program identity is deployed on Solana Devnet, bound to the current code, and bootstrapped with deterministic payment state.
+      evidence_class: LIVE_INTEGRATION
+      truth_state: COMPLETE
       expected_program_id: 6SoGabSLX2YHMjFx1ynbz5nLFtd8Z7hURmszddU6DeJP
       scenarios:
         - scenario_id: CK_PROGRAM_DEPLOY
           scenario_type: SUCCESS
           preconditions: [human_controlled_program_keypair, built_program, Devnet_funding]
           expected_consequence: Distinct program id is deployed and independently queryable on Devnet.
-      missing_edges:
-        - scenario_to_runtime_execution
-        - runtime_execution_to_receipt_or_telemetry
-        - runtime_execution_to_commit
-        - commit_to_deployment
+          runtime_execution:
+            execution_id: gha_37182728261
+            runtime: GitHub_Actions_Solana_Devnet
+            observed_at: 2026-10-04
+            result: SUCCESS
+          dependencies:
+            - dependency_id: solana_devnet_rpc
+              role: deployment_network
+              live_or_stub: LIVE_DEVNET_SERVICE
+              load_bearing: true
+            - dependency_id: github_actions_devnet_deploy_environment
+              role: protected_deploy_runtime
+              live_or_stub: LIVE_CI_RUNTIME
+              load_bearing: true
+            - dependency_id: encrypted_repo_secrets
+              role: private_key_custody_boundary
+              live_or_stub: PROTECTED_SECRET_STORE
+              load_bearing: true
+          receipt_or_telemetry:
+            receipt_id: DISTINCT_DEVNET_PROGRAM_RECEIPT_2026_10_04
+            artifact_pointer: https://github.com/Faadil1/cresco-key/actions/runs/37182728261/artifacts/11295688079
+            artifact_digest: sha256:45c8031ed62c0b218e865b51ee1e855f8e8e26868c55e1a21af5695b46f3f819
+            deploy_signature: 5o2zN6qo9KY9Jhz5VNuuvaRr95p7gdSj858e28nW1PRDYHgpPx88uE2y4Kw4Funh4bzm3evEicmAY1Pf5Ygej2g8
+            program_binary_sha256: 7f45c16253e886160f9c9242edb46ab45c868e2d36767192b8d76e9db605a77c
+            observed_or_generated: OBSERVED_AND_GENERATED
+          commit:
+            repository: Faadil1/cresco-key
+            commit_sha: 0db1f52ff35961fdd1191cff61f8324fe470f504
+          deployment:
+            runtime_url_or_environment: Solana_Devnet
+            deployment_identity: 6SoGabSLX2YHMjFx1ynbz5nLFtd8Z7hURmszddU6DeJP
+            deployment_state: LIVE_DEVNET
+        - scenario_id: CK_DETERMINISTIC_BOOTSTRAP
+          scenario_type: SUCCESS
+          preconditions: [deployed_CRESCO_program, guardian_devnet_wallet, beneficiary_devnet_wallet]
+          expected_consequence: Deterministic charter, mandate and mint are ready for the mobile runtime.
+          runtime_execution:
+            execution_id: gha_37182728261
+            runtime: GitHub_Actions_Solana_Devnet
+            observed_at: 2026-10-04
+            result: SUCCESS
+          receipt_or_telemetry:
+            receipt_id: CRESCO_KEY_DEMO_STATE_2026_10_04
+            artifact_pointer: https://github.com/Faadil1/cresco-key/actions/runs/37182728261/artifacts/11295688079
+            observed_or_generated: OBSERVED_AND_GENERATED
+            bootstrap_status: READY_FOR_MOBILE_RUNTIME
+            guardian: Fsm2vU1vzWkowmkU9bRpCfaR8Q5vETCFXtofUCRZUnov
+            beneficiary: DD1T86b6vSJd7avUVn23f8TaZxdKEzjRF14XzgffDRSZ
+            charter: 9FjR5U3ELz6oRmMJN8VoH6M2795bBSnkEN6kgz7Y8ZQS
+            mandate: C6H6bUXTZBqBJVBSVNx3m2pXXDhuySZVnbWcrVgP6qaE
+            mint: B5G9WPQrgrvoFuJm53ZmT5gyJb5k1g9VdqLLeh4eK9V5
+          commit:
+            repository: Faadil1/cresco-key
+            commit_sha: 0db1f52ff35961fdd1191cff61f8324fe470f504
+          deployment:
+            runtime_url_or_environment: Solana_Devnet
+            deployment_identity: 6SoGabSLX2YHMjFx1ynbz5nLFtd8Z7hURmszddU6DeJP
+            deployment_state: LIVE_DEVNET_BOOTSTRAPPED
 
     - claim_id: CK_LIVE_CORE_LOOP
       statement: The real mobile CRESCO Key hero path enforces standing authority and exact one-use exceptions end to end.
@@ -174,9 +227,9 @@ claim_runtime_evidence_graph:
         - commit_to_deployment
 
   exact_next_graph_edge:
-    claim_id: CK_DISTINCT_DEVNET_PROGRAM
+    claim_id: CK_LIVE_CORE_LOOP
     edge: SCENARIO_TO_RUNTIME_EXECUTION
     action: >-
-      Run the protected Codespaces secret-seeding helper, return only the PUBLIC PROGRAM ID, commit that public id
-      into declare_id!/Anchor.toml, then dispatch the guarded GitHub Actions deploy/bootstrap workflow. Capture the
-      deployment receipt/program id/network and bind the runtime to the source commit.
+      Use the deployed distinct Devnet program and deterministic bootstrap state to execute the real mobile CRESCO
+      transaction path. Capture success, boundary, exact Allow Once, changed-recipient refusal, replay refusal,
+      before/after state, runtime receipts, and commit/deployment binding.

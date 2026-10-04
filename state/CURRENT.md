@@ -1,6 +1,6 @@
 # CRESCO Key — CURRENT
 
-Updated: 2026-10-02
+Updated: 2026-10-04
 
 ## Project status
 
@@ -45,33 +45,40 @@ Central governance source:
 
 ## Last materially proven gate
 
-**MWA SESSION — PROVEN at LOCAL / PARTIAL scope**
+**LIVE_CORE_G0 — DISTINCT CRESCO KEY DEVNET PROGRAM DEPLOYMENT + BOOTSTRAP — PROVEN at LIVE_INTEGRATION scope**
 
-Canonical successful run: `36699897176`.
+Canonical successful run: `37182728261`.
 
 Observed:
 
-`authorize decline → REFUSED → authorize/connect → signMessage approve → SIGNED → force-stop/relaunch → CONNECTED_RESTORED`
+- source commit: `0db1f52ff35961fdd1191cff61f8324fe470f504`
+- program id: `6SoGabSLX2YHMjFx1ynbz5nLFtd8Z7hURmszddU6DeJP`
+- deploy signature: `5o2zN6qo9KY9Jhz5VNuuvaRr95p7gdSj858e28nW1PRDYHgpPx88uE2y4Kw4Funh4bzm3evEicmAY1Pf5Ygej2g8`
+- program binary SHA-256: `7f45c16253e886160f9c9242edb46ab45c868e2d36767192b8d76e9db605a77c`
+- evidence artifact: `https://github.com/Faadil1/cresco-key/actions/runs/37182728261/artifacts/11295688079`
+- artifact digest: `sha256:45c8031ed62c0b218e865b51ee1e855f8e8e26868c55e1a21af5695b46f3f819`
+- deterministic bootstrap status: `READY_FOR_MOBILE_RUNTIME`
+- guardian: `Fsm2vU1vzWkowmkU9bRpCfaR8Q5vETCFXtofUCRZUnov`
+- beneficiary: `DD1T86b6vSJd7avUVn23f8TaZxdKEzjRF14XzgffDRSZ`
+- charter: `9FjR5U3ELz6oRmMJN8VoH6M2795bBSnkEN6kgz7Y8ZQS`
+- mandate: `C6H6bUXTZBqBJVBSVNx3m2pXXDhuySZVnbWcrVgP6qaE`
+- mint: `B5G9WPQrgrvoFuJm53ZmT5gyJb5k1g9VdqLLeh4eK9V5`
 
-This is a real representative emulator behavior proof. It is **not** physical-device proof, production-wallet proof, Devnet transaction proof, or Live Core Loop proof.
+Truth boundary:
 
-Android emulator standalone runtime is separately proven on run `36669206551`.
+- distinct Devnet program deployed: **true**
+- deterministic payment state ready: **true**
+- mobile CRESCO transaction proven: **false**
+- full Live Core Loop proven: **false**
+- physical Android proven: **false**
+- production-wallet compatibility proven: **false**
 
-## Latest observed runtime attempt
+Prior bounded runtime proof remains valid:
 
-The generic Devnet MWA transaction workstream remains **NOT PROVEN** and is now **closed/deferred as a separate proof-only lane**. PR #28 and issue #27 were closed after the v1.3 reconciliation; the failed run remains preserved evidence.
+- Android emulator standalone runtime: run `36669206551`
+- MWA decline / authorize / signMessage / relaunch behavior: run `36699897176`
 
-Latest run:
-
-- workflow run: `36761591880`
-- branch: `p0/devnet-transaction-evidence`
-- commit: `2cde3dd95ecebc95defb2944d910e57e07899d8e`
-- result: **FAILURE BEFORE TRANSACTION RUNTIME**
-- observed cause: CRESCO release APK built successfully, but the CI environment could not install `platforms;android-37` required by the upstream Solana Mobile fakewallet build.
-
-No Devnet transaction, wallet sign/send receipt, or RPC-confirmed signature was produced by that run.
-
-The failure is preserved as external build-environment evidence. It is not narrated as product success or product failure.
+The historical generic Devnet MWA transaction workstream remains **NOT PROVEN** and **closed/deferred as a separate proof-only lane**. Run `36761591880` failed before transaction runtime and produced no Devnet transaction, wallet sign/send receipt, or RPC-confirmed signature.
 
 ## Integration-First v1.3 reconciliation
 
@@ -104,31 +111,29 @@ Accepted debt is explicit, not hidden:
 
 ## Exact next gate
 
-**LIVE_CORE_G0 — DISTINCT CRESCO KEY DEVNET PROGRAM DEPLOYMENT + BOOTSTRAP**
+**LIVE_CORE_G1 — MOBILE CRESCO TRANSACTION AGAINST DISTINCT DEVNET PROGRAM**
 
 ## Exact next action
 
-**Protected human setup is complete; public identity binding is now the immediate step.**
+Use the deployed distinct Devnet program and deterministic bootstrap state to execute the real mobile CRESCO action path.
 
-The repository now contains:
+Available bounded inputs:
 
-- `scripts/seed-devnet-repo-secrets.sh` — browser/Codespaces helper that generates three Devnet-only keypairs outside git and uploads them as encrypted repository secrets without printing private key material;
-- `scripts/devnet-deploy-and-bootstrap.sh` — guarded deploy/bootstrap harness;
-- `.github/workflows/deploy-distinct-devnet-program.yml` — manual GitHub Actions deployment gate;
-- `docs/DEVNET-DISTINCT-PROGRAM-GATE.md`.
+- distinct program id: `6SoGabSLX2YHMjFx1ynbz5nLFtd8Z7hURmszddU6DeJP`
+- deterministic charter: `9FjR5U3ELz6oRmMJN8VoH6M2795bBSnkEN6kgz7Y8ZQS`
+- deterministic mandate: `C6H6bUXTZBqBJVBSVNx3m2pXXDhuySZVnbWcrVgP6qaE`
+- deterministic mint: `B5G9WPQrgrvoFuJm53ZmT5gyJb5k1g9VdqLLeh4eK9V5`
+- guardian public key: `Fsm2vU1vzWkowmkU9bRpCfaR8Q5vETCFXtofUCRZUnov`
+- beneficiary public key: `DD1T86b6vSJd7avUVn23f8TaZxdKEzjRF14XzgffDRSZ`
+- deployment/bootstrap run: `37182728261`
 
-Completed human action:
+Next action: wire/execute the mobile runtime against those public Devnet identities and capture the first real CRESCO transaction receipt from the product path.
 
-1. open a private GitHub Codespace for this repository;
-2. run `bash scripts/seed-devnet-repo-secrets.sh`;
-3. provide **only the PUBLIC PROGRAM ID** printed by the helper:
-   `6SoGabSLX2YHMjFx1ynbz5nLFtd8Z7hURmszddU6DeJP`.
+The next proof must cover the product path, not a generic Memo lane:
 
-Next action: merge the public-only `declare_id!` + `Anchor.toml` binding, then dispatch the protected deployment workflow with expected program id `6SoGabSLX2YHMjFx1ynbz5nLFtd8Z7hURmszddU6DeJP`.
+`REAL MOBILE CRESCO ACTION → REAL CONSEQUENCE → SUCCESS/BOUNDARY/ALLOW-ONCE/MUTATION/REPLAY RECEIPTS → COMMIT/DEPLOYMENT BINDING`
 
 Private key material must not be pasted into chat, committed, or uploaded as a public artifact.
-
-The generic Memo/MWA proof remains deferred as a standalone lane.
 
 ## Product Exploitation Loop
 
@@ -157,7 +162,7 @@ Current material claim states:
 - Android emulator standalone runtime: **COMPLETE at LOCAL/PARTIAL claim scope**
 - MWA session behavior: **COMPLETE at LOCAL/PARTIAL claim scope**
 - real Devnet MWA transaction: **PARTIAL / NOT PROVEN**
-- distinct CRESCO Key Devnet program: **MISSING**
+- distinct CRESCO Key Devnet program + deterministic bootstrap: **COMPLETE at LIVE_INTEGRATION claim scope**
 - full Live Core Loop: **MISSING**
 - live two-device relay: **MISSING**
 
@@ -215,11 +220,12 @@ Ossium is not material to the current runtime/deployment gate.
 - relay deployment workflow;
 - distinct-program provisioning script;
 - deterministic Devnet bootstrap tooling;
+- distinct CRESCO Key Devnet program deployment at LIVE_INTEGRATION scope;
+- deterministic Devnet payment state bootstrapped at LIVE_INTEGRATION scope;
 - Rust / relay / mobile / Devnet-tooling CI.
 
 ## Blocked / not live-proven
 
-- distinct CRESCO Key program id deployed to Devnet;
 - real CRESCO program payment transaction from the mobile path;
 - physical Android runtime;
 - production-wallet compatibility;
@@ -262,15 +268,13 @@ Deadline pressure changes sequencing, not evidence class or safety/authority bou
 
 Before BUILD_CANDIDATE_READY or equivalent terminal promotion, applicable material dimensions must be SATISFIED or NOT_APPLICABLE_WITH_REASON. Current blocking chain includes:
 
-1. distinct CRESCO Key program id deployed to Devnet;
-2. deterministic CRESCO payment state bootstrapped;
-3. live relay with deployment receipt;
-4. actual mobile MWA transaction through the CRESCO program;
-5. real in-bounds / boundary / Allow Once / mutation / replay consequences;
-6. runtime → receipt → commit → deployment binding;
-7. failure/recovery coverage;
-8. dependency/reproducibility debt #33 re-evaluated before PRE_SUBMISSION / RELEASE;
-9. TRACE/design assurance when still triggered;
-10. clean-room / judge self-serve path;
-11. post-first-live-slice Product Exploitation / Depth Gap Review;
-12. Project Finisher terminal assurance before submission-ready.
+1. live relay with deployment receipt;
+2. actual mobile MWA transaction through the CRESCO program;
+3. real in-bounds / boundary / Allow Once / mutation / replay consequences;
+4. runtime → receipt → commit → deployment binding for relay/mobile hero runtime;
+5. failure/recovery coverage;
+6. dependency/reproducibility debt #33 re-evaluated before PRE_SUBMISSION / RELEASE;
+7. TRACE/design assurance when still triggered;
+8. clean-room / judge self-serve path;
+9. post-first-live-slice Product Exploitation / Depth Gap Review;
+10. Project Finisher terminal assurance before submission-ready.

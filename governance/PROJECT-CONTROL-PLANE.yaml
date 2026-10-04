@@ -23,14 +23,14 @@ project_control_plane:
   routing:
     current_owner: pbpd_or_existing_product_owner
     current_stage: DELIVER_TO_LIVE_DEPTH
-    exact_next_gate: LIVE_CORE_G0_DISTINCT_CRESCO_KEY_DEVNET_PROGRAM_DEPLOY_AND_BOOTSTRAP
+    exact_next_gate: LIVE_CORE_G1_MOBILE_CRESCO_TRANSACTION_AGAINST_DISTINCT_DEVNET_PROGRAM
     exact_next_action: >-
-      Prepare the protected distinct-program path under human-controlled key custody, provision a new program id,
-      hard-stop if it matches the original CRESCO id, deploy the rebuilt program to Devnet, capture deployment receipt
-      plus source-commit binding, then bootstrap deterministic payment state and resume the real mobile CRESCO action path.
+      Use the deployed distinct Devnet program and deterministic bootstrap state to execute the real mobile CRESCO
+      action path, then capture success/boundary/Allow Once/mutation/replay receipts with source-commit and
+      deployment binding.
     protected_authority_boundary: >-
       Human retains wallet/program-key custody, external secrets, final submission and irreversible production actions.
-    next_product_gate_after_system_repair: LIVE_CORE_G0_DISTINCT_CRESCO_KEY_DEVNET_PROGRAM_DEPLOY_AND_BOOTSTRAP
+    next_product_gate_after_system_repair: LIVE_CORE_G1_MOBILE_CRESCO_TRANSACTION_AGAINST_DISTINCT_DEVNET_PROGRAM
 
   activation:
     lifecycle_manifest: governance/BUILD-LIFECYCLE-COVERAGE.yaml
@@ -52,9 +52,10 @@ project_control_plane:
       - MWA decline/authorize/signMessage/relaunch is proven at LOCAL/PARTIAL scope on run 36699897176.
       - Mobile CI and APK evidence have successful runs for the current main lineage.
       - Devnet MWA transaction proof is not proven; run 36761591880 failed before transaction runtime because the CI environment could not install Android platform 37 for the upstream fakewallet build.
+      - Distinct CRESCO Key Devnet program deployment is proven at LIVE_INTEGRATION scope on run 37182728261, commit 0db1f52ff35961fdd1191cff61f8324fe470f504, program 6SoGabSLX2YHMjFx1ynbz5nLFtd8Z7hURmszddU6DeJP.
+      - Deterministic Devnet payment state is bootstrapped and READY_FOR_MOBILE_RUNTIME on run 37182728261.
     inferred: []
     unknown:
-      - distinct CRESCO Key Devnet program deployment
       - real CRESCO payment-program mobile runtime
       - live Cloudflare relay deployment
       - full two-device hero loop

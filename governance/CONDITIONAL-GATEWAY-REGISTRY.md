@@ -1,6 +1,6 @@
 # CRESCO Key — Conditional Gateway Registry
 
-Updated: 2026-10-02  
+Updated: 2026-10-04  
 Project status: **ACTIVE**
 
 ## Status vocabulary
@@ -32,11 +32,11 @@ A blank, omitted, or forgotten gate is never a PASS.
 | Pre-Build Reality Gate | Before Concept Lock | **PROVEN** | Existing project canon records real user/problem, negative-event evidence, impact, native/mobile need and killer demo before lock. This is historical evidence, not a claim that System Control Plane v1 existed then. |
 | Real Negative Event Gate | Competitive product builds | **PROVEN** | Existing project research preserves concrete broad-authorization failures and their design implication: exact, bounded authority rather than broad silent windows. |
 | Competitive Novelty / Kill Gate | Before Concept Lock | **PROVEN** | Existing project canon records comparison against Greenlight/Google Wallet/BTCBitByBit/Squads/session-key/policy alternatives and narrows residual differentiation. |
-| Technical Reality Check | After Concept Lock | **ACTIVE** | Core program/mobile/relay code exists; load-bearing Devnet program deployment and real product runtime remain incomplete. |
+| Technical Reality Check | After Concept Lock | **ACTIVE** | Core program/mobile/relay code exists; load-bearing Devnet program deployment and deterministic bootstrap are proven; real mobile product runtime remains incomplete. |
 | Living PRD | Before consequential implementation / material change | **PROVEN** | `product/PRD.md` exists and is being reconciled to v0.3 without changing locked product law. |
 | Product Reality / Integration-First v1.3 | Active project next material touch | **ACTIVE** | Adopted on 2026-10-01. Real product action now outranks generic proof spikes; evidence should exhaust the canonical runtime. |
 | Product Exploitation Loop | First live vertical slice onward | **PENDING** | Integration-first priority applies now; formal post-slice exploitation/depth-gap loop starts immediately after the first real CRESCO live core slice. |
-| Claim → Runtime → Evidence Graph | Material live/payment/recovery/terminal claims | **ACTIVE** | `evidence/CLAIM-RUNTIME-EVIDENCE-GRAPH.yaml` exists. Android/MWA local claims are complete at bounded scope; program/live-core edges remain missing. |
+| Claim → Runtime → Evidence Graph | Material live/payment/recovery/terminal claims | **ACTIVE** | `evidence/CLAIM-RUNTIME-EVIDENCE-GRAPH.yaml` exists. Android/MWA local claims are complete at bounded scope; distinct program/bootstrap is complete at LIVE_INTEGRATION scope; live-core edges remain missing. |
 | Rule Lifecycle | Any proposed global/system rule change | **N/A** | This reconciliation adopts existing central rules; it proposes no new cross-project rule. |
 | Cross-Project Learning | Post-mortem / repeated comparable signals | **N/A** | Project is ACTIVE and has no terminal outcome. No single CRESCO result is being generalized. |
 
@@ -48,8 +48,8 @@ A blank, omitted, or forgotten gate is never a PASS.
 | Negative Path Gate | All serious builds | **ACTIVE** | Wallet decline is runtime-proven; product-level 12-unit refusal, changed-recipient refusal, replay refusal and recovery remain to be proven in the integrated live path. |
 | Evidence Integrity Gate | All material proof | **ACTIVE** | LOCAL/PARTIAL/TESTED/MOCKED/NOT_PROVEN distinctions remain mandatory. Failures are preserved. |
 | Reality Ledger | Competitive/release claims | **PROVEN** | `evidence/REALITY-LEDGER.md` exists and is reconciled at this material touch; it must stay current. |
-| Runtime / Commit / Deployment Binding | Any live runtime claim | **ACTIVE** | Distinct CRESCO Key public program id `6SoGabSLX2YHMjFx1ynbz5nLFtd8Z7hURmszddU6DeJP` is now committed; Devnet deployment receipt, live relay deployment and integrated hero runtime are still missing. |
-| Observability / Reproducibility | Runtime/evidence work | **ACTIVE** | CI artifacts and bounded receipts exist; full program/relay/mobile hero receipts and clean-room run are missing. |
+| Runtime / Commit / Deployment Binding | Any live runtime claim | **ACTIVE** | Distinct CRESCO Key Devnet program is now bound to run `37182728261`, commit `0db1f52ff35961fdd1191cff61f8324fe470f504`, deploy signature `5o2zN6qo9KY9Jhz5VNuuvaRr95p7gdSj858e28nW1PRDYHgpPx88uE2y4Kw4Funh4bzm3evEicmAY1Pf5Ygej2g8`, and artifact digest `sha256:45c8031ed62c0b218e865b51ee1e855f8e8e26868c55e1a21af5695b46f3f819`; live relay and integrated hero runtime are still missing. |
+| Observability / Reproducibility | Runtime/evidence work | **ACTIVE** | CI artifacts and bounded receipts exist for program/bootstrap; relay/mobile hero receipts and clean-room run are missing. |
 | Deterministic Demo Gate | Before recording | **PENDING** | Hero sequence is locked, but the same-product live path must exist before deterministic fallback/replay can be treated as supporting evidence. |
 | Judge Performance Assurance | After product depth, before submission | **PENDING** | Signature moment exists conceptually; judge pacing, hostile Q&A, claim→demo→receipt chain and final self-serve path wait on live depth. |
 | Submission Integrity Gate | Before final submission | **PENDING** | Official requirements are known; final APK/runtime/video/deck/repository/evidence consistency cannot be checked until the build reaches terminal assurance. |
@@ -95,12 +95,12 @@ A blank, omitted, or forgotten gate is never a PASS.
 | Physical Android | Strongest target-device evidence | **UNKNOWN** | No physical Android runtime has been observed. Lack of owner device does not change architecture; borrow/obtain one later for final evidence if feasible. |
 | Production-wallet compatibility | Real wallet target | **UNKNOWN** | Official test wallets prove protocol behavior only; production-wallet behavior remains unobserved. |
 | Solana authority program code | Smart-contract mechanism | **PROVEN** | Exact payment/allowance logic and negative invariants exist in code/tests at code-test scope. |
-| Distinct CRESCO Key Devnet program | Load-bearing live integration | **ACTIVE** | **Exact next primary gate.** Public program identity `6SoGabSLX2YHMjFx1ynbz5nLFtd8Z7hURmszddU6DeJP` is committed for the protected secret-backed keypair; deploy to Devnet and bind program id + deployment receipt + source commit. |
-| Deterministic Devnet payment bootstrap | After distinct program deploy | **PENDING** | Tooling exists; must run against the newly deployed program and bind resulting state. |
+| Distinct CRESCO Key Devnet program | Load-bearing live integration | **PROVEN** | Run `37182728261` deployed program `6SoGabSLX2YHMjFx1ynbz5nLFtd8Z7hURmszddU6DeJP` to Devnet from commit `0db1f52ff35961fdd1191cff61f8324fe470f504`; deploy signature `5o2zN6qo9KY9Jhz5VNuuvaRr95p7gdSj858e28nW1PRDYHgpPx88uE2y4Kw4Funh4bzm3evEicmAY1Pf5Ygej2g8`. |
+| Deterministic Devnet payment bootstrap | After distinct program deploy | **PROVEN** | Run `37182728261` bootstrapped status `READY_FOR_MOBILE_RUNTIME` with charter `9FjR5U3ELz6oRmMJN8VoH6M2795bBSnkEN6kgz7Y8ZQS`, mandate `C6H6bUXTZBqBJVBSVNx3m2pXXDhuySZVnbWcrVgP6qaE`, mint `B5G9WPQrgrvoFuJm53ZmT5gyJb5k1g9VdqLLeh4eK9V5`. |
 | Solana Pay / payment intent | Mobile hero input | **ACTIVE** | Parser/QR code exists; real integrated scan/payment execution remains to be proven. |
 | Boundary relay code | Remote guardian coordination | **PROVEN** | Coordination-only code/tests exist at code/test scope. |
 | Live Cloudflare boundary relay | Two-device live experience | **BLOCKED** | Deployment receipt/runtime identity still missing. |
-| Full two-device Live Core Loop | P0 hero value | **BLOCKED** | Requires deployed program + live relay + mobile MWA + real success/boundary/grant/mutation/replay consequences + evidence binding. |
+| Full two-device Live Core Loop | P0 hero value | **BLOCKED** | Requires live relay + mobile MWA + real success/boundary/grant/mutation/replay consequences + evidence binding against the deployed distinct program. |
 
 ## Other transactional gateways
 
@@ -118,11 +118,11 @@ A blank, omitted, or forgotten gate is never a PASS.
 
 ## Exact next gate
 
-**LIVE_CORE_G0 — DISTINCT CRESCO KEY DEVNET PROGRAM DEPLOYMENT + BOOTSTRAP**
+**LIVE_CORE_G1 — MOBILE CRESCO TRANSACTION AGAINST DISTINCT DEVNET PROGRAM**
 
 Exact action:
 
-`HUMAN-CONTROLLED DISTINCT PROGRAM KEY → DEVNET DEPLOY → DEPLOYMENT RECEIPT/PROGRAM ID → COMMIT BINDING → DETERMINISTIC PAYMENT BOOTSTRAP → REAL MOBILE CRESCO ACTION`
+`DEPLOYED DISTINCT PROGRAM → DETERMINISTIC PAYMENT STATE → REAL MOBILE CRESCO ACTION → HERO RECEIPTS/COMMIT/DEPLOYMENT BINDING`
 
 Engineering Quality backfill is now PROVEN / PASS_WITH_ACCEPTED_DEBT. The generic Memo transaction proof remains deferred as a separate lane and must not displace the load-bearing path.
 
