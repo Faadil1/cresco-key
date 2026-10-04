@@ -16,6 +16,7 @@ Use only public runtime identifiers here. Do not paste private key material into
 - Beneficiary public key: `DD1T86b6vSJd7avUVn23f8TaZxdKEzjRF14XzgffDRSZ`
 - G0 deployment/bootstrap run: `37182728261`
 - G1 configured preflight head: `a2d9e35f8730a4ca97c8324e96c116697c8fbfb2`
+- G1 receipt-capture merge: `ffef78e45053e1406b90843d89fe271c9d593466`
 
 ## Current proof boundary
 
@@ -26,6 +27,7 @@ Already proven:
 - Debug APK builds.
 - Emulator smoke passes.
 - Official Mock MWA Wallet decline/authorize/signMessage/relaunch passes at local/partial scope.
+- Mobile app can emit/share public `cresco-key.mobile-g1-runtime-receipt.v1` receipts.
 
 Not yet proven:
 
@@ -46,6 +48,22 @@ node ../../tools/devnet/write-mobile-env-from-demo-state.cjs \
 ```
 
 The generated `.env` contains public Devnet configuration only. It must not contain private keys, keypairs, seed phrases, API secrets, or wallet recovery material.
+
+## Receipt capture helper
+
+After each material action, use `Share latest receipt JSON` in the mobile app and save the resulting public JSON with the rest of the evidence package.
+
+The receipt schema is `cresco-key.mobile-g1-runtime-receipt.v1`. It is designed for public runtime evidence only and must not contain private keys, seed phrases, wallet secrets or custody material.
+
+Expected capture points:
+
+- wallet proof;
+- standing payment attempt;
+- boundary request creation;
+- guardian Allow Once;
+- changed-recipient mutation;
+- exact allowance execution;
+- replay attempt.
 
 ## Required run scenarios
 
@@ -73,7 +91,8 @@ A sufficient G1 evidence package should include:
 - account addresses inspected;
 - before/after token/account state;
 - screenshots or screen recording of approval/refusal surfaces;
-- explicit truth boundary.
+- explicit truth boundary;
+- exported `cresco-key.mobile-g1-runtime-receipt.v1` JSON for each material action.
 
 ## Promotion rule
 

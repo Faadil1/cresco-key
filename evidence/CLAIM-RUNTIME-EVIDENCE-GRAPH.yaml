@@ -241,6 +241,35 @@ claim_runtime_evidence_graph:
             runtime_url_or_environment: GitHub_Actions_Android_API_36
             deployment_identity: run_37214738207
             deployment_state: LOCAL_TEST_ONLY
+
+        - scenario_id: CK_G1_RUNTIME_RECEIPT_CAPTURE_READY
+          scenario_type: EVIDENCE_CAPTURE
+          preconditions: [configured_CRESCO_mobile_client, Android_build_environment]
+          expected_consequence: Mobile app can emit and share public G1 runtime receipt JSON without private key material.
+          runtime_execution:
+            execution_id: gha_37242955089
+            runtime: GitHub_Actions_mobile_ci
+            observed_at: 2026-10-04
+            result: SUCCESS
+          receipt_or_telemetry:
+            receipt_id: MOBILE_G1_RECEIPT_CAPTURE_READY_2026_10_04
+            schema: cresco-key.mobile-g1-runtime-receipt.v1
+            artifact_pointer: https://github.com/Faadil1/cresco-key/actions/runs/37242955074/artifacts/11318066453
+            artifact_digest: sha256:d46720eff4a821f854d68bfc20041781296d44c8b26211cde4e6545973671dfc
+            apk_artifact_pointer: https://github.com/Faadil1/cresco-key/actions/runs/37242955055/artifacts/11318980161
+            apk_artifact_digest: sha256:b70160874d451144d51775ba56e7701e6e454052af50a8588424720a915e9281
+            emulator_artifact_pointer: https://github.com/Faadil1/cresco-key/actions/runs/37242955076/artifacts/11318127844
+            emulator_artifact_digest: sha256:338e7c270cdef7bc02f214d64f3892af2107962525f026bedde34762b6d35cf1
+            mwa_artifact_pointer: https://github.com/Faadil1/cresco-key/actions/runs/37242955096/artifacts/11318282662
+            mwa_artifact_digest: sha256:7f34b57db2dbbfaa6ba36cbf6176bbdb4439e8cdfc626bfebb956ba1ba61c684
+            observed_or_generated: OBSERVED_AND_GENERATED
+          commit:
+            repository: Faadil1/cresco-key
+            commit_sha: f3354b1e9c9f44ebecea8e3ebcc8718e977f1d32
+          deployment:
+            runtime_url_or_environment: GitHub_Actions_Android_build
+            deployment_identity: run_37242955089
+            deployment_state: EVIDENCE_CAPTURE_READY_ONLY
       missing_edges:
         - physical_android_runtime
         - production_wallet_runtime

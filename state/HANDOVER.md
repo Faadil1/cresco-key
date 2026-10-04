@@ -131,7 +131,27 @@ Final CI evidence:
 
 This proves configuration/build/emulator readiness for the G1 path. It does not prove physical-device runtime, production-wallet compatibility, a CRESCO transaction, or Live Core Loop.
 
-Operator handoff for the next real run: `docs/MOBILE-G1-RUNTIME-RUNBOOK.md`.
+Operator handoff for the next real run: `docs/MOBILE-G1-RUNTIME-RUNBOOK.md`. The app now includes `Share latest receipt JSON` for public runtime evidence capture.
+
+## Mobile G1 runtime receipt capture readiness
+
+**MOBILE_G1_RECEIPT_CAPTURE_READY — PROVEN / BUILD_CONFIGURATION + LOCAL_PARTIAL**
+
+PR #44 is merged at merge commit `ffef78e45053e1406b90843d89fe271c9d593466`.
+
+Final head commit: `f3354b1e9c9f44ebecea8e3ebcc8718e977f1d32`.
+
+Final CI evidence:
+
+- Mobile CI: `37242955089` — success.
+- Mobile G1 Configured Preflight: `37242955074`, artifact `11318066453`, digest `sha256:d46720eff4a821f854d68bfc20041781296d44c8b26211cde4e6545973671dfc`.
+- Mobile APK Evidence: `37242955055`, artifact `11318980161`, digest `sha256:b70160874d451144d51775ba56e7701e6e454052af50a8588424720a915e9281`.
+- Android Emulator Smoke Evidence: `37242955076`, artifact `11318127844`, digest `sha256:338e7c270cdef7bc02f214d64f3892af2107962525f026bedde34762b6d35cf1`.
+- MWA Session Evidence: `37242955096`, artifact `11318282662`, digest `sha256:7f34b57db2dbbfaa6ba36cbf6176bbdb4439e8cdfc626bfebb956ba1ba61c684`.
+
+This proves receipt-capture readiness for the mobile G1 path. It does not prove a physical-device runtime, production-wallet compatibility, a CRESCO transaction, or Live Core Loop.
+
+Operator instruction for the next real run: use `Share latest receipt JSON` after wallet proof, standing payment, boundary request, guardian Allow Once, exact execution, changed-recipient mutation and replay attempts.
 
 ## Exact next gate
 
