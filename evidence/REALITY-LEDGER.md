@@ -28,6 +28,7 @@ Purpose: distinguish what is **LIVE / TESTED / LOCAL / MOCKED / PLANNED / NOT PR
 | Exact amount + recipient allowance logic exists | LOCAL / TECHNICAL_PROOF | OBSERVED | Anchor code + Rust tests | Distinct Devnet deployment + mobile runtime |
 | Distinct CRESCO Key Devnet program exists | LIVE_INTEGRATION | OBSERVED | Run `37182728261`; program `6SoGabSLX2YHMjFx1ynbz5nLFtd8Z7hURmszddU6DeJP`; deploy signature `5o2zN6qo9KY9Jhz5VNuuvaRr95p7gdSj858e28nW1PRDYHgpPx88uE2y4Kw4Funh4bzm3evEicmAY1Pf5Ygej2g8`; commit `0db1f52ff35961fdd1191cff61f8324fe470f504`; artifact digest `sha256:45c8031ed62c0b218e865b51ee1e855f8e8e26868c55e1a21af5695b46f3f819` | None for this bounded claim |
 | Deterministic CRESCO payment state bootstrapped against distinct program | LIVE_INTEGRATION | OBSERVED | Run `37182728261`; status `READY_FOR_MOBILE_RUNTIME`; charter `9FjR5U3ELz6oRmMJN8VoH6M2795bBSnkEN6kgz7Y8ZQS`; mandate `C6H6bUXTZBqBJVBSVNx3m2pXXDhuySZVnbWcrVgP6qaE`; mint `B5G9WPQrgrvoFuJm53ZmT5gyJb5k1g9VdqLLeh4eK9V5` | Mobile runtime must now consume this state |
+| Mobile G1 configured preflight against distinct Devnet program | BUILD_CONFIGURATION / LOCAL_PARTIAL | OBSERVED | PR #42 merged at `842ff6cf74e93fbb28bc3fd0dba30c27cf3da6e6`; final head `a2d9e35f8730a4ca97c8324e96c116697c8fbfb2`; configured preflight run `37214738255`; APK run `37214738295`; emulator smoke run `37214738237`; MWA session run `37214738207`; all success | Real mobile CRESCO transaction, physical Android, production wallet and Live Core Loop remain unproven |
 | In-bounds 5-unit payment executes through CRESCO program from mobile | NOT_IMPLEMENTED | UNKNOWN | Product/code path exists; no integrated runtime receipt | Deploy/bootstrap + mobile MWA |
 | 12-unit boundary refuses in real CRESCO capital path | NOT_IMPLEMENTED | UNKNOWN | Negative semantics exist in code | Integrated hero run |
 | Guardian exact Allow Once is confirmed onchain in mobile loop | NOT_IMPLEMENTED | UNKNOWN | Grant instruction/code exists | Live relay + guardian wallet + deployed program |
@@ -53,6 +54,7 @@ Purpose: distinguish what is **LIVE / TESTED / LOCAL / MOCKED / PLANNED / NOT PR
 
 - **TECHNICAL / LOCAL proof exists** for substantial program/mobile/relay mechanisms.
 - **LIVE_INTEGRATION proof exists** for distinct Devnet program deployment and deterministic payment state readiness.
+- **BUILD_CONFIGURATION / LOCAL_PARTIAL proof exists** for mobile G1 configuration, Android APK, emulator launch and Mock MWA session against the distinct Devnet configuration.
 - **BEHAVIOR proof exists at LOCAL/PARTIAL scope** for Android launch and MWA decline/authorize/signMessage/relaunch.
 - **No OUTCOME proof is claimed.**
 - **No PRODUCTION_EVIDENCE is claimed.**

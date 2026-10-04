@@ -185,6 +185,69 @@ claim_runtime_evidence_graph:
             deployment_identity: 6SoGabSLX2YHMjFx1ynbz5nLFtd8Z7hURmszddU6DeJP
             deployment_state: LIVE_DEVNET_BOOTSTRAPPED
 
+    - claim_id: CK_MOBILE_G1_CONFIGURED_PREFLIGHT
+      statement: The mobile client is configured and build-verified against the distinct CRESCO Key Devnet program and deterministic demo state.
+      evidence_class: BUILD_CONFIGURATION_LOCAL_PARTIAL
+      truth_state: COMPLETE
+      scenarios:
+        - scenario_id: CK_G1_CONFIGURED_MOBILE_BUILD
+          scenario_type: SUCCESS
+          preconditions: [distinct_CRESCO_program, deterministic_demo_state, Android_build_environment]
+          expected_consequence: Mobile env generation, typecheck and Android prebuild succeed against the distinct Devnet program state.
+          runtime_execution:
+            execution_id: gha_37214738255
+            runtime: GitHub_Actions_mobile_configured_preflight
+            observed_at: 2026-10-04
+            result: SUCCESS
+          dependencies:
+            - dependency_id: distinct_devnet_program_state
+              role: mobile_runtime_configuration
+              live_or_stub: LIVE_DEVNET_CONFIGURATION
+              load_bearing: true
+            - dependency_id: android_build_toolchain
+              role: build_runtime
+              live_or_stub: CI_BUILD_RUNTIME
+              load_bearing: true
+          receipt_or_telemetry:
+            receipt_id: MOBILE_G1_CONFIGURED_PREFLIGHT_2026_10_04
+            artifact_pointer: https://github.com/Faadil1/cresco-key/actions/runs/37214738255/artifacts/11307638925
+            artifact_digest: sha256:c63972323dc36477f2207fee6aa3e18b9abe23212918b0f0812579100c281b4c
+            observed_or_generated: OBSERVED_AND_GENERATED
+          commit:
+            repository: Faadil1/cresco-key
+            commit_sha: a2d9e35f8730a4ca97c8324e96c116697c8fbfb2
+          deployment:
+            runtime_url_or_environment: GitHub_Actions_Android_build
+            deployment_identity: run_37214738255
+            deployment_state: BUILD_CONFIGURATION_ONLY
+        - scenario_id: CK_G1_MWA_EMULATOR_SESSION
+          scenario_type: RECOVERY
+          preconditions: [Android_API_36_emulator, official_Mock_MWA_Wallet, configured_CRESCO_mobile_client]
+          expected_consequence: Mock-wallet decline, authorize, signMessage and relaunch sequence succeeds at local/partial scope.
+          runtime_execution:
+            execution_id: gha_37214738207
+            runtime: GitHub_Actions_Android_emulator
+            observed_at: 2026-10-04
+            result: SUCCESS
+          receipt_or_telemetry:
+            receipt_id: MWA_SESSION_EVIDENCE_G1_2026_10_04
+            artifact_pointer: https://github.com/Faadil1/cresco-key/actions/runs/37214738207/artifacts/11309055853
+            artifact_digest: sha256:b376f910f6ba45892817c004a972ec716b30882659a9db79793a06c86a1da988
+            observed_or_generated: OBSERVED_AND_GENERATED
+          commit:
+            repository: Faadil1/cresco-key
+            commit_sha: a2d9e35f8730a4ca97c8324e96c116697c8fbfb2
+          deployment:
+            runtime_url_or_environment: GitHub_Actions_Android_API_36
+            deployment_identity: run_37214738207
+            deployment_state: LOCAL_TEST_ONLY
+      missing_edges:
+        - physical_android_runtime
+        - production_wallet_runtime
+        - real_cresco_transaction_signature
+        - devnet_account_state_after_mobile_action
+        - full_live_core_loop
+
     - claim_id: CK_LIVE_CORE_LOOP
       statement: The real mobile CRESCO Key hero path enforces standing authority and exact one-use exceptions end to end.
       evidence_class: LIVE_INTEGRATION_TARGET
