@@ -532,7 +532,7 @@ Current P0 summary:
 | Gateway | P0 state | Rule |
 |---|---|---|
 | Solana authority program code | **PROVEN** | Exact amount + recipient + one-time semantics are implemented and Rust-tested. |
-| Distinct CRESCO Key Devnet program | **ACTIVE** | Public program identity `6SoGabSLX2YHMjFx1ynbz5nLFtd8Z7hURmszddU6DeJP` is committed for the secret-backed keypair; next gate is Devnet deployment, receipt and commit binding. |
+| Distinct CRESCO Key Devnet program | **PROVEN — LIVE_INTEGRATION** | Run `37182728261` deployed program `6SoGabSLX2YHMjFx1ynbz5nLFtd8Z7hURmszddU6DeJP` from commit `0db1f52ff35961fdd1191cff61f8324fe470f504`; deploy signature `5o2zN6qo9KY9Jhz5VNuuvaRr95p7gdSj858e28nW1PRDYHgpPx88uE2y4Kw4Funh4bzm3evEicmAY1Pf5Ygej2g8`. |
 | Mobile Wallet Adapter session | **PROVEN — LOCAL/PARTIAL** | Run `36699897176` proves decline → authorize/connect → signMessage → relaunch recovery in the emulator. |
 | Real MWA Devnet sign/send | **ACTIVE / NOT PROVEN** | Generic Memo proof is secondary technical evidence; it must not displace the actual CRESCO program path. |
 | Android standalone emulator runtime | **PROVEN — LOCAL/PARTIAL** | Run `36669206551`; physical Android remains separate. |
@@ -540,7 +540,7 @@ Current P0 summary:
 | Solana Pay / payment QR | **ACTIVE** | Native parsing exists; real hero scan/payment execution remains unproven. |
 | Product Reality / Integration-First v1.3 | **ACTIVE** | Product value and real action outrank proof-only artifacts; evidence should exhaust the canonical product runtime. |
 | Claim → Runtime → Evidence Graph | **ACTIVE** | Material live/payment/recovery claims now trace through `evidence/CLAIM-RUNTIME-EVIDENCE-GRAPH.yaml`. |
-| Engineering Quality Assurance | **PENDING / BACKFILL_REQUIRED** | Must be completed before terminal-sensitive promotion. |
+| Engineering Quality Assurance | **PROVEN — PASS_WITH_ACCEPTED_DEBT** | Receipt `evidence/engineering-quality/ENGINEERING-QUALITY-RECEIPT-2026-10-02.json`; issue #33 remains debt before PRE_SUBMISSION / RELEASE. |
 | TRACE / Design Experience Assurance | **ACTIVE** | Evaluator-facing mobile UX makes the design-assurance route applicable. |
 | Seed Vault direct dApp access | **N/A** | CRESCO uses MWA; compatible wallets may use Seed Vault underneath. |
 | SGT | **N/A** | Do not force into P0. |
@@ -567,12 +567,12 @@ Current P0 summary:
 - private relay code and tests;
 - fail-closed ALLOW / REFUSE / UNKNOWN classification;
 - deterministic two-wallet Devnet bootstrap tooling;
+- distinct CRESCO Key Devnet program deployment at LIVE_INTEGRATION scope — run `37182728261`;
+- deterministic payment state bootstrapped at LIVE_INTEGRATION scope — status `READY_FOR_MOBILE_RUNTIME`;
 - Rust / relay / mobile / Devnet-tooling CI.
 
 ### ACTIVE / NOT YET PROVEN as integrated product runtime
 
-- distinct CRESCO Key program deployment to Devnet;
-- deterministic payment state bootstrapped against that distinct program;
 - real CRESCO payment transaction from the mobile MWA path;
 - in-bounds 5-unit ALLOW consequence;
 - 12-unit capital-path REFUSE;
@@ -746,7 +746,7 @@ The concept remains locked. The project is **ACTIVE** and is now in live-integra
 
 The primary sequence is now:
 
-`DISTINCT CRESCO PROGRAM ID → DEVNET DEPLOY → DEPLOYMENT RECEIPT/COMMIT BINDING → DETERMINISTIC PAYMENT BOOTSTRAP → REAL MOBILE CRESCO ACTION → HERO NEGATIVE/BOUNDARY/REPLAY CASES`
+`DEPLOYED DISTINCT CRESCO PROGRAM → DETERMINISTIC PAYMENT STATE → REAL MOBILE CRESCO ACTION → HERO NEGATIVE/BOUNDARY/REPLAY CASES`
 
 The open generic Memo/MWA transaction proof is secondary technical evidence. It is not the product's Definition of Done and is not a substitute for the actual CRESCO program path.
 
@@ -754,23 +754,20 @@ The open generic Memo/MWA transaction proof is secondary technical evidence. It 
 
 The product must not claim the complete CLOCK IN hero run until all materially applicable items are satisfied:
 
-1. distinct CRESCO Key program id is deployed to Devnet;
-2. deterministic demo/payment state is bootstrapped against that program;
-3. live relay deployment receipt exists;
-4. mobile MWA path executes the real CRESCO program action;
-5. real in-bounds ALLOW consequence is observed;
-6. real out-of-bounds REFUSE is observed;
-7. guardian exact Allow Once is confirmed;
-8. changed-recipient REFUSE is observed without consuming the allowance;
-9. exact original action succeeds once;
-10. replay refuses;
-11. standing Mandate version/nonce remains unchanged because Allow Once is not Widen;
-12. runtime evidence binds through receipt → commit → deployment;
-13. failure/recovery and clean-room/self-serve paths are exercised;
-14. Engineering Quality backfill receipt exists;
-15. TRACE/design assurance is resolved when still triggered;
-16. Post-Vertical-Slice Product Exploitation / Depth Gap Review runs after the first live slice;
-17. Project Finisher performs terminal assurance before SUBMISSION_READY.
+1. live relay deployment receipt exists;
+2. mobile MWA path executes the real CRESCO program action;
+3. real in-bounds ALLOW consequence is observed;
+4. real out-of-bounds REFUSE is observed;
+5. guardian exact Allow Once is confirmed;
+6. changed-recipient REFUSE is observed without consuming the allowance;
+7. exact original action succeeds once;
+8. replay refuses;
+9. standing Mandate version/nonce remains unchanged because Allow Once is not Widen;
+10. runtime evidence binds through receipt → commit → deployment for the mobile/relay hero runtime;
+11. failure/recovery and clean-room/self-serve paths are exercised;
+12. TRACE/design assurance is resolved when still triggered;
+13. Post-Vertical-Slice Product Exploitation / Depth Gap Review runs after the first live slice;
+14. Project Finisher performs terminal assurance before SUBMISSION_READY.
 
 Until then, technical, local, behavior, outcome and production evidence classes remain explicitly separated.
 
@@ -861,8 +858,8 @@ Earlier stages are reconstructed only where existing canonical evidence supports
 
 ### Exact next gate
 
-**LIVE_CORE_G0 — DISTINCT CRESCO KEY DEVNET PROGRAM DEPLOYMENT + BOOTSTRAP**
+**LIVE_CORE_G1 — MOBILE CRESCO TRANSACTION AGAINST DISTINCT DEVNET PROGRAM**
 
 Exact next product action:
 
-`HUMAN-CONTROLLED DISTINCT PROGRAM KEY → DEVNET DEPLOY → RECEIPT/PROGRAM ID → COMMIT BINDING → DETERMINISTIC PAYMENT BOOTSTRAP → REAL MOBILE CRESCO TRANSACTION`
+`DEPLOYED DISTINCT PROGRAM → DETERMINISTIC PAYMENT STATE → REAL MOBILE CRESCO TRANSACTION → RECEIPTS/COMMIT/DEPLOYMENT BINDING`
