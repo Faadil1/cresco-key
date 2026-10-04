@@ -125,3 +125,17 @@ The young-person flow supports the target sequence once Devnet state is provisio
 The app intentionally refuses to use the inherited CRESCO program id by default. Set `EXPO_PUBLIC_CRESCO_KEY_PROGRAM_ID` only after issue #8 provisions a distinct program identity and deployment.
 
 A successful TypeScript/prebuild CI run proves client construction, not on-device MWA execution or Devnet capital movement. Those remain runtime gates.
+
+## G1 configured Devnet mode
+
+The public distinct-program bootstrap receipt can generate a local `.env` for the mobile app:
+
+```bash
+node ../../tools/devnet/write-mobile-env-from-demo-state.cjs \
+  ../../evidence/devnet-distinct-program/cresco-key-demo-state-37182728261.json \
+  .env
+```
+
+This enables deterministic Devnet intent buttons in the young-person flow, so the G1 runtime can load the exact 5-unit and 12-unit actions without camera setup.
+
+Truth boundary: this configuration proves only that the mobile build is pointed at the deployed distinct Devnet program and demo state. The Live Core Loop remains unproven until wallet-mediated mobile transactions produce inspectable Devnet receipts.
