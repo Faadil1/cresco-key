@@ -1,6 +1,6 @@
 # CRESCO Key — HANDOVER
 
-Updated: 2026-10-02
+Updated: 2026-10-04
 
 ## Resume rule
 
@@ -56,40 +56,39 @@ System Control Plane v1 and Integration-First Product Exploitation v1.3 were ado
 
 ## Last proven runtime state
 
-**MWA SESSION — PROVEN / LOCAL-PARTIAL**
+**LIVE_CORE_G0 — DISTINCT CRESCO KEY DEVNET PROGRAM DEPLOYMENT + BOOTSTRAP — PROVEN / LIVE_INTEGRATION**
 
-Run: `36699897176`
+Run: `37182728261`
 
 Observed:
 
-`decline → REFUSED → authorize/connect → signMessage approve → SIGNED → relaunch → CONNECTED_RESTORED`
+- source commit: `0db1f52ff35961fdd1191cff61f8324fe470f504`
+- program id: `6SoGabSLX2YHMjFx1ynbz5nLFtd8Z7hURmszddU6DeJP`
+- deploy signature: `5o2zN6qo9KY9Jhz5VNuuvaRr95p7gdSj858e28nW1PRDYHgpPx88uE2y4Kw4Funh4bzm3evEicmAY1Pf5Ygej2g8`
+- program binary SHA-256: `7f45c16253e886160f9c9242edb46ab45c868e2d36767192b8d76e9db605a77c`
+- artifact: `https://github.com/Faadil1/cresco-key/actions/runs/37182728261/artifacts/11295688079`
+- artifact digest: `sha256:45c8031ed62c0b218e865b51ee1e855f8e8e26868c55e1a21af5695b46f3f819`
+- deterministic bootstrap status: `READY_FOR_MOBILE_RUNTIME`
+- guardian: `Fsm2vU1vzWkowmkU9bRpCfaR8Q5vETCFXtofUCRZUnov`
+- beneficiary: `DD1T86b6vSJd7avUVn23f8TaZxdKEzjRF14XzgffDRSZ`
+- charter: `9FjR5U3ELz6oRmMJN8VoH6M2795bBSnkEN6kgz7Y8ZQS`
+- mandate: `C6H6bUXTZBqBJVBSVNx3m2pXXDhuySZVnbWcrVgP6qaE`
+- mint: `B5G9WPQrgrvoFuJm53ZmT5gyJb5k1g9VdqLLeh4eK9V5`
 
-Android emulator standalone launch is separately proven on `36669206551`.
+This proves the distinct Devnet program and deterministic bootstrap state only. Do not upgrade it to:
 
-Do not upgrade these to:
-
+- real mobile CRESCO transaction;
+- full two-device hero loop;
 - physical Android;
 - production wallet;
-- real Devnet CRESCO transaction;
-- live two-device hero loop;
 - production evidence.
 
-## Latest failed / partial workstream
+Prior bounded runtime evidence remains valid:
 
-Historical secondary PR: **#28 — P0: prove real Devnet transaction through MWA — CLOSED WITHOUT MERGE after v1.3 reconciliation**
+- Android emulator standalone launch: `36669206551`
+- MWA decline / authorize / signMessage / relaunch: `36699897176`
 
-Latest material run inspected:
-
-- `36761591880`
-- result: **FAILURE BEFORE TRANSACTION RUNTIME**
-- CRESCO release APK build: success
-- upstream Solana Mobile fakewallet build prerequisite: failed because CI could not install `platforms;android-37`
-- Devnet transaction receipt: absent
-- RPC confirmation: absent
-
-This failure remains evidence. It does not become a PASS.
-
-Under Integration-First v1.3, the generic Memo proof is now a **secondary technical proof lane**, not the primary product gate.
+Historical secondary PR #28 / run `36761591880` remains a failed proof-only lane: no Devnet transaction receipt and no RPC confirmation were produced.
 
 ## Engineering Quality Assurance
 
@@ -115,24 +114,31 @@ Accepted debt:
 
 ## Exact next gate
 
-**LIVE_CORE_G0 — DISTINCT CRESCO KEY DEVNET PROGRAM DEPLOYMENT + BOOTSTRAP**
+**LIVE_CORE_G1 — MOBILE CRESCO TRANSACTION AGAINST DISTINCT DEVNET PROGRAM**
 
 Exact chain:
 
-`HUMAN-CONTROLLED NEW DISTINCT PROGRAM ID → DEVNET DEPLOY → DEPLOYMENT RECEIPT → COMMIT BINDING → DETERMINISTIC PAYMENT BOOTSTRAP → MOBILE CRESCO TRANSACTION`
+`DEPLOYED DISTINCT DEVNET PROGRAM → DETERMINISTIC PAYMENT STATE → MOBILE CRESCO TRANSACTION → SUCCESS/BOUNDARY/ALLOW-ONCE/MUTATION/REPLAY RECEIPTS`
 
-Prepared automation:
+Ready public inputs:
+
+- program id: `6SoGabSLX2YHMjFx1ynbz5nLFtd8Z7hURmszddU6DeJP`
+- charter: `9FjR5U3ELz6oRmMJN8VoH6M2795bBSnkEN6kgz7Y8ZQS`
+- mandate: `C6H6bUXTZBqBJVBSVNx3m2pXXDhuySZVnbWcrVgP6qaE`
+- mint: `B5G9WPQrgrvoFuJm53ZmT5gyJb5k1g9VdqLLeh4eK9V5`
+- guardian: `Fsm2vU1vzWkowmkU9bRpCfaR8Q5vETCFXtofUCRZUnov`
+- beneficiary: `DD1T86b6vSJd7avUVn23f8TaZxdKEzjRF14XzgffDRSZ`
+
+Completed automation:
 
 - `scripts/seed-devnet-repo-secrets.sh`
 - `scripts/devnet-deploy-and-bootstrap.sh`
 - `.github/workflows/deploy-distinct-devnet-program.yml`
 - `docs/DEVNET-DISTINCT-PROGRAM-GATE.md`
 
-**Immediate human handoff:** run the secret-seeding helper in a private GitHub Codespace and return only the PUBLIC PROGRAM ID. The repository source cannot be commit-bound to the secret-backed deployment identity until that public id exists.
+Required evidence graph binding for the next gate:
 
-Required evidence graph binding:
-
-`CLAIM → PROGRAM DEPLOY SCENARIO → DEVNET RUNTIME EXECUTION → SOLANA DEPENDENCY → DEPLOY RECEIPT → SOURCE COMMIT → DEVNET PROGRAM ID`
+`CK_LIVE_CORE_LOOP → MOBILE CRESCO SCENARIO → MOBILE/RELAY/DEVNET RUNTIME EXECUTION → REAL RECEIPTS → SOURCE COMMIT → DEPLOYED PROGRAM/RELAY IDENTITY`
 
 Do not revive or expand a separate generic proof-only transaction lane unless it materially helps this real product chain.
 
