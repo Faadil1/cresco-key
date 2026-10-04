@@ -258,3 +258,27 @@ console.log(JSON.stringify({
   wallet: {
     implementation: "solana-mobile/mock-mwa-wallet",
     productionWallet: false,
+    explicitDeclineObserved: true,
+    authorizeObserved: true,
+    signMessageObserved: true
+  },
+  android: {
+    emulator: true,
+    apiLevel: 36,
+    relaunchState: process.env.RELAUNCH_STATE
+  },
+  hashes: {
+    crescoTestApkSha256: process.env.APK_SHA,
+    mockWalletApkSha256: process.env.MOCK_SHA
+  },
+  truthBoundary: {
+    physicalDeviceProven: false,
+    productionWalletCompatibilityProven: false,
+    devnetTransactionProven: false,
+    liveCoreLoopProven: false
+  },
+  generatedAt: new Date().toISOString()
+}, null, 2));
+NODE
+
+echo "MWA session evidence complete."
