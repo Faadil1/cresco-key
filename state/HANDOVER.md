@@ -112,6 +112,27 @@ Accepted debt:
 - no breaking force-fix;
 - broad structural refactors deferred unless materially justified.
 
+## Post-G0 configured mobile preflight
+
+**MOBILE_G1_CONFIGURED_PREFLIGHT — PROVEN / BUILD_CONFIGURATION + LOCAL_PARTIAL**
+
+PR #42 is merged at merge commit `842ff6cf74e93fbb28bc3fd0dba30c27cf3da6e6`.
+
+Final head commit: `a2d9e35f8730a4ca97c8324e96c116697c8fbfb2`.
+
+Final CI evidence:
+
+- Devnet Tooling CI: `37214738229` — success.
+- Mobile G1 Configured Preflight: `37214738255`, artifact `11307638925`, digest `sha256:c63972323dc36477f2207fee6aa3e18b9abe23212918b0f0812579100c281b4c`.
+- Mobile CI: `37214738200` — success.
+- Mobile APK Evidence: `37214738295`, artifact `11308430993`, digest `sha256:555df236d02a39d92bd67d8206a40133b13c0b02a0516ee907321e4c58999666`.
+- Android Emulator Smoke Evidence: `37214738237`, artifact `11307918176`, digest `sha256:a5ae5cd17a619282357006d1e6b53cae3c7b259976e177b79aaa8ed4532e91b9`.
+- MWA Session Evidence: `37214738207`, artifact `11309055853`, digest `sha256:b376f910f6ba45892817c004a972ec716b30882659a9db79793a06c86a1da988`.
+
+This proves configuration/build/emulator readiness for the G1 path. It does not prove physical-device runtime, production-wallet compatibility, a CRESCO transaction, or Live Core Loop.
+
+Operator handoff for the next real run: `docs/MOBILE-G1-RUNTIME-RUNBOOK.md`.
+
 ## Exact next gate
 
 **LIVE_CORE_G1 — MOBILE CRESCO TRANSACTION AGAINST DISTINCT DEVNET PROGRAM**
