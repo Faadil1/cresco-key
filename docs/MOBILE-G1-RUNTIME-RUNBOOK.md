@@ -94,6 +94,25 @@ A sufficient G1 evidence package should include:
 - explicit truth boundary;
 - exported `cresco-key.mobile-g1-runtime-receipt.v1` JSON for each material action.
 
+
+## Validate exported receipts
+
+Before reviewing the evidence package for G1 promotion, run the public receipt validator against the exported JSON files:
+
+```bash
+npm --prefix tools/devnet run validate-mobile-g1 -- path/to/mobile-g1-receipts
+```
+
+Expected full-coverage status:
+
+```text
+Mobile G1 receipt validation: READY_TO_REVIEW_FOR_LIVE_CORE_G1
+```
+
+Use `--json` when attaching the validation summary as a machine-readable artifact. Use `--allow-partial` only for in-progress debugging; partial validation must not be used for promotion.
+
+The validator checks exported receipt coverage and flags suspicious key names. It is still only one gate: G1 also requires physical Android evidence, production-wallet compatibility evidence, real Devnet transaction confirmations, and before/after account-state review.
+
 ## Promotion rule
 
 Only promote `LIVE_CORE_G1` when the real product path produces the required Devnet receipts. Emulator/mock-wallet behavior is useful support evidence, but it cannot by itself prove physical Android, production wallet, or Live Core Loop.
