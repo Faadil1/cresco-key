@@ -94,3 +94,32 @@ This enables the mobile app's deterministic G1 helpers:
 - changed-recipient hostile intent.
 
 The generated configuration is still not a Live Core Loop receipt. Promotion requires wallet-mediated mobile transactions against the deployed program.
+
+## Validate mobile G1 receipts
+
+After exporting the public mobile receipts from the app, validate the folder before reviewing any G1 promotion:
+
+```bash
+npm --prefix tools/devnet run validate-mobile-g1 -- path/to/mobile-g1-receipts
+```
+
+For CI or artifact processing, emit machine-readable output:
+
+```bash
+npm --prefix tools/devnet run validate-mobile-g1 -- --json path/to/mobile-g1-receipts
+```
+
+The validator checks for the required receipt coverage:
+
+- signed wallet proof;
+- 5-unit standing payment ALLOW with a transaction signature;
+- 12-unit boundary payment REFUSE;
+- boundary request creation;
+- guardian Allow Once ALLOW with a grant signature;
+- changed-recipient mutation REFUSE;
+- exact approved execution ALLOW with a transaction signature;
+- replay REFUSE after allowance consumption.
+
+It also fails if exported receipts contain key names that look like private key, seed phrase, mnemonic, keypair, recovery, or secret material.
+
+Passing validation means the receipt set is ready for human G1 evidence review. It does not by itself prove physical Android runtime, production wallet compatibility, or Devnet account-state changes.
