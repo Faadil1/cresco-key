@@ -135,6 +135,31 @@ Truth boundary:
 - production-wallet compatibility: **false**
 - full Live Core Loop: **false**
 
+## Mobile G1 runtime receipt capture readiness
+
+**MOBILE_G1_RECEIPT_CAPTURE_READY — PROVEN at BUILD_CONFIGURATION / LOCAL_PARTIAL scope**
+
+Merge: PR #44, merge commit `ffef78e45053e1406b90843d89fe271c9d593466`.
+
+Final head: `f3354b1e9c9f44ebecea8e3ebcc8718e977f1d32`.
+
+Observed:
+
+- Mobile CI: run `37242955089` — success.
+- Mobile G1 Configured Preflight: run `37242955074`, artifact `11318066453`, digest `sha256:d46720eff4a821f854d68bfc20041781296d44c8b26211cde4e6545973671dfc`.
+- Mobile APK Evidence: run `37242955055`, artifact `11318980161`, digest `sha256:b70160874d451144d51775ba56e7701e6e454052af50a8588424720a915e9281`.
+- Android Emulator Smoke Evidence: run `37242955076`, artifact `11318127844`, digest `sha256:338e7c270cdef7bc02f214d64f3892af2107962525f026bedde34762b6d35cf1`.
+- MWA Session Evidence: run `37242955096`, artifact `11318282662`, digest `sha256:7f34b57db2dbbfaa6ba36cbf6176bbdb4439e8cdfc626bfebb956ba1ba61c684`.
+
+Truth boundary:
+
+- mobile app can emit/share public G1 runtime receipt JSON: **true**
+- receipt schema available: `cresco-key.mobile-g1-runtime-receipt.v1`
+- real mobile CRESCO transaction against the distinct Devnet program: **false**
+- physical Android proof: **false**
+- production-wallet compatibility: **false**
+- full Live Core Loop: **false**
+
 ## Exact next gate
 
 **LIVE_CORE_G1 — MOBILE CRESCO TRANSACTION AGAINST DISTINCT DEVNET PROGRAM**
@@ -153,7 +178,7 @@ Available bounded inputs:
 - beneficiary public key: `DD1T86b6vSJd7avUVn23f8TaZxdKEzjRF14XzgffDRSZ`
 - deployment/bootstrap run: `37182728261`
 
-Next action: wire/execute the mobile runtime against those public Devnet identities and capture the first real CRESCO transaction receipt from the product path.
+Next action: execute the mobile runtime against those public Devnet identities and use `Share latest receipt JSON` to capture the first real CRESCO transaction receipt from the product path.
 
 The next proof must cover the product path, not a generic Memo lane:
 
