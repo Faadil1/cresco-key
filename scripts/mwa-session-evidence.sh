@@ -69,39 +69,76 @@ wait_text() {
 }
 
 unlock_emulator() {
-  adb shell input keyevent 224 || true
-  sleep 1
+  keyguard_visible() {
+    label="$1"
+    adb shell dumpsys window > "$EVIDENCE/$label-window.txt" 2>&1 || true
+    adb shell uiautomator dump /sdcard/"$label".xml >/dev/null 2>&1 || true
+    adb pull /sdcard/"$label".xml "$EVIDENCE/$label.xml" >/dev/null 2>&1 || true
 
-  # Secure keyguard does not reliably accept `input text` on API 36.
-  # Reveal the PIN surface, then send digit key events directly.
-  adb shell input swipe 540 2100 540 650 500 || true
-  sleep 2
+    if grep -Eq 'mDreamingLockscreen=true|mShowingLockscreen=true|mKeyguardShowing=true|isKeyguardShowing=true|KeyguardController.*mShowing=true' "$EVIDENCE/$label-window.txt" 2>/dev/null; then
+      return 0
+    fi
 
-  adb shell uiautomator dump /sdcard/keyguard-pin.xml >/dev/null 2>&1 || true
-  adb pull /sdcard/keyguard-pin.xml "$EVIDENCE/keyguard-pin.xml" >/dev/null 2>&1 || true
+    grep -Eq 'Unlock for all features and data|Enter PIN|Emergency call|Password required' "$EVIDENCE/$label.xml" 2>/dev/null
+  }
 
-  # KEYCODE_1..4 are 8..11. This PIN is emulator-only.
-  adb shell input keyevent 8 || true
-  adb shell input keyevent 9 || true
-  adb shell input keyevent 10 || true
-  adb shell input keyevent 11 || true
-  adb shell input keyevent 66 || true
-  sleep 4
+  enter_pin() {
+    # KEYCODE_1..4 are 8..11. This PIN is emulator-only.
+    adb shell input keyevent 8 || true
+    adb shell input keyevent 9 || true
+    adb shell input keyevent 10 || true
+    adb shell input keyevent 11 || true
+    adb shell input keyevent 66 || true
+  }
 
-  # A final MENU key helps dismiss a completed keyguard transition on emulators.
-  adb shell input keyevent 82 || true
-  sleep 2
+  tap_pin_keypad() {
+    adb shell input tap 270 1420 || true
+    adb shell input tap 540 1420 || true
+    adb shell input tap 810 1420 || true
+    adb shell input tap 270 1625 || true
+    adb shell input keyevent 66 || true
+  }
 
-  adb shell uiautomator dump /sdcard/unlock.xml >/dev/null 2>&1 || true
-  adb pull /sdcard/unlock.xml "$EVIDENCE/unlock.xml" >/dev/null 2>&1 || true
+  for attempt in 1 2 3; do
+    adb shell input keyevent 224 || true
+    adb shell wm dismiss-keyguard || true
+    adb shell input swipe 540 2100 540 650 500 || true
+    sleep 2
 
-  if grep -Eq 'Unlock for all features and data|Enter PIN|Emergency call' "$EVIDENCE/unlock.xml" 2>/dev/null; then
-    echo "Emulator remained locked after direct PIN key events." >&2
-    dump_ui "unlock-failed"
-    return 1
-  fi
+    if ! keyguard_visible "unlock-attempt-$attempt-before"; then
+      echo "Emulator keyguard dismissed before PIN attempt $attempt." > "$EVIDENCE/unlock-result.txt"
+      return 0
+    fi
 
-  echo "Emulator keyguard dismissed." > "$EVIDENCE/unlock-result.txt"
+    enter_pin
+    sleep 3
+
+    if ! keyguard_visible "unlock-attempt-$attempt-after-keyevents"; then
+      echo "Emulator keyguard dismissed with PIN key events on attempt $attempt." > "$EVIDENCE/unlock-result.txt"
+      return 0
+    fi
+
+    adb shell input text "$PIN" || true
+    adb shell input keyevent 66 || true
+    sleep 2
+
+    if ! keyguard_visible "unlock-attempt-$attempt-after-text"; then
+      echo "Emulator keyguard dismissed with PIN text on attempt $attempt." > "$EVIDENCE/unlock-result.txt"
+      return 0
+    fi
+
+    tap_pin_keypad
+    sleep 3
+
+    if ! keyguard_visible "unlock-attempt-$attempt-after-taps"; then
+      echo "Emulator keyguard dismissed with PIN keypad taps on attempt $attempt." > "$EVIDENCE/unlock-result.txt"
+      return 0
+    fi
+  done
+
+  echo "Emulator remained locked after PIN key events, PIN text, and keypad taps." >&2
+  dump_ui "unlock-failed"
+  return 1
 }
 
 echo "== Configure and unlock emulator credential =="
@@ -167,7 +204,10 @@ while [ "$elapsed" -lt 30 ]; do
         break
       fi
     done
-    adb shell input text "$PIN" || true
+    adb shell input keyevent 8 || true
+    adb shell input keyevent 9 || true
+    adb shell input keyevent 10 || true
+    adb shell input keyevent 11 || true
     adb shell input keyevent 66 || true
   fi
 
@@ -218,27 +258,3 @@ console.log(JSON.stringify({
   wallet: {
     implementation: "solana-mobile/mock-mwa-wallet",
     productionWallet: false,
-    explicitDeclineObserved: true,
-    authorizeObserved: true,
-    signMessageObserved: true
-  },
-  android: {
-    emulator: true,
-    apiLevel: 36,
-    relaunchState: process.env.RELAUNCH_STATE
-  },
-  hashes: {
-    crescoTestApkSha256: process.env.APK_SHA,
-    mockWalletApkSha256: process.env.MOCK_SHA
-  },
-  truthBoundary: {
-    physicalDeviceProven: false,
-    productionWalletCompatibilityProven: false,
-    devnetTransactionProven: false,
-    liveCoreLoopProven: false
-  },
-  generatedAt: new Date().toISOString()
-}, null, 2));
-NODE
-
-echo "MWA session evidence complete."
