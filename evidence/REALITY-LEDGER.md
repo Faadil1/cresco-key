@@ -1,6 +1,6 @@
 # CRESCO Key — Reality Ledger
 
-Updated: 2026-10-04
+Updated: 2026-10-05
 
 Purpose: distinguish what is **LIVE / TESTED / LOCAL / MOCKED / PLANNED / NOT PROVEN** today. The ledger is factual state, not marketing copy.
 
@@ -30,6 +30,7 @@ Purpose: distinguish what is **LIVE / TESTED / LOCAL / MOCKED / PLANNED / NOT PR
 | Deterministic CRESCO payment state bootstrapped against distinct program | LIVE_INTEGRATION | OBSERVED | Run `37182728261`; status `READY_FOR_MOBILE_RUNTIME`; charter `9FjR5U3ELz6oRmMJN8VoH6M2795bBSnkEN6kgz7Y8ZQS`; mandate `C6H6bUXTZBqBJVBSVNx3m2pXXDhuySZVnbWcrVgP6qaE`; mint `B5G9WPQrgrvoFuJm53ZmT5gyJb5k1g9VdqLLeh4eK9V5` | Mobile runtime must now consume this state |
 | Mobile G1 configured preflight against distinct Devnet program | BUILD_CONFIGURATION / LOCAL_PARTIAL | OBSERVED | PR #42 merged at `842ff6cf74e93fbb28bc3fd0dba30c27cf3da6e6`; final head `a2d9e35f8730a4ca97c8324e96c116697c8fbfb2`; configured preflight run `37214738255`; APK run `37214738295`; emulator smoke run `37214738237`; MWA session run `37214738207`; all success | Real mobile CRESCO transaction, physical Android, production wallet and Live Core Loop remain unproven |
 | Mobile G1 runtime receipt capture helper | BUILD_CONFIGURATION / LOCAL_PARTIAL | OBSERVED | PR #44 merged at `ffef78e45053e1406b90843d89fe271c9d593466`; final head `f3354b1e9c9f44ebecea8e3ebcc8718e977f1d32`; Mobile CI `37242955089`; preflight `37242955074`; APK `37242955055`; emulator smoke `37242955076`; MWA session `37242955096`; all success | Real receipt must still come from physical/product runtime; helper alone is not G1 proof |
+| Mobile G1 receipt validation tool | BUILD_CONFIGURATION / LOCAL_PARTIAL | OBSERVED | PR #46 merged at `451b862f78fdf46de53877ca08d1a06dcb5d30cb`; final head `798ff453f62822aaa6b0d9e5bec8d82517238702`; Devnet Tooling CI `37245241219` success; validator checks exported `cresco-key.mobile-g1-runtime-receipt.v1` coverage and suspicious secret-like field names | Validator output is review support only; physical/product runtime, production-wallet compatibility, Devnet transaction signatures and account-state changes remain required |
 | In-bounds 5-unit payment executes through CRESCO program from mobile | NOT_IMPLEMENTED | UNKNOWN | Product/code path exists; no integrated runtime receipt | Deploy/bootstrap + mobile MWA |
 | 12-unit boundary refuses in real CRESCO capital path | NOT_IMPLEMENTED | UNKNOWN | Negative semantics exist in code | Integrated hero run |
 | Guardian exact Allow Once is confirmed onchain in mobile loop | NOT_IMPLEMENTED | UNKNOWN | Grant instruction/code exists | Live relay + guardian wallet + deployed program |
@@ -55,7 +56,7 @@ Purpose: distinguish what is **LIVE / TESTED / LOCAL / MOCKED / PLANNED / NOT PR
 
 - **TECHNICAL / LOCAL proof exists** for substantial program/mobile/relay mechanisms.
 - **LIVE_INTEGRATION proof exists** for distinct Devnet program deployment and deterministic payment state readiness.
-- **BUILD_CONFIGURATION / LOCAL_PARTIAL proof exists** for mobile G1 configuration, Android APK, emulator launch, Mock MWA session and runtime receipt-capture readiness against the distinct Devnet configuration.
+- **BUILD_CONFIGURATION / LOCAL_PARTIAL proof exists** for mobile G1 configuration, Android APK, emulator launch, Mock MWA session, runtime receipt-capture readiness, and receipt-validation readiness against the distinct Devnet configuration.
 - **BEHAVIOR proof exists at LOCAL/PARTIAL scope** for Android launch and MWA decline/authorize/signMessage/relaunch.
 - **No OUTCOME proof is claimed.**
 - **No PRODUCTION_EVIDENCE is claimed.**
