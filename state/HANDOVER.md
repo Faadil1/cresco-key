@@ -28,7 +28,7 @@ Current production phase:
 
 **P0 IMPLEMENTATION → LIVE INTEGRATION / LIVE DEPTH**
 
-System Control Plane v1 and Integration-First Product Exploitation v1.3 were adopted prospectively on **2026-10-01**. Do not rewrite earlier history to imply those policies were already active.
+System Control Plane v1 and Integration-First Product Exploitation v1.5 were adopted prospectively on **2026-10-01**. Do not rewrite earlier history to imply those policies were already active.
 
 ## What is locked
 
@@ -177,6 +177,32 @@ It does not prove physical-device runtime, production-wallet compatibility, a CR
 
 Operator instruction for the next real run: after exporting all material mobile receipts, run `npm --prefix tools/devnet run validate-mobile-g1 -- <receipt-folder>` and attach the validation summary to the evidence package.
 
+## Canonical baseline / drift handoff — 2026-10-05
+
+Canonical baseline version: `0.1.56-canonical-baseline-drift-tripwire-promoted`.
+
+Canonical baseline exact SHA / continuity SHA: `8a7e8a4ff5461641c595e2cf052a95fdc32a6340`.
+
+Central active-project reconciliation wave merge: `fb062d6cd792cab8e27c342120824f285120bc2f`.
+
+Product Reality policy: **v1.5.0**.
+
+Project pinned baseline before this handoff was stale/missing in project-local truth and still worded around v1.3. Classification at resume: **MATERIAL_RECONCILIATION_REQUIRED**.
+
+Material delta for CRESCO: baseline pinning, material user capability delta recording, workstream drift classification, primary workstream restoration, and fail-closed terminal transition handling. No global retrofit or product-law rewrite is authorized by this handoff.
+
+Material user capability delta since previous milestone: **NONE**. Validator and state/evidence work improved review readiness, but did not create a new externally usable product capability.
+
+Workstream drift status: **WORKSTREAM_DRIFT** until product work resumes on the live mobile CRESCO path.
+
+Current primary workstream: **PRODUCT_EXPLOITATION**.
+
+Remaining material product-depth gaps: mobile CRESCO Devnet transaction, physical/prod-wallet evidence when feasible, live relay/two-device flow, success/boundary/Allow Once/mutation/replay receipts, before/after state proof, recovery, clean-room/self-serve, external operator evidence, TRACE/design verdict, and terminal assurance.
+
+Exact next owner: Codex may maintain truth/source state; the human/operator owns protected wallet/runtime/submission actions.
+
+Exact next action: return to LIVE_CORE_G1 by executing the real mobile runtime against the public Devnet identities, exporting receipts, and running the validator.
+
 ## Exact next gate
 
 **LIVE_CORE_G1 — MOBILE CRESCO TRANSACTION AGAINST DISTINCT DEVNET PROGRAM**
@@ -213,7 +239,7 @@ Status:
 
 **ACTIVE / WAITING FOR FIRST REAL LIVE CORE SLICE**
 
-The v1.3 integration-first priority applies immediately.
+The v1.5 Product Reality priority applies immediately.
 
 Once the first real end-to-end CRESCO slice works, run:
 

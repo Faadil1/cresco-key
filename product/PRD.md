@@ -538,7 +538,7 @@ Current P0 summary:
 | Android standalone emulator runtime | **PROVEN — LOCAL/PARTIAL** | Run `36669206551`; physical Android remains separate. |
 | Two-device relay code | **PROVEN at code/test scope** | Coordination logic exists; live Cloudflare deployment remains BLOCKED. |
 | Solana Pay / payment QR | **ACTIVE** | Native parsing exists; real hero scan/payment execution remains unproven. |
-| Product Reality / Integration-First v1.3 | **ACTIVE** | Product value and real action outrank proof-only artifacts; evidence should exhaust the canonical product runtime. |
+| Product Reality / Integration-First v1.5 | **ACTIVE** | Product value and real action outrank proof-only artifacts; baseline pinning and drift tripwire are active. Evidence should exhaust the canonical product runtime. |
 | Claim → Runtime → Evidence Graph | **ACTIVE** | Material live/payment/recovery claims now trace through `evidence/CLAIM-RUNTIME-EVIDENCE-GRAPH.yaml`. |
 | Engineering Quality Assurance | **PROVEN — PASS_WITH_ACCEPTED_DEBT** | Receipt `evidence/engineering-quality/ENGINEERING-QUALITY-RECEIPT-2026-10-02.json`; issue #33 remains debt before PRE_SUBMISSION / RELEASE. |
 | TRACE / Design Experience Assurance | **ACTIVE** | Evaluator-facing mobile UX makes the design-assurance route applicable. |
@@ -588,7 +588,7 @@ Current P0 summary:
 
 ### Secondary technical proof lane
 
-A generic Memo transaction through MWA may prove wallet/RPC mechanics, but under Integration-First v1.3 it is **not** the CRESCO live core and must not displace the load-bearing program/payment path.
+A generic Memo transaction through MWA may prove wallet/RPC mechanics, but under Integration-First v1.5 it is **not** the CRESCO live core and must not displace the load-bearing program/payment path.
 
 Latest inspected generic transaction run `36761591880` failed before transaction runtime because its upstream fakewallet build required Android platform 37, which the CI SDK environment could not install. No transaction success is claimed from that run.
 
@@ -812,7 +812,7 @@ This reconciliation does **not** change:
 
 ### Build-priority change
 
-The product now explicitly follows Integration-First / Maximum Product Exploitation v1.3:
+The product now explicitly follows Product Reality / Maximum Product Exploitation v1.5:
 
 - product value + real action outrank proof-only artifacts;
 - evidence should be generated from or bound to the canonical product runtime;
@@ -855,6 +855,19 @@ Earlier stages are reconstructed only where existing canonical evidence supports
 - TRACE / Design Experience Assurance: **triggered** for evaluator-facing mobile experience and must be resolved before a design-sensitive terminal transition.
 - Project Finisher: remains required only after BUILD_CANDIDATE_READY.
 - protected human actions remain human-owned.
+
+### Canonical baseline drift tripwire update — 2026-10-05
+
+Central baseline pin:
+
+- version: `0.1.56-canonical-baseline-drift-tripwire-promoted`;
+- continuity SHA: `8a7e8a4ff5461641c595e2cf052a95fdc32a6340`;
+- active-project reconciliation wave merge: `fb062d6cd792cab8e27c342120824f285120bc2f`;
+- Product Reality policy: **v1.5.0**.
+
+Baseline delta status at resume: **MATERIAL_RECONCILIATION_REQUIRED**.
+
+Material product implication: the next primary work must be a live product capability delta, not more demo/evidence/packaging work. Since the validator and state updates after #46-#49 added no new external user capability, `material_user_capability_delta_since_previous_milestone = NONE` and **WORKSTREAM_DRIFT** is recorded until PRODUCT_EXPLOITATION resumes on LIVE_CORE_G1.
 
 ### Exact next gate
 

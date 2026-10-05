@@ -8,7 +8,7 @@ Updated: 2026-10-05
 
 This is an existing, authorized hackathon product project. It is not FROZEN, SUBMITTED, or REOPENED.
 
-System Control Plane v1 and Product Reality / Integration-First v1.3 are adopted **from 2026-10-01 forward** at this material touch. They are not backdated into prior project history.
+System Control Plane v1 and Product Reality / Integration-First v1.5 are adopted **from 2026-10-01 forward** at this material touch. They are not backdated into prior project history.
 
 ## North Star
 
@@ -38,7 +38,7 @@ Central governance source:
 
 - `Faadil1/faadil-agent-system@main`
 - `SYSTEM-CONTROL-PLANE-POLICY.yaml`
-- `PRODUCT-REALITY-POLICY.yaml@1.3.0`
+- `PRODUCT-REALITY-POLICY.yaml@1.5.0`
 - `PROJECT-LIFECYCLE-COMPLETENESS-POLICY.yaml`
 - `EVIDENCE-GRAPH-POLICY.yaml`
 - `project-profiles/hackathon.yaml`
@@ -80,7 +80,7 @@ Prior bounded runtime proof remains valid:
 
 The historical generic Devnet MWA transaction workstream remains **NOT PROVEN** and **closed/deferred as a separate proof-only lane**. Run `36761591880` failed before transaction runtime and produced no Devnet transaction, wallet sign/send receipt, or RPC-confirmed signature.
 
-## Integration-First v1.3 reconciliation
+## Integration-First v1.5 reconciliation
 
 The generic Memo transaction proof is useful **technical evidence**, but it is not the core product action.
 
@@ -187,6 +187,34 @@ Truth boundary:
 - physical Android proof: **false**
 - production-wallet compatibility: **false**
 - full Live Core Loop: **false**
+
+## Canonical baseline reconciliation — 2026-10-05
+
+Canonical baseline version: `0.1.56-canonical-baseline-drift-tripwire-promoted`.
+
+Canonical baseline exact SHA / continuity SHA: `8a7e8a4ff5461641c595e2cf052a95fdc32a6340`.
+
+Central active-project reconciliation wave merge: `fb062d6cd792cab8e27c342120824f285120bc2f`.
+
+Central Product Reality policy: **v1.5.0**.
+
+Project baseline delta status: **MATERIAL_RECONCILIATION_REQUIRED** at resume time; this reconciliation records the v1.5 pin and restores the product-first workstream. The material delta is baseline pinning plus the drift tripwire; it does not change CRESCO product law, authority semantics, hero flow, or P0 scope.
+
+Current project source head observed before this reconciliation: `b75225ef59386b81aef3a61b2f70c13a3f6f7ca4` (merge of PR #49).
+
+First live slice status: **NOT PROVEN**.
+
+Material user capability delta since previous milestone: **NONE**. PRs #46-#49 added receipt validation, validator self-test coverage, and state/evidence updates; they did not add or verify a new external user/operator product capability and did not prove a mobile CRESCO Devnet transaction.
+
+Workstream drift status: **WORKSTREAM_DRIFT**. Recent progress was primarily validator/evidence/state work while material product-depth gaps remain. Demo, receipt, replay, screenshot, video, README and packaging work are secondary until the next live product delta advances.
+
+Current primary workstream: **PRODUCT_EXPLOITATION**.
+
+Next highest-value depth delta: execute the real mobile CRESCO transaction path against the distinct Devnet program, export the public `cresco-key.mobile-g1-runtime-receipt.v1` receipts, and validate them before any G1 promotion review.
+
+Valid stop condition: **NONE**. Protected human actions still exist for wallet/key custody, external secrets and final submission, but no valid stop condition currently replaces the product-exploitation step.
+
+Demo packaging permission: **SECONDARY_SUPPORT_ONLY**. Demo packaging may only follow or support live product evidence; it must not displace LIVE_CORE_G1.
 
 ## Exact next gate
 

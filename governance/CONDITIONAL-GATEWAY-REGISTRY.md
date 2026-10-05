@@ -1,6 +1,6 @@
 # CRESCO Key — Conditional Gateway Registry
 
-Updated: 2026-10-04  
+Updated: 2026-10-05  
 Project status: **ACTIVE**
 
 ## Status vocabulary
@@ -34,11 +34,21 @@ A blank, omitted, or forgotten gate is never a PASS.
 | Competitive Novelty / Kill Gate | Before Concept Lock | **PROVEN** | Existing project canon records comparison against Greenlight/Google Wallet/BTCBitByBit/Squads/session-key/policy alternatives and narrows residual differentiation. |
 | Technical Reality Check | After Concept Lock | **ACTIVE** | Core program/mobile/relay code exists; load-bearing Devnet program deployment and deterministic bootstrap are proven; real mobile product runtime remains incomplete. |
 | Living PRD | Before consequential implementation / material change | **PROVEN** | `product/PRD.md` exists and is being reconciled to v0.3 without changing locked product law. |
-| Product Reality / Integration-First v1.3 | Active project next material touch | **ACTIVE** | Adopted on 2026-10-01. Real product action now outranks generic proof spikes; evidence should exhaust the canonical runtime. |
-| Product Exploitation Loop | First live vertical slice onward | **PENDING** | Integration-first priority applies now; formal post-slice exploitation/depth-gap loop starts immediately after the first real CRESCO live core slice. |
+| Product Reality / Integration-First v1.5 | Active project next material touch | **ACTIVE** | Adopted on 2026-10-01. Real product action now outranks generic proof spikes; evidence should exhaust the canonical runtime. |
+| Product Exploitation Loop | First live vertical slice onward | **PENDING** | Product Reality v1.5 priority applies now; formal post-slice exploitation/depth-gap loop starts immediately after the first real CRESCO live core slice. |
 | Claim → Runtime → Evidence Graph | Material live/payment/recovery/terminal claims | **ACTIVE** | `evidence/CLAIM-RUNTIME-EVIDENCE-GRAPH.yaml` exists. Android/MWA local claims are complete at bounded scope; distinct program/bootstrap is complete at LIVE_INTEGRATION scope; live-core edges remain missing. |
 | Rule Lifecycle | Any proposed global/system rule change | **N/A** | This reconciliation adopts existing central rules; it proposes no new cross-project rule. |
 | Cross-Project Learning | Post-mortem / repeated comparable signals | **N/A** | Project is ACTIVE and has no terminal outcome. No single CRESCO result is being generalized. |
+
+## Canonical baseline and drift tripwire — 2026-10-05
+
+| Gateway | Activation | Status | Current condition |
+|---|---|---:|---|
+| Canonical baseline pin | Active project at next material touch | **PROVEN** | Project truth is reconciled to `0.1.56-canonical-baseline-drift-tripwire-promoted`, continuity SHA `8a7e8a4ff5461641c595e2cf052a95fdc32a6340`, central wave merge `fb062d6cd792cab8e27c342120824f285120bc2f`, Product Reality v1.5.0. |
+| Baseline delta classification | Canon advancement or stale project pin | **ACTIVE** | Resume classification was **MATERIAL_RECONCILIATION_REQUIRED** because local project truth still referenced v1.3 and lacked v1.5 drift fields. This registry records the reconciliation; affected terminal promotions remain blocked until product gaps are resolved. |
+| Drift Tripwire | Every material milestone | **ACTIVE** | `material_user_capability_delta_since_previous_milestone = NONE` after #46-#49. Validator/receipt/state work did not prove a new user/operator capability. |
+| Workstream Drift | Demo/evidence work while product gaps remain and user delta is NONE/UNKNOWN | **BLOCKED** | **WORKSTREAM_DRIFT** is emitted. Demo/evidence/packaging work must stop as the primary lane; current primary workstream is restored to **PRODUCT_EXPLOITATION**. |
+| Demo packaging permission | Before story/video/README/submission packaging work | **BLOCKED** | Packaging is **SECONDARY_SUPPORT_ONLY** until LIVE_CORE_G1 or another material live product delta advances. |
 
 ## Product reality, evidence, and terminal gates
 
@@ -98,6 +108,9 @@ A blank, omitted, or forgotten gate is never a PASS.
 | Distinct CRESCO Key Devnet program | Load-bearing live integration | **PROVEN** | Run `37182728261` deployed program `6SoGabSLX2YHMjFx1ynbz5nLFtd8Z7hURmszddU6DeJP` to Devnet from commit `0db1f52ff35961fdd1191cff61f8324fe470f504`; deploy signature `5o2zN6qo9KY9Jhz5VNuuvaRr95p7gdSj858e28nW1PRDYHgpPx88uE2y4Kw4Funh4bzm3evEicmAY1Pf5Ygej2g8`. |
 | Deterministic Devnet payment bootstrap | After distinct program deploy | **PROVEN** | Run `37182728261` bootstrapped status `READY_FOR_MOBILE_RUNTIME` with charter `9FjR5U3ELz6oRmMJN8VoH6M2795bBSnkEN6kgz7Y8ZQS`, mandate `C6H6bUXTZBqBJVBSVNx3m2pXXDhuySZVnbWcrVgP6qaE`, mint `B5G9WPQrgrvoFuJm53ZmT5gyJb5k1g9VdqLLeh4eK9V5`. |
 | Mobile G1 configured Devnet preflight | Before physical/mobile transaction run | **PROVEN** | PR #42 merged at `842ff6cf74e93fbb28bc3fd0dba30c27cf3da6e6`; final head `a2d9e35f8730a4ca97c8324e96c116697c8fbfb2`; configured preflight, mobile CI, APK evidence, emulator smoke and MWA session evidence all passed. This is not a CRESCO transaction or Live Core Loop proof. |
+| Mobile G1 receipt capture readiness | Before live receipt export | **PROVEN** | PR #44 merged at `ffef78e45053e1406b90843d89fe271c9d593466`; final head `f3354b1e9c9f44ebecea8e3ebcc8718e977f1d32`; app can export/share `cresco-key.mobile-g1-runtime-receipt.v1` receipts. This is not a live transaction proof. |
+| Mobile G1 receipt validator | Before G1 promotion review | **PROVEN** | PR #46 merged at `451b862f78fdf46de53877ca08d1a06dcb5d30cb`; final head `798ff453f62822aaa6b0d9e5bec8d82517238702`; Devnet Tooling CI `37245241219` success. Validates receipt coverage and flags secret-like fields. |
+| Mobile G1 receipt validator self-test | Validator reliability | **PROVEN** | PR #48 merged at `8af1bc3dc75754d7eddc7b211f54970fcbee650e`; final head `c95758f7fcb0db4c1623a70ac800805eae9896ae`; Devnet Tooling CI `37251332445` success. This proves validator behavior only, not mobile product runtime. |
 | Solana Pay / payment intent | Mobile hero input | **ACTIVE** | Parser/QR code exists; real integrated scan/payment execution remains to be proven. |
 | Boundary relay code | Remote guardian coordination | **PROVEN** | Coordination-only code/tests exist at code/test scope. |
 | Live Cloudflare boundary relay | Two-device live experience | **BLOCKED** | Deployment receipt/runtime identity still missing. |
