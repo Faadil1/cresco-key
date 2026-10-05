@@ -165,8 +165,13 @@ Final head commit: `798ff453f62822aaa6b0d9e5bec8d82517238702`.
 Final CI evidence:
 
 - Devnet Tooling CI: `37245241219` — success.
+- Validator self-test CI: `37251332445` — success.
 
-This proves the public receipt validator exists and passes tooling CI. It validates exported `cresco-key.mobile-g1-runtime-receipt.v1` coverage and flags suspicious private-key/seed/mnemonic/keypair/recovery/secret field names.
+PR #48 is merged at merge commit `8af1bc3dc75754d7eddc7b211f54970fcbee650e`.
+
+Final self-test head commit: `c95758f7fcb0db4c1623a70ac800805eae9896ae`.
+
+This proves the public receipt validator exists, passes tooling CI, and has self-test coverage for complete receipt validation, incomplete receipt refusal, partial debug mode, and secret-like field refusal. It validates exported `cresco-key.mobile-g1-runtime-receipt.v1` coverage and flags suspicious private-key/seed/mnemonic/keypair/recovery/secret field names.
 
 It does not prove physical-device runtime, production-wallet compatibility, a CRESCO transaction, Devnet account-state changes, or Live Core Loop.
 
