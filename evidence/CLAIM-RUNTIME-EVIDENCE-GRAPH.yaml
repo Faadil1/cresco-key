@@ -293,6 +293,27 @@ claim_runtime_evidence_graph:
             runtime_url_or_environment: GitHub_Actions_devnet_tooling
             deployment_identity: run_37245241219
             deployment_state: EVIDENCE_VALIDATION_READY_ONLY
+
+        - scenario_id: CK_G1_RECEIPT_VALIDATOR_SELF_TEST
+          scenario_type: EVIDENCE_VALIDATION
+          preconditions: [mobile_G1_receipt_validator]
+          expected_consequence: Validator behavior is covered for complete receipts, incomplete receipts, partial-debug mode, and secret-like field refusal.
+          runtime_execution:
+            execution_id: gha_37251332445
+            runtime: GitHub_Actions_devnet_tooling
+            observed_at: 2026-10-05
+            result: SUCCESS
+          receipt_or_telemetry:
+            receipt_id: MOBILE_G1_RECEIPT_VALIDATOR_SELF_TEST_2026_10_05
+            artifact_pointer: https://github.com/Faadil1/cresco-key/actions/runs/37251332445
+            observed_or_generated: OBSERVED_AND_GENERATED
+          commit:
+            repository: Faadil1/cresco-key
+            commit_sha: c95758f7fcb0db4c1623a70ac800805eae9896ae
+          deployment:
+            runtime_url_or_environment: GitHub_Actions_devnet_tooling
+            deployment_identity: run_37251332445
+            deployment_state: EVIDENCE_VALIDATION_SELF_TEST_ONLY
       missing_edges:
         - physical_android_runtime
         - production_wallet_runtime
