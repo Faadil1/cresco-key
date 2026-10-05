@@ -172,7 +172,9 @@ Final head: `798ff453f62822aaa6b0d9e5bec8d82517238702`.
 Observed:
 
 - Devnet Tooling CI: run `37245241219` — success.
+- Validator self-test CI: run `37251332445` — success.
 - Receipt validator CLI: `tools/devnet/validate-mobile-g1-receipts.cjs`.
+- Receipt validator self-test: `tools/devnet/test-mobile-g1-receipt-validator.cjs`.
 - Validator schema: `cresco-key.mobile-g1-receipt-validation.v1`.
 - Target receipt schema: `cresco-key.mobile-g1-runtime-receipt.v1`.
 
@@ -180,6 +182,7 @@ Truth boundary:
 
 - exported G1 receipt coverage can be validated before promotion review: **true**
 - suspicious private-key/seed/mnemonic/keypair/recovery/secret field names are flagged: **true**
+- validator behavior is self-tested for complete, incomplete, partial-debug and secret-like-field cases: **true**
 - real mobile CRESCO transaction against the distinct Devnet program: **false**
 - physical Android proof: **false**
 - production-wallet compatibility: **false**
@@ -298,7 +301,7 @@ Ossium is not material to the current runtime/deployment gate.
 - deterministic Devnet bootstrap tooling;
 - distinct CRESCO Key Devnet program deployment at LIVE_INTEGRATION scope;
 - deterministic Devnet payment state bootstrapped at LIVE_INTEGRATION scope;
-- mobile G1 runtime receipt export and validation tooling at BUILD_CONFIGURATION / LOCAL_PARTIAL scope;
+- mobile G1 runtime receipt export, validation tooling and validator self-test at BUILD_CONFIGURATION / LOCAL_PARTIAL scope;
 - Rust / relay / mobile / Devnet-tooling CI.
 
 ## Blocked / not live-proven
