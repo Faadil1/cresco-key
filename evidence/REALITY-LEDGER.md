@@ -10,6 +10,9 @@ Purpose: distinguish what is **LIVE / TESTED / LOCAL / MOCKED / PLANNED / NOT PR
 | System Control Plane v1 is reconciled into this active project | LOCAL / GOVERNANCE | OBSERVED | `governance/PROJECT-CONTROL-PLANE.yaml` + lifecycle manifest created prospectively on 2026-10-01 | Keep CURRENT/HANDOVER/gates current |
 | Lifecycle coverage manifest exists | LOCAL / GOVERNANCE | OBSERVED | `governance/BUILD-LIFECYCLE-COVERAGE.yaml` | Material capabilities inside remain MISSING |
 | Claim → Runtime → Evidence Graph exists | LOCAL / GOVERNANCE | OBSERVED | `evidence/CLAIM-RUNTIME-EVIDENCE-GRAPH.yaml` | Missing live/program/deployment edges remain explicit |
+| Canonical baseline v0.1.56 / Product Reality v1.5 is pinned locally | LOCAL / GOVERNANCE | OBSERVED | Central baseline `0.1.56-canonical-baseline-drift-tripwire-promoted`; continuity SHA `8a7e8a4ff5461641c595e2cf052a95fdc32a6340`; wave merge `fb062d6cd792cab8e27c342120824f285120bc2f`; reconciled after source head `b75225ef59386b81aef3a61b2f70c13a3f6f7ca4` | Keep baseline pins current at every material touch |
+| Material user capability delta after #46-#49 | GOVERNANCE / PRODUCT-REALITY | OBSERVED_NONE | Receipt validator, validator self-test and state/evidence updates improved review readiness but did not prove a new external user/operator product capability | WORKSTREAM_DRIFT; return to PRODUCT_EXPLOITATION and LIVE_CORE_G1 |
+| Current primary workstream | GOVERNANCE / PRODUCT-REALITY | OBSERVED | `PRODUCT_EXPLOITATION`; demo packaging permission is `SECONDARY_SUPPORT_ONLY` | Real mobile CRESCO transaction and representative receipts remain required |
 | Android native project exists | LOCAL | OBSERVED | Expo/React Native source on main | None for code existence |
 | Android APK can compile | LOCAL | OBSERVED | Successful GitHub Actions APK builds | Physical-device/runtime class remains separate |
 | Android APK installs and process launches in emulator | LOCAL / PARTIAL | OBSERVED | Run `36669206551` | Physical-device runtime |
@@ -62,6 +65,7 @@ Purpose: distinguish what is **LIVE / TESTED / LOCAL / MOCKED / PLANNED / NOT PR
 - **No OUTCOME proof is claimed.**
 - **No PRODUCTION_EVIDENCE is claimed.**
 - **LIVE CORE LOOP is not proven.**
+- **WORKSTREAM_DRIFT is recorded** for recent validator/evidence/state work without a material user capability delta while live product gaps remain.
 
 ## Ledger rules
 
