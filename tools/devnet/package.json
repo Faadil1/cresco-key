@@ -5,8 +5,9 @@
   "scripts": {
     "bootstrap": "node bootstrap-payment-demo.cjs",
     "mobile-env": "node write-mobile-env-from-demo-state.cjs",
-    "check": "node --check bootstrap-payment-demo.cjs && node --check write-mobile-env-from-demo-state.cjs && node --check validate-mobile-g1-receipts.cjs",
-    "validate-mobile-g1": "node validate-mobile-g1-receipts.cjs"
+    "check": "node --check bootstrap-payment-demo.cjs && node --check write-mobile-env-from-demo-state.cjs && node --check validate-mobile-g1-receipts.cjs && node --check test-mobile-g1-receipt-validator.cjs && node test-mobile-g1-receipt-validator.cjs",
+    "validate-mobile-g1": "node validate-mobile-g1-receipts.cjs",
+    "test:mobile-g1-validator": "node test-mobile-g1-receipt-validator.cjs"
   },
   "dependencies": {
     "@coral-xyz/anchor": "0.32.1",
