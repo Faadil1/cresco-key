@@ -1,4 +1,4 @@
-version: 0.1.1
+version: 0.1.2
 build_lifecycle_coverage:
   project: CRESCO Key
   project_type: HACKATHON
@@ -8,10 +8,32 @@ build_lifecycle_coverage:
   current_stage: DELIVER_TO_LIVE_DEPTH
   exact_next_gate: LIVE_CORE_G1_MOBILE_CRESCO_TRANSACTION_AGAINST_DISTINCT_DEVNET_PROGRAM
   exact_next_action: >-
-    Use the deployed distinct CRESCO Key Devnet program and deterministic bootstrap state to execute the real mobile
-    CRESCO transaction path, then capture success/boundary/Allow Once/mutation/replay receipts with source-commit and
-    deployment binding.
-  last_updated: 2026-10-04
+    Return to PRODUCT_EXPLOITATION by using the deployed distinct CRESCO Key Devnet program and deterministic bootstrap
+    state to execute the real mobile CRESCO transaction path, then capture success/boundary/Allow Once/mutation/replay
+    receipts with source-commit and deployment binding.
+  last_updated: 2026-10-05
+
+  canonical_baseline_reconciliation:
+    current_central_baseline: 0.1.56-canonical-baseline-drift-tripwire-promoted
+    canonical_baseline_exact_sha: 8a7e8a4ff5461641c595e2cf052a95fdc32a6340
+    central_active_project_reconciliation_wave_merge: fb062d6cd792cab8e27c342120824f285120bc2f
+    product_reality_policy_version: 1.5.0
+    project_source_head_before_reconciliation: b75225ef59386b81aef3a61b2f70c13a3f6f7ca4
+    baseline_delta_status: MATERIAL_RECONCILIATION_REQUIRED
+    material_delta: baseline pinning plus Product Reality v1.5 drift tripwire; no product-law retrofit
+    first_live_slice_proven: false
+    material_user_capability_delta_since_previous_milestone: NONE
+    workstream_drift_status: WORKSTREAM_DRIFT
+    current_primary_workstream: PRODUCT_EXPLOITATION
+    valid_stop_condition: NONE
+    demo_packaging_permission: SECONDARY_SUPPORT_ONLY
+    blocked_transitions:
+      - BUILD_CANDIDATE_READY
+      - LIVE
+      - COMPLETE
+      - RELEASE_READY
+      - SUBMISSION_READY
+    next_highest_value_depth_delta: LIVE_CORE_G1_MOBILE_CRESCO_TRANSACTION_AGAINST_DISTINCT_DEVNET_PROGRAM
 
   bootstrap:
     faadil_system_router_activated: true
@@ -63,7 +85,7 @@ build_lifecycle_coverage:
       owner: pbpd_or_existing_product_owner
       status: SATISFIED
       evidence_pointer: product/PRD.md
-      reconstruction_note: Living PRD exists; v1.3 reconciliation is adopted prospectively.
+      reconstruction_note: Living PRD exists; Product Reality v1.5 baseline/drift reconciliation is adopted prospectively.
     - capability: spec_kit_or_equivalent
       owner: none
       status: NOT_APPLICABLE_WITH_REASON
@@ -126,6 +148,9 @@ build_lifecycle_coverage:
     real_action_depth: MISSING
     highest_safe_justified_action_tier: APPROVAL_GATED_WRITE
     post_vertical_slice_product_exploitation_loop: ACTIVE_PENDING_FIRST_LIVE_CORE_SLICE
+    current_primary_workstream: PRODUCT_EXPLOITATION
+    workstream_drift_status: WORKSTREAM_DRIFT
+    material_user_capability_delta_since_previous_milestone: NONE
     real_consequence: MISSING
     representative_scenario_depth: MISSING
     failure_and_recovery: MISSING
