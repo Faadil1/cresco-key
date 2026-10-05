@@ -270,6 +270,29 @@ claim_runtime_evidence_graph:
             runtime_url_or_environment: GitHub_Actions_Android_build
             deployment_identity: run_37242955089
             deployment_state: EVIDENCE_CAPTURE_READY_ONLY
+
+        - scenario_id: CK_G1_RECEIPT_VALIDATION_READY
+          scenario_type: EVIDENCE_VALIDATION
+          preconditions: [exported_mobile_G1_runtime_receipts]
+          expected_consequence: Public mobile G1 receipts can be validated for required scenario coverage before any G1 promotion review.
+          runtime_execution:
+            execution_id: gha_37245241219
+            runtime: GitHub_Actions_devnet_tooling
+            observed_at: 2026-10-05
+            result: SUCCESS
+          receipt_or_telemetry:
+            receipt_id: MOBILE_G1_RECEIPT_VALIDATOR_READY_2026_10_05
+            validator_schema: cresco-key.mobile-g1-receipt-validation.v1
+            target_receipt_schema: cresco-key.mobile-g1-runtime-receipt.v1
+            artifact_pointer: https://github.com/Faadil1/cresco-key/actions/runs/37245241219
+            observed_or_generated: OBSERVED_AND_GENERATED
+          commit:
+            repository: Faadil1/cresco-key
+            commit_sha: 798ff453f62822aaa6b0d9e5bec8d82517238702
+          deployment:
+            runtime_url_or_environment: GitHub_Actions_devnet_tooling
+            deployment_identity: run_37245241219
+            deployment_state: EVIDENCE_VALIDATION_READY_ONLY
       missing_edges:
         - physical_android_runtime
         - production_wallet_runtime
@@ -324,4 +347,4 @@ claim_runtime_evidence_graph:
     action: >-
       Use the deployed distinct Devnet program and deterministic bootstrap state to execute the real mobile CRESCO
       transaction path. Capture success, boundary, exact Allow Once, changed-recipient refusal, replay refusal,
-      before/after state, runtime receipts, and commit/deployment binding.
+      before/after state, runtime receipts, receipt validation output, and commit/deployment binding.

@@ -1,6 +1,6 @@
 # CRESCO Key — CURRENT
 
-Updated: 2026-10-04
+Updated: 2026-10-05
 
 ## Project status
 
@@ -160,6 +160,31 @@ Truth boundary:
 - production-wallet compatibility: **false**
 - full Live Core Loop: **false**
 
+
+## Mobile G1 receipt validation readiness
+
+**MOBILE_G1_RECEIPT_VALIDATION_READY — PROVEN at BUILD_CONFIGURATION / LOCAL_PARTIAL scope**
+
+Merge: PR #46, merge commit `451b862f78fdf46de53877ca08d1a06dcb5d30cb`.
+
+Final head: `798ff453f62822aaa6b0d9e5bec8d82517238702`.
+
+Observed:
+
+- Devnet Tooling CI: run `37245241219` — success.
+- Receipt validator CLI: `tools/devnet/validate-mobile-g1-receipts.cjs`.
+- Validator schema: `cresco-key.mobile-g1-receipt-validation.v1`.
+- Target receipt schema: `cresco-key.mobile-g1-runtime-receipt.v1`.
+
+Truth boundary:
+
+- exported G1 receipt coverage can be validated before promotion review: **true**
+- suspicious private-key/seed/mnemonic/keypair/recovery/secret field names are flagged: **true**
+- real mobile CRESCO transaction against the distinct Devnet program: **false**
+- physical Android proof: **false**
+- production-wallet compatibility: **false**
+- full Live Core Loop: **false**
+
 ## Exact next gate
 
 **LIVE_CORE_G1 — MOBILE CRESCO TRANSACTION AGAINST DISTINCT DEVNET PROGRAM**
@@ -178,7 +203,7 @@ Available bounded inputs:
 - beneficiary public key: `DD1T86b6vSJd7avUVn23f8TaZxdKEzjRF14XzgffDRSZ`
 - deployment/bootstrap run: `37182728261`
 
-Next action: execute the mobile runtime against those public Devnet identities and use `Share latest receipt JSON` to capture the first real CRESCO transaction receipt from the product path.
+Next action: execute the mobile runtime against those public Devnet identities, use `Share latest receipt JSON` to capture the public G1 receipts, then run `npm --prefix tools/devnet run validate-mobile-g1 -- <receipt-folder>` before any G1 promotion review.
 
 The next proof must cover the product path, not a generic Memo lane:
 
@@ -273,6 +298,7 @@ Ossium is not material to the current runtime/deployment gate.
 - deterministic Devnet bootstrap tooling;
 - distinct CRESCO Key Devnet program deployment at LIVE_INTEGRATION scope;
 - deterministic Devnet payment state bootstrapped at LIVE_INTEGRATION scope;
+- mobile G1 runtime receipt export and validation tooling at BUILD_CONFIGURATION / LOCAL_PARTIAL scope;
 - Rust / relay / mobile / Devnet-tooling CI.
 
 ## Blocked / not live-proven
