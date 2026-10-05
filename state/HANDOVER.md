@@ -1,6 +1,6 @@
 # CRESCO Key — HANDOVER
 
-Updated: 2026-10-04
+Updated: 2026-10-05
 
 ## Resume rule
 
@@ -153,13 +153,32 @@ This proves receipt-capture readiness for the mobile G1 path. It does not prove 
 
 Operator instruction for the next real run: use `Share latest receipt JSON` after wallet proof, standing payment, boundary request, guardian Allow Once, exact execution, changed-recipient mutation and replay attempts.
 
+
+## Mobile G1 receipt validation readiness
+
+**MOBILE_G1_RECEIPT_VALIDATION_READY — PROVEN / BUILD_CONFIGURATION + LOCAL_PARTIAL**
+
+PR #46 is merged at merge commit `451b862f78fdf46de53877ca08d1a06dcb5d30cb`.
+
+Final head commit: `798ff453f62822aaa6b0d9e5bec8d82517238702`.
+
+Final CI evidence:
+
+- Devnet Tooling CI: `37245241219` — success.
+
+This proves the public receipt validator exists and passes tooling CI. It validates exported `cresco-key.mobile-g1-runtime-receipt.v1` coverage and flags suspicious private-key/seed/mnemonic/keypair/recovery/secret field names.
+
+It does not prove physical-device runtime, production-wallet compatibility, a CRESCO transaction, Devnet account-state changes, or Live Core Loop.
+
+Operator instruction for the next real run: after exporting all material mobile receipts, run `npm --prefix tools/devnet run validate-mobile-g1 -- <receipt-folder>` and attach the validation summary to the evidence package.
+
 ## Exact next gate
 
 **LIVE_CORE_G1 — MOBILE CRESCO TRANSACTION AGAINST DISTINCT DEVNET PROGRAM**
 
 Exact chain:
 
-`DEPLOYED DISTINCT DEVNET PROGRAM → DETERMINISTIC PAYMENT STATE → MOBILE CRESCO TRANSACTION → SUCCESS/BOUNDARY/ALLOW-ONCE/MUTATION/REPLAY RECEIPTS`
+`DEPLOYED DISTINCT DEVNET PROGRAM → DETERMINISTIC PAYMENT STATE → MOBILE CRESCO TRANSACTION → SUCCESS/BOUNDARY/ALLOW-ONCE/MUTATION/REPLAY RECEIPTS → RECEIPT VALIDATION`
 
 Ready public inputs:
 
