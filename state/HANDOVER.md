@@ -1,6 +1,6 @@
 # CRESCO Key — HANDOVER
 
-Updated: 2026-10-05
+Updated: 2026-10-06
 
 ## Resume rule
 
@@ -202,6 +202,28 @@ Remaining material product-depth gaps: mobile CRESCO Devnet transaction, physica
 Exact next owner: Codex may maintain truth/source state; the human/operator owns protected wallet/runtime/submission actions.
 
 Exact next action: return to LIVE_CORE_G1 by executing the real mobile runtime against the public Devnet identities, exporting receipts, and running the validator.
+
+## Reproducibility handoff — 2026-10-06
+
+G1 is intentionally deferred until a real Android/wallet operator can run it. No G1 claim is promoted.
+
+This step adds deterministic npm lockfiles for:
+
+- mobile app;
+- boundary relay;
+- Devnet tooling.
+
+Material capability delta: **OPERATOR_DEPTH_DELTA** for setup/reproducibility and clean-room readiness. External user capability delta remains **NONE**.
+
+Current primary workstream remains **PRODUCT_EXPLOITATION**.
+
+Exact next owner:
+
+- Codex: dependency-lock PR, CI review, and state/evidence updates;
+- human/operator: Android/wallet G1 runtime;
+- human authorization required before any protected Cloudflare relay deployment.
+
+Exact next action after this PR: verify CI, then either run G1 with Android receipts or explicitly authorize the live relay deployment gate.
 
 ## Exact next gate
 

@@ -11,7 +11,7 @@ build_lifecycle_coverage:
     Return to PRODUCT_EXPLOITATION by using the deployed distinct CRESCO Key Devnet program and deterministic bootstrap
     state to execute the real mobile CRESCO transaction path, then capture success/boundary/Allow Once/mutation/replay
     receipts with source-commit and deployment binding.
-  last_updated: 2026-10-05
+  last_updated: 2026-10-06
 
   canonical_baseline_reconciliation:
     current_central_baseline: 0.1.56-canonical-baseline-drift-tripwire-promoted
@@ -23,6 +23,7 @@ build_lifecycle_coverage:
     material_delta: baseline pinning plus Product Reality v1.5 drift tripwire; no product-law retrofit
     first_live_slice_proven: false
     material_user_capability_delta_since_previous_milestone: NONE
+    operator_depth_delta_since_previous_milestone: deterministic npm dependency lockfiles for mobile, relay, and Devnet tooling
     workstream_drift_status: WORKSTREAM_DRIFT
     current_primary_workstream: PRODUCT_EXPLOITATION
     valid_stop_condition: NONE
@@ -167,8 +168,8 @@ build_lifecycle_coverage:
     post_vertical_slice_reason: First real live core vertical slice is not yet proven; review activates immediately after that proof.
     observability_and_receipts: PARTIAL
     judge_or_operator_self_serve: MISSING
-    setup_and_reproducibility: MISSING
-    clean_room_core_path: MISSING
+    setup_and_reproducibility: PARTIAL
+    clean_room_core_path: PARTIAL
     external_dependency_failure_behavior: MISSING
     production_like_behavior: MISSING
     evidence_pointer: evidence/REALITY-LEDGER.md
@@ -180,7 +181,7 @@ build_lifecycle_coverage:
       - physical Android / production-wallet evidence
       - external operator trial
       - TRACE/design terminal verdict
-      - clean-room setup
+      - clean-room setup still needs a fresh install/run proof after dependency lockfiles
 
   competitive_judge_cycle:
     applicable: true

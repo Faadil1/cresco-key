@@ -1,6 +1,6 @@
 # CRESCO Key — CURRENT
 
-Updated: 2026-10-05
+Updated: 2026-10-06
 
 ## Project status
 
@@ -215,6 +215,32 @@ Next highest-value depth delta: execute the real mobile CRESCO transaction path 
 Valid stop condition: **NONE**. Protected human actions still exist for wallet/key custody, external secrets and final submission, but no valid stop condition currently replaces the product-exploitation step.
 
 Demo packaging permission: **SECONDARY_SUPPORT_ONLY**. Demo packaging may only follow or support live product evidence; it must not displace LIVE_CORE_G1.
+
+## Reproducibility / clean-room dependency lock delta — 2026-10-06
+
+G1 mobile physical-device execution remains pending and is not promoted.
+
+Material user capability delta since previous milestone: **NONE** for external users; **OPERATOR_DEPTH_DELTA** for clean-room setup/reproducibility because npm dependency resolution is now pinned for mobile, relay and Devnet tooling.
+
+Current primary workstream: **PRODUCT_EXPLOITATION**, with G1 explicitly deferred until an Android/wallet operator can execute the real mobile path.
+
+Workstream drift status: **MITIGATED_FOR_THIS_STEP**. This step is not demo/story/packaging work; it reduces a recorded product-depth gap: setup/reproducibility and judge/operator self-serve.
+
+Files added:
+
+- `apps/mobile/package-lock.json`
+- `services/relay/package-lock.json`
+- `tools/devnet/package-lock.json`
+
+Truth boundary:
+
+- deterministic dependency lockfiles improve clean-room reproducibility;
+- they do **not** prove physical Android runtime, production wallet compatibility, Cloudflare live relay deployment, a mobile CRESCO transaction, or Live Core Loop.
+
+Next highest-value depth delta remains one of:
+
+1. execute LIVE_CORE_G1 with a real Android/wallet operator; or
+2. if explicitly authorized, deploy the live Cloudflare boundary relay and capture its deployment/health receipt.
 
 ## Exact next gate
 
