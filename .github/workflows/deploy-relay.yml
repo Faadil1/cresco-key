@@ -23,7 +23,7 @@ jobs:
           node-version: "22.13.0"
 
       - name: Install
-        run: npm install
+        run: npm ci
 
       - name: Test relay
         run: npm test
