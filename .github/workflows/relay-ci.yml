@@ -22,8 +22,8 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: "20.19.0"
+          node-version: "22.13.0"
       - name: Install
-        run: npm install
+        run: npm ci
       - name: Test and dry-run Worker build
         run: npm run check
