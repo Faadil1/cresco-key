@@ -1,6 +1,6 @@
 # CRESCO Key — Reality Ledger
 
-Updated: 2026-10-05
+Updated: 2026-10-06
 
 Purpose: distinguish what is **LIVE / TESTED / LOCAL / MOCKED / PLANNED / NOT PROVEN** today. The ledger is factual state, not marketing copy.
 
@@ -48,10 +48,10 @@ Purpose: distinguish what is **LIVE / TESTED / LOCAL / MOCKED / PLANNED / NOT PR
 | Failure/recovery on full product loop | PARTIAL | UNKNOWN | Wallet cancellation and app relaunch are locally observed; RPC/relay/product-state recovery not yet integrated | Representative recovery run |
 | Runtime → receipt → commit → deployment binding for live product | PARTIAL LIVE_INTEGRATION | OBSERVED_FOR_PROGRAM_AND_BOOTSTRAP | Evidence Graph binds run `37182728261`, artifact `11295688079`, commit `0db1f52ff35961fdd1191cff61f8324fe470f504`, program `6SoGabSLX2YHMjFx1ynbz5nLFtd8Z7hURmszddU6DeJP` | Need equivalent relay/mobile hero binding |
 | Engineering Quality receipt | GOVERNANCE / QUALITY | OBSERVED | `evidence/engineering-quality/ENGINEERING-QUALITY-RECEIPT-2026-10-02.json` — **PASS_WITH_ACCEPTED_DEBT**; Mobile CI `37039621579` and Relay CI `37039621677` pass | Issue #33 dependency/reproducibility debt must be re-evaluated before PRE_SUBMISSION / RELEASE |
-| Mobile dependency audit debt | GOVERNANCE / SECURITY-DEBT | OBSERVED | Mobile CI `37039621579`: 13 transitive audit findings (8 moderate / 5 high), including node-forge via Expo tooling; issue #33 tracks remediation | Do not force-downgrade Expo; add deterministic dependency locking and re-evaluate before PRE_SUBMISSION / RELEASE |
+| Mobile dependency audit debt | GOVERNANCE / SECURITY-DEBT | OBSERVED | Mobile CI `37039621579`: 13 transitive audit findings (8 moderate / 5 high), including node-forge via Expo tooling; issue #33 tracks remediation. Deterministic npm lockfiles are added for mobile, relay and Devnet tooling on 2026-10-06. | Do not force-downgrade Expo; re-evaluate audit findings before PRE_SUBMISSION / RELEASE |
 | TRACE / Design Experience terminal verdict | NOT_IMPLEMENTED / GOVERNANCE | UNKNOWN | Design collaboration exists; no TRACE verdict | Run before design-sensitive terminal transition |
 | External user/operator trial | NOT_IMPLEMENTED | UNKNOWN | None recorded | Usable live build |
-| Clean-room / judge self-serve core path | NOT_IMPLEMENTED | UNKNOWN | Setup scripts/docs exist; no fresh-environment proof | Live core first |
+| Clean-room / judge self-serve core path | PARTIAL | UNKNOWN | Setup scripts/docs exist; deterministic npm lockfiles now exist for mobile, relay and Devnet tooling; no fresh-environment proof yet | Fresh install/run proof and live core still required |
 | Mainnet production readiness | N/A P0 | UNKNOWN | Not claimed | Out of P0 |
 | Production custody / KYC | N/A P0 | UNKNOWN | Not claimed | Out of P0 |
 | Real minor securities execution | N/A P0 | UNKNOWN | Not claimed | Out of P0 |
