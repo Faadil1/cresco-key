@@ -741,19 +741,13 @@ export function BoundaryWorkspace() {
 
   if (!mode) {
     return (
-      <View style={styles.section}>
+      <ScrollView contentContainerStyle={styles.section}>
         <Text style={styles.sectionTitle}>P0 mobile workspace</Text>
         <Text style={styles.body}>
           Choose the human role on this device. Each role still uses its own
           local wallet session.
         </Text>
         <JudgePathCard />
-        <CoreLoopCard
-          intentLoaded={Boolean(intent)}
-          relayDecision={relayDecisionLabel(relayRequest)}
-          exactUse={exactUseLabel(exactExecutionState)}
-          receiptReady={Boolean(latestReceiptJson)}
-        />
         <View style={styles.truthCard}>
           <Text style={styles.truthTitle}>Local wallet proof</Text>
           <Text style={styles.body}>{walletProof}</Text>
@@ -772,7 +766,13 @@ export function BoundaryWorkspace() {
         <Pressable style={styles.button} onPress={() => setMode("GUARDIAN")}>
           <Text style={styles.buttonText}>Guardian flow</Text>
         </Pressable>
-      </View>
+        <CoreLoopCard
+          intentLoaded={Boolean(intent)}
+          relayDecision={relayDecisionLabel(relayRequest)}
+          exactUse={exactUseLabel(exactExecutionState)}
+          receiptReady={Boolean(latestReceiptJson)}
+        />
+      </ScrollView>
     );
   }
 
