@@ -42,6 +42,7 @@ Purpose: distinguish what is **LIVE / TESTED / LOCAL / MOCKED / PLANNED / NOT PR
 | Exact approved action succeeds once | NOT_IMPLEMENTED | UNKNOWN | Code path exists; no live receipt | Integrated hero run |
 | Replay runtime refusal | NOT_IMPLEMENTED | UNKNOWN | Code path exists; no live receipt | Integrated hero run |
 | Standing Key remains unchanged by Allow Once in integrated loop | NOT_IMPLEMENTED | UNKNOWN | Program semantics support it; no before/after live account receipt | Hero run + before/after state |
+| Guardian "Not this time" refusal in mobile Guardian flow | LOCAL / PRODUCT_CODE | OBSERVED_IN_CODE | Guardian UI can post `REFUSED` to the relay and export a `GUARDIAN_REFUSE` public runtime receipt. | CI/runtime, live relay, physical Android, production wallet, and Devnet transaction remain separate evidence requirements. |
 | Boundary relay code exists | LOCAL | OBSERVED | Worker/Durable Object source + tests | Live deployment |
 | Boundary relay is live | NOT_IMPLEMENTED | UNKNOWN | Deployment workflow exists | Cloudflare deployment receipt/runtime identity |
 | Full two-device Live Core Loop | NOT_IMPLEMENTED / LIVE TARGET | UNKNOWN | Components exist separately; no same-product integrated run | Program + bootstrap + relay + mobile + representative scenarios + binding |

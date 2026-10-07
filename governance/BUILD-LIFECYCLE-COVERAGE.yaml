@@ -6,25 +6,24 @@ build_lifecycle_coverage:
   source_of_truth: GitHub
   current_owner: pbpd_or_existing_product_owner
   current_stage: DELIVER_TO_LIVE_DEPTH
-  exact_next_gate: LIVE_CORE_G1_MOBILE_CRESCO_TRANSACTION_AGAINST_DISTINCT_DEVNET_PROGRAM
+  exact_next_gate: LIVE_RELAY_DEPLOYMENT_WITH_HUMAN_AUTHORIZATION_OR_FINAL_LIVE_CORE_G1
   exact_next_action: >-
-    Return to PRODUCT_EXPLOITATION by using the deployed distinct CRESCO Key Devnet program and deterministic bootstrap
-    state to execute the real mobile CRESCO transaction path, then capture success/boundary/Allow Once/mutation/replay
-    receipts with source-commit and deployment binding.
-  last_updated: 2026-10-06
+    Merge the guardian refusal product delta after CI, then either authorize live relay deployment
+    or run final physical Android/prod-wallet G1 when the operator is available.
+  last_updated: 2026-10-07
 
   canonical_baseline_reconciliation:
-    current_central_baseline: 0.1.56-canonical-baseline-drift-tripwire-promoted
-    canonical_baseline_exact_sha: 8a7e8a4ff5461641c595e2cf052a95fdc32a6340
+    current_central_baseline: 0.1.58-eval-driven-reliability-v1-promoted
+    canonical_baseline_exact_sha: 2ef16fdcf2166385d08676c8dd680962cc3745e2
     central_active_project_reconciliation_wave_merge: fb062d6cd792cab8e27c342120824f285120bc2f
     product_reality_policy_version: 1.5.0
     project_source_head_before_reconciliation: b75225ef59386b81aef3a61b2f70c13a3f6f7ca4
-    baseline_delta_status: MATERIAL_RECONCILIATION_REQUIRED
-    material_delta: baseline pinning plus Product Reality v1.5 drift tripwire; no product-law retrofit
+    baseline_delta_status: NON_MATERIAL_DELTA
+    material_delta: Eval-Driven Reliability v1 is non-material for deterministic mobile guardian refusal path; no AI/agent/stochastic retrofit triggered.
     first_live_slice_proven: false
-    material_user_capability_delta_since_previous_milestone: NONE
+    material_user_capability_delta_since_previous_milestone: GUARDIAN_REFUSAL_PATH_ADDED_AT_BUILD_CONFIGURATION_SCOPE
     operator_depth_delta_since_previous_milestone: deterministic npm dependency lockfiles for mobile, relay, and Devnet tooling
-    workstream_drift_status: WORKSTREAM_DRIFT
+    workstream_drift_status: CLEAR_FOR_THIS_PRODUCT_DELTA
     current_primary_workstream: PRODUCT_EXPLOITATION
     valid_stop_condition: NONE
     demo_packaging_permission: SECONDARY_SUPPORT_ONLY
@@ -34,7 +33,7 @@ build_lifecycle_coverage:
       - COMPLETE
       - RELEASE_READY
       - SUBMISSION_READY
-    next_highest_value_depth_delta: LIVE_CORE_G1_MOBILE_CRESCO_TRANSACTION_AGAINST_DISTINCT_DEVNET_PROGRAM
+    next_highest_value_depth_delta: LIVE_RELAY_DEPLOYMENT_IF_AUTHORIZED_THEN_FINAL_LIVE_CORE_G1
 
   bootstrap:
     faadil_system_router_activated: true
