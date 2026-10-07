@@ -1,6 +1,6 @@
 # CRESCO Key — Conditional Gateway Registry
 
-Updated: 2026-10-05  
+Updated: 2026-10-07  
 Project status: **ACTIVE**
 
 ## Status vocabulary
@@ -44,11 +44,11 @@ A blank, omitted, or forgotten gate is never a PASS.
 
 | Gateway | Activation | Status | Current condition |
 |---|---|---:|---|
-| Canonical baseline pin | Active project at next material touch | **PROVEN** | Project truth is reconciled to `0.1.56-canonical-baseline-drift-tripwire-promoted`, continuity SHA `8a7e8a4ff5461641c595e2cf052a95fdc32a6340`, central wave merge `fb062d6cd792cab8e27c342120824f285120bc2f`, Product Reality v1.5.0. |
-| Baseline delta classification | Canon advancement or stale project pin | **ACTIVE** | Resume classification was **MATERIAL_RECONCILIATION_REQUIRED** because local project truth still referenced v1.3 and lacked v1.5 drift fields. This registry records the reconciliation; affected terminal promotions remain blocked until product gaps are resolved. |
-| Drift Tripwire | Every material milestone | **ACTIVE** | `material_user_capability_delta_since_previous_milestone = NONE` after #46-#49. Validator/receipt/state work did not prove a new user/operator capability. |
+| Canonical baseline pin | Active project at next material touch | **PROVEN** | Project truth is now additionally reconciled at this material touch to `0.1.59-adaptive-best-of-system-execution-v1-promoted`, exact central main SHA `3243720286b5d17d9415c9d12ff5ac742ab773d6`, while preserving Product Reality v1.5.0 obligations. |
+| Baseline delta classification | Canon advancement or stale project pin | **PROVEN** | Current touch classification is **NON_MATERIAL_DELTA** for CRESCO product/runtime obligations. Adaptive Best-of-System Execution v1 changes execution routing, not CRESCO product law or G1 proof requirements. Terminal promotions remain blocked by product gaps, not by baseline reconciliation. |
+| Drift Tripwire | Every material milestone | **ACTIVE** | Latest material delta after PR #56: `JUDGE_SELF_ORIENTATION_LOOP_MERGED_TO_MAIN_AT_BUILD_CONFIGURATION_SCOPE`. It improves judge/operator orientation but does not prove Live Core Loop. |
 | Workstream Drift | Demo/evidence work while product gaps remain and user delta is NONE/UNKNOWN | **BLOCKED** | **WORKSTREAM_DRIFT** is emitted. Demo/evidence/packaging work must stop as the primary lane; current primary workstream is restored to **PRODUCT_EXPLOITATION**. |
-| Demo packaging permission | Before story/video/README/submission packaging work | **BLOCKED** | Packaging is **SECONDARY_SUPPORT_ONLY** until LIVE_CORE_G1 or another material live product delta advances. |
+| Demo packaging permission | Before story/video/README/submission packaging work | **ACTIVE** | Packaging is **CONTINGENCY_SUPPORT_ONLY** under deadline pressure and external Android-operator uncertainty. It may prepare truthful fallback materials but cannot upgrade G1/LIVE/READY/SUBMITTED claims. |
 
 ## Product reality, evidence, and terminal gates
 
@@ -61,7 +61,7 @@ A blank, omitted, or forgotten gate is never a PASS.
 | Reality Ledger | Competitive/release claims | **PROVEN** | `evidence/REALITY-LEDGER.md` exists and is reconciled at this material touch; it must stay current. |
 | Runtime / Commit / Deployment Binding | Any live runtime claim | **ACTIVE** | Distinct CRESCO Key Devnet program is now bound to run `37182728261`, commit `0db1f52ff35961fdd1191cff61f8324fe470f504`, deploy signature `5o2zN6qo9KY9Jhz5VNuuvaRr95p7gdSj858e28nW1PRDYHgpPx88uE2y4Kw4Funh4bzm3evEicmAY1Pf5Ygej2g8`, and artifact digest `sha256:45c8031ed62c0b218e865b51ee1e855f8e8e26868c55e1a21af5695b46f3f819`; live relay and integrated hero runtime are still missing. |
 | Observability / Reproducibility | Runtime/evidence work | **ACTIVE** | CI artifacts and bounded receipts exist for program/bootstrap; relay/mobile hero receipts and clean-room run are missing. |
-| Deterministic Demo Gate | Before recording | **PENDING** | Hero sequence is locked, but the same-product live path must exist before deterministic fallback/replay can be treated as supporting evidence. |
+| Deterministic Demo Gate | Before recording | **ACTIVE** | Deadline fallback recording may use proven APK/emulator/MWA/program evidence with explicit no-G1 truth boundaries. If late physical G1 receipts arrive, replace fallback claims with validated runtime evidence. |
 | Judge Performance Assurance | After product depth, before submission | **PENDING** | Signature moment exists conceptually; judge pacing, hostile Q&A, claim→demo→receipt chain and final self-serve path wait on live depth. |
 | Submission Integrity Gate | Before final submission | **PENDING** | Official requirements are known; final APK/runtime/video/deck/repository/evidence consistency cannot be checked until the build reaches terminal assurance. |
 | Project Finisher / Terminal Assurance | After BUILD_CANDIDATE_READY | **BLOCKED** | BUILD_CANDIDATE_READY has not been reached. |
@@ -103,7 +103,7 @@ A blank, omitted, or forgotten gate is never a PASS.
 | Android standalone emulator runtime | Mobile runtime | **PROVEN** | Run `36669206551` proved standalone CRESCO launch + Connect wallet surface at LOCAL/PARTIAL scope. |
 | MWA session decline/authorize/signMessage/relaunch | Mobile wallet behavior | **PROVEN** | Run `36699897176` proved the bounded emulator session sequence at LOCAL/PARTIAL scope. |
 | Real MWA Devnet sign/send | Transaction technical proof | **PENDING** | Not proven. Latest run `36761591880` failed before transaction runtime. Separate PR #28/issue #27 were closed/deferred under v1.3; sign/send should now be proven through the real CRESCO product path where practical. |
-| Physical Android | Strongest target-device evidence | **UNKNOWN** | No physical Android runtime has been observed. Lack of owner device does not change architecture; borrow/obtain one later for final evidence if feasible. |
+| Physical Android | Strongest target-device evidence | **BLOCKED** | No physical Android runtime has been observed. Current operator availability is uncertain; one potential operator is unresponsive and another Android device has a broken screen. This is an external operator/device blocker, not a product success. |
 | Production-wallet compatibility | Real wallet target | **UNKNOWN** | Official test wallets prove protocol behavior only; production-wallet behavior remains unobserved. |
 | Solana authority program code | Smart-contract mechanism | **PROVEN** | Exact payment/allowance logic and negative invariants exist in code/tests at code-test scope. |
 | Distinct CRESCO Key Devnet program | Load-bearing live integration | **PROVEN** | Run `37182728261` deployed program `6SoGabSLX2YHMjFx1ynbz5nLFtd8Z7hURmszddU6DeJP` to Devnet from commit `0db1f52ff35961fdd1191cff61f8324fe470f504`; deploy signature `5o2zN6qo9KY9Jhz5VNuuvaRr95p7gdSj858e28nW1PRDYHgpPx88uE2y4Kw4Funh4bzm3evEicmAY1Pf5Ygej2g8`. |
@@ -115,7 +115,7 @@ A blank, omitted, or forgotten gate is never a PASS.
 | Solana Pay / payment intent | Mobile hero input | **ACTIVE** | Parser/QR code exists; real integrated scan/payment execution remains to be proven. |
 | Boundary relay code | Remote guardian coordination | **PROVEN** | Coordination-only code/tests exist at code/test scope. |
 | Live Cloudflare boundary relay | Two-device live experience | **BLOCKED** | Deployment receipt/runtime identity still missing. |
-| Full two-device Live Core Loop | P0 hero value | **BLOCKED** | Requires live relay + mobile MWA + real success/boundary/grant/mutation/replay consequences + evidence binding against the deployed distinct program. |
+| Full two-device Live Core Loop | P0 hero value | **BLOCKED** | Requires live relay + mobile MWA + real success/boundary/grant/mutation/replay consequences + evidence binding against the deployed distinct program. If no physical operator is available before deadline, submit only the truthful fallback packet. |
 
 ## Other transactional gateways
 
