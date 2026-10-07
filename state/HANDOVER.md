@@ -53,6 +53,30 @@ Exact next gate: **LIVE_RELAY_DEPLOYMENT_WITH_HUMAN_AUTHORIZATION_OR_FINAL_LIVE_
 Exact next owner: **Codex for branch/product readiness; human operator for protected deploy and Android/wallet G1**.
 Exact next action: merge the guardian refusal product delta after CI, then either authorize live relay deploy or wait for final G1 Android execution.
 
+## PR #52 merge binding - 2026-10-07
+
+Merged product delta: Guardian **Not this time** refusal path in the mobile boundary flow.
+
+Bindings:
+- PR: https://github.com/Faadil1/cresco-key/pull/52
+- merge commit: `a52000c0c16f073a39c295618e2f9522217e007d`
+- product branch head before merge: `430db6a79628df185fa257db535ac461bf34b000`
+- merged at: `2026-10-07T10:19:27Z`
+- CI evidence on PR head:
+  - `verify-mobile`: success
+  - `configured-mobile-build`: success
+  - `build-debug-apk`: success
+  - `emulator-smoke`: success
+  - `mwa-session`: success
+
+Truth boundary:
+- This proves repository integration plus CI/build/emulator evidence for the Guardian refusal product path.
+- It does **not** prove a live Cloudflare relay deployment.
+- It does **not** prove physical Android/prod-wallet G1.
+- It does **not** prove a mobile CRESCO transaction or complete Live Core Loop.
+
+Material user capability delta since previous milestone: **GUARDIAN_REFUSAL_PATH_MERGED_TO_MAIN_AT_BUILD_CONFIGURATION_SCOPE**.
+
 ## What is locked
 
 - Product: **CRESCO Key**
