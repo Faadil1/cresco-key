@@ -323,6 +323,64 @@ Truth boundary:
 
 Material user/operator capability delta since previous milestone: **RELAY_OPERATOR_READY_CHECK_MERGED_TO_MAIN_AT_BUILD_CONFIGURATION_SCOPE**.
 
+
+## PR #56 merge binding and no-G1 contingency - 2026-10-07
+
+Merged product/readiness delta: mobile judge-path UX surface.
+
+Bindings:
+- PR: https://github.com/Faadil1/cresco-key/pull/56
+- merge commit: `32faa302e0253485482f6e1ac1d7c3bd71b0df14`
+- product branch head before merge: `d6c11d4231d220378485a06d3b85b2073bfed48f`
+- merged at: `2026-10-07T23:12:41Z`
+- CI evidence on PR head:
+  - `verify-mobile`: success
+  - `configured-mobile-build`: success
+  - `build-debug-apk`: success after runner retry
+  - `emulator-smoke`: success
+  - `mwa-session`: success
+
+Central canonical baseline observed at this material touch: `0.1.59-adaptive-best-of-system-execution-v1-promoted` at `3243720286b5d17d9415c9d12ff5ac742ab773d6`.
+
+Baseline delta status: **NON_MATERIAL_DELTA** for CRESCO product/runtime obligations. Adaptive Best-of-System Execution v1 affects execution routing but does not change CRESCO product law, authority semantics, Solana/MWA requirements, or the remaining G1 proof obligations.
+
+First live slice status: **NOT PROVEN**.
+
+Material user/operator capability delta since previous milestone: **JUDGE_SELF_ORIENTATION_LOOP_MERGED_TO_MAIN_AT_BUILD_CONFIGURATION_SCOPE**. External judges/operators can now see the intended product loop directly in the mobile app before the final physical G1 run.
+
+Current submission contingency: prepare `docs/SUBMISSION-CONTINGENCY-NO-G1-2026-10-07.md` as a deadline fallback while preserving a late-G1 insertion slot if a physical Android/prod-wallet operator becomes available tonight.
+
+Truth boundary:
+- repository integration plus PR-head CI/build/emulator/MWA evidence is proven;
+- no physical Android proof is claimed;
+- no production-wallet compatibility is claimed;
+- no mobile CRESCO transaction or full Live Core Loop is claimed;
+- final competition submission remains a protected human action and is not executed by this state update.
+
+Current primary workstream: **PRODUCT_EXPLOITATION_WITH_DEADLINE_CONTINGENCY**.
+
+Workstream drift status: **NOT_DRIFT_FOR_THIS_STEP** only while contingency packaging preserves explicit truth boundaries and does not claim G1, LIVE, COMPLETE, READY, or SUBMITTED.
+
+Valid stop condition: **PARTIAL_EXTERNAL_OPERATOR_BLOCKER** for physical Android/prod-wallet G1 if no operator/device is available before the submission safety boundary.
+
+Demo packaging permission: **CONTINGENCY_SUPPORT_ONLY**. Demo/video/deck work may proceed only as truthful fallback packaging, not as evidence upgrade.
+
+Remaining material product-depth gaps:
+- physical Android runtime;
+- production-wallet compatibility;
+- live Cloudflare relay deployment receipt;
+- mobile CRESCO transaction against the distinct Devnet program;
+- in-bounds/boundary/Allow Once/mutation/replay runtime receipts;
+- receipt validation on real G1 receipts;
+- clean-room/judge self-serve final replay;
+- final submission receipt.
+
+Exact next gate: **NO_G1_CONTINGENCY_SUBMISSION_PACKET_OR_LATE_LIVE_CORE_G1**.
+
+Exact next owner: **Codex for packet/state updates; human operator for Android/wallet G1; human for final submission**.
+
+Exact next action: package the truthful fallback evidence/video/deck around build/emulator/MWA/program facts, and replace the fallback with validated G1 receipts if the Android operator becomes available in time.
+
 ## Exact next gate
 
 **LIVE_CORE_G1 — MOBILE CRESCO TRANSACTION AGAINST DISTINCT DEVNET PROGRAM**
