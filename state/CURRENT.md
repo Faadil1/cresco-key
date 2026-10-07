@@ -263,6 +263,30 @@ Current primary workstream: **PRODUCT_EXPLOITATION**.
 Workstream drift status: **CLEAR_FOR_THIS_PRODUCT_DELTA**.
 Next highest-value depth delta: live Cloudflare relay deployment if explicitly authorized, otherwise final LIVE_CORE_G1 with Android/wallet operator evidence.
 
+## PR #52 merge binding - 2026-10-07
+
+Merged product delta: Guardian **Not this time** refusal path in the mobile boundary flow.
+
+Bindings:
+- PR: https://github.com/Faadil1/cresco-key/pull/52
+- merge commit: `a52000c0c16f073a39c295618e2f9522217e007d`
+- product branch head before merge: `430db6a79628df185fa257db535ac461bf34b000`
+- merged at: `2026-10-07T10:19:27Z`
+- CI evidence on PR head:
+  - `verify-mobile`: success
+  - `configured-mobile-build`: success
+  - `build-debug-apk`: success
+  - `emulator-smoke`: success
+  - `mwa-session`: success
+
+Truth boundary:
+- This proves repository integration plus CI/build/emulator evidence for the Guardian refusal product path.
+- It does **not** prove a live Cloudflare relay deployment.
+- It does **not** prove physical Android/prod-wallet G1.
+- It does **not** prove a mobile CRESCO transaction or complete Live Core Loop.
+
+Material user capability delta since previous milestone: **GUARDIAN_REFUSAL_PATH_MERGED_TO_MAIN_AT_BUILD_CONFIGURATION_SCOPE**.
+
 ## Exact next gate
 
 **LIVE_CORE_G1 — MOBILE CRESCO TRANSACTION AGAINST DISTINCT DEVNET PROGRAM**
