@@ -1,6 +1,6 @@
 # CRESCO Key — HANDOVER
 
-Updated: 2026-10-06
+Updated: 2026-10-07
 
 ## Resume rule
 
