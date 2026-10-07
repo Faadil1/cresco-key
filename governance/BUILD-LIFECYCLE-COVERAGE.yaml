@@ -6,7 +6,7 @@ build_lifecycle_coverage:
   source_of_truth: GitHub
   current_owner: pbpd_or_existing_product_owner
   current_stage: DELIVER_TO_LIVE_DEPTH
-  exact_next_gate: LIVE_CORE_G1_MOBILE_CRESCO_TRANSACTION_AGAINST_DISTINCT_DEVNET_PROGRAM
+  exact_next_gate: LIVE_RELAY_DEPLOYMENT_WITH_HUMAN_AUTHORIZATION_OR_FINAL_LIVE_CORE_G1_MOBILE_CRESCO_TRANSACTION_AGAINST_DISTINCT_DEVNET_PROGRAM
   exact_next_action: >-
     Return to PRODUCT_EXPLOITATION by using the deployed distinct CRESCO Key Devnet program and deterministic bootstrap
     state to execute the real mobile CRESCO transaction path, then capture success/boundary/Allow Once/mutation/replay
@@ -14,8 +14,8 @@ build_lifecycle_coverage:
   last_updated: 2026-10-06
 
   canonical_baseline_reconciliation:
-    current_central_baseline: 0.1.56-canonical-baseline-drift-tripwire-promoted
-    canonical_baseline_exact_sha: 8a7e8a4ff5461641c595e2cf052a95fdc32a6340
+    current_central_baseline: 0.1.58-eval-driven-reliability-v1-promoted
+    canonical_baseline_exact_sha: 2ef16fdcf2166385d08676c8dd680962cc3745e2
     central_active_project_reconciliation_wave_merge: fb062d6cd792cab8e27c342120824f285120bc2f
     product_reality_policy_version: 1.5.0
     project_source_head_before_reconciliation: b75225ef59386b81aef3a61b2f70c13a3f6f7ca4
