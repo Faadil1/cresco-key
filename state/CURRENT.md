@@ -1,6 +1,6 @@
 # CRESCO Key — CURRENT
 
-Updated: 2026-10-06
+Updated: 2026-10-07
 
 ## Project status
 
@@ -241,6 +241,27 @@ Next highest-value depth delta remains one of:
 
 1. execute LIVE_CORE_G1 with a real Android/wallet operator; or
 2. if explicitly authorized, deploy the live Cloudflare boundary relay and capture its deployment/health receipt.
+
+## Guardian refusal path delta - 2026-10-07
+
+Central canonical baseline observed at this material touch: `0.1.58-eval-driven-reliability-v1-promoted` at `2ef16fdcf2166385d08676c8dd680962cc3745e2`.
+
+Baseline delta status: **NON_MATERIAL_DELTA**. Eval-Driven Reliability v1 is not materially triggered by this deterministic mobile/relay product-path change because it does not add or modify AI, agentic, stochastic, or load-bearing model behavior.
+
+G1 remains intentionally deferred to the final physical Android/wallet proof.
+
+Material user capability delta since previous milestone: **GUARDIAN_REFUSAL_PATH_ADDED_AT_BUILD_CONFIGURATION_SCOPE**. The Guardian mobile flow can now choose **Not this time** on a pending boundary request, records a `REFUSED` relay event, and emits a public `GUARDIAN_REFUSE` runtime receipt.
+
+Truth boundary:
+- code/build capability only until CI/runtime evidence is observed;
+- no live Cloudflare relay deployment is claimed;
+- no physical Android proof is claimed;
+- no production-wallet compatibility is claimed;
+- no mobile CRESCO transaction or Live Core Loop is claimed.
+
+Current primary workstream: **PRODUCT_EXPLOITATION**.
+Workstream drift status: **CLEAR_FOR_THIS_PRODUCT_DELTA**.
+Next highest-value depth delta: live Cloudflare relay deployment if explicitly authorized, otherwise final LIVE_CORE_G1 with Android/wallet operator evidence.
 
 ## Exact next gate
 
