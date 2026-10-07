@@ -51,6 +51,7 @@ type G1ReceiptScenario =
   | "STANDING_PAYMENT"
   | "BOUNDARY_REQUEST"
   | "GUARDIAN_ALLOW_ONCE"
+  | "GUARDIAN_REFUSE"
   | "EXACT_ALLOWANCE_EXECUTION"
   | "CHANGED_RECIPIENT_MUTATION";
 
@@ -514,6 +515,42 @@ export function BoundaryWorkspace() {
     }
   };
 
+  const refuseBoundaryRequest = async () => {
+    if (!guardianCapability || !relayRequest) return;
+
+    if (relayRequest.status !== "PENDING") {
+      setStatus(`Guardian refusal blocked in relay state ${relayRequest.status}.`);
+      return;
+    }
+
+    setBusy(true);
+    setStatus("Recording guardian refusal. No allowance will be granted.");
+
+    try {
+      const request = await postBoundaryRelayEvent(
+        guardianCapability.requestId,
+        guardianCapability.relayToken,
+        { type: "REFUSED" },
+      );
+
+      setRelayRequest(request);
+      recordReceipt("GUARDIAN_REFUSE", {
+        state: "REFUSED",
+        relayStatus: request.status,
+        requestId: request.requestId,
+        boundary:
+          "Guardian chose Not this time. No allowance was granted and the standing Key did not move.",
+      });
+      setStatus(
+        "Guardian refused this exact request. No allowance was granted; the standing Key did not move.",
+      );
+    } catch (error) {
+      setStatus(error instanceof Error ? error.message : "REFUSE_REQUEST_FAILED");
+    } finally {
+      setBusy(false);
+    }
+  };
+
   const grantExactAllowanceOnce = async () => {
     if (!guardianCapability || !relayRequest || !account) return;
 
@@ -764,6 +801,16 @@ export function BoundaryWorkspace() {
           <Pressable
             disabled={busy}
             style={styles.button}
+            onPress={refuseBoundaryRequest}
+          >
+            <Text style={styles.buttonText}>Not this time</Text>
+          </Pressable>
+        ) : null}
+
+        {guardianCapability && relayRequest?.status === "PENDING" ? (
+          <Pressable
+            disabled={busy}
+            style={styles.button}
             onPress={grantExactAllowanceOnce}
           >
             <Text style={styles.buttonText}>Allow this exact payment once</Text>
@@ -914,7 +961,7 @@ function LatestReceiptCard({
 
   return (
     <View style={styles.receiptCard}>
-      <Text style={styles.truthTitle}>Latest G1 runtime receipt</Text>
+      <Text style={styles.truthTitle}>Latest public runtime receipt</Text>
       <Text style={styles.receiptText} numberOfLines={8}>
         {receiptJson}
       </Text>
@@ -924,7 +971,7 @@ function LatestReceiptCard({
         onPress={() =>
           Share.share({
             message: receiptJson,
-            title: "CRESCO Key G1 runtime receipt",
+            title: "CRESCO Key public runtime receipt",
           })
         }
       >
