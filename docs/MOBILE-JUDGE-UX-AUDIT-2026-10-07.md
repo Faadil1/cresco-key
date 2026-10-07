@@ -34,6 +34,7 @@ The product concept is strong, but the previous mobile surface made judges infer
 - This audit is code-level and layout-level only; it is not a physical-device accessibility proof.
 - It does not prove G1, a live relay deployment, production wallet compatibility, or a mobile CRESCO transaction.
 - Final device testing should still verify text wrapping, touch target comfort, reduced-motion behavior, screen reader labels, and wallet handoff clarity.
+- Follow-up after PR #56 MWA evidence: the role-choice screen is now scrollable and keeps wallet proof plus role controls ahead of the checklist, so the judge-path copy does not make core controls unreachable on mobile-height viewports.
 
 ## Material capability delta
 
