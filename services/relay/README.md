@@ -48,6 +48,19 @@ Expiry is checked before reads and event application. A request at or beyond its
 
 ## API
 
+### Health
+
+`GET /health` returns a lightweight liveness response. It does not prove the relay is deploy-ready.
+
+### Readiness
+
+`GET /ready` verifies that the required Durable Object binding is configured.
+
+- `200` means the relay has the expected coordination binding.
+- `503` means the relay must fail closed because the binding is missing.
+
+This is an operator readiness check only. It does not prove mobile G1, a live CRESCO transaction, or financial authority.
+
 ### Create
 
 `POST /v1/requests`
