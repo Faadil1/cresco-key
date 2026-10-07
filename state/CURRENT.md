@@ -303,6 +303,26 @@ Current primary workstream: **PRODUCT_EXPLOITATION**.
 Workstream drift status: **CLEAR_FOR_THIS_PRODUCT_DELTA**.
 Next highest-value depth delta after this branch: human-authorized live relay deployment or final LIVE_CORE_G1 physical Android/wallet execution.
 
+## PR #54 merge binding - 2026-10-07
+
+Merged product/operator delta: relay `GET /ready` readiness endpoint.
+
+Bindings:
+- PR: https://github.com/Faadil1/cresco-key/pull/54
+- merge commit: `313a4b130261a57d971e611db27c2d38eb2dd612`
+- product branch head before merge: `ac381c0b2b38a3e0c2302b86ef5751ec4aa62317`
+- merged at: `2026-10-07T11:51:39Z`
+- CI evidence on PR head:
+  - `relay-check`: success, run `37607355212`
+
+Truth boundary:
+- This proves repository integration plus relay CI for the operator readiness endpoint.
+- It does **not** prove a live Cloudflare relay deployment.
+- It does **not** prove physical Android/prod-wallet G1.
+- It does **not** prove a mobile CRESCO transaction or complete Live Core Loop.
+
+Material user/operator capability delta since previous milestone: **RELAY_OPERATOR_READY_CHECK_MERGED_TO_MAIN_AT_BUILD_CONFIGURATION_SCOPE**.
+
 ## Exact next gate
 
 **LIVE_CORE_G1 — MOBILE CRESCO TRANSACTION AGAINST DISTINCT DEVNET PROGRAM**
