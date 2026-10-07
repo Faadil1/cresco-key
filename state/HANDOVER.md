@@ -137,6 +137,46 @@ Current primary workstream: **PRODUCT_EXPLOITATION**.
 Workstream drift status: **CLEAR_FOR_THIS_PRODUCT_DELTA**.
 Next highest-value depth delta after this branch: live relay deployment with explicit human authorization or final LIVE_CORE_G1 on physical Android/prod wallet.
 
+
+## PR #56 merge binding and no-G1 contingency - 2026-10-07
+
+Central canonical baseline observed at this material touch: `0.1.59-adaptive-best-of-system-execution-v1-promoted` at `3243720286b5d17d9415c9d12ff5ac742ab773d6`.
+
+Baseline delta status: **NON_MATERIAL_DELTA** for CRESCO product/runtime obligations. Adaptive Best-of-System Execution v1 does not change the locked product, authority model, G1 gate, or truth boundaries for this deterministic mobile product update.
+
+Merged product/readiness delta: mobile judge-path UX surface.
+
+Bindings:
+- PR: https://github.com/Faadil1/cresco-key/pull/56
+- merge commit: `32faa302e0253485482f6e1ac1d7c3bd71b0df14`
+- product branch head before merge: `d6c11d4231d220378485a06d3b85b2073bfed48f`
+- merged at: `2026-10-07T23:12:41Z`
+- PR-head checks: `verify-mobile`, `configured-mobile-build`, `build-debug-apk`, `emulator-smoke`, `mwa-session` all success.
+
+Material user/operator capability delta since previous milestone: **JUDGE_SELF_ORIENTATION_LOOP_MERGED_TO_MAIN_AT_BUILD_CONFIGURATION_SCOPE**.
+
+First live slice status: **NOT PROVEN**.
+
+Current primary workstream: **PRODUCT_EXPLOITATION_WITH_DEADLINE_CONTINGENCY**.
+
+Workstream drift status: **NOT_DRIFT_FOR_THIS_STEP** while the contingency packet preserves explicit no-G1 truth boundaries.
+
+Valid stop condition: **PARTIAL_EXTERNAL_OPERATOR_BLOCKER** if no physical Android/prod-wallet operator is available before the submission safety boundary.
+
+Demo packaging permission: **CONTINGENCY_SUPPORT_ONLY**.
+
+Contingency packet:
+- `docs/SUBMISSION-CONTINGENCY-NO-G1-2026-10-07.md`
+
+Exact next gate: **NO_G1_CONTINGENCY_SUBMISSION_PACKET_OR_LATE_LIVE_CORE_G1**.
+
+Exact next owner:
+- Codex: state, evidence map, truthful fallback copy, PR preparation;
+- human/operator: physical Android/prod-wallet G1;
+- human: final protected competition submission.
+
+Exact next action: prepare final fallback demo/deck/submission wording from proven program/APK/emulator/MWA evidence, then insert validated G1 receipts only if the operator/device appears before the deadline.
+
 ## What is locked
 
 - Product: **CRESCO Key**
