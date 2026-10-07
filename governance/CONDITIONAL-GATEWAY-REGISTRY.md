@@ -55,6 +55,7 @@ A blank, omitted, or forgotten gate is never a PASS.
 | Gateway | Activation | Status | Current condition |
 |---|---|---:|---|
 | Truth Boundary Gate | All material claims | **ACTIVE** | OBSERVED / INFERRED / UNKNOWN boundaries remain explicit; code/CI/local emulator proof is not production evidence. |
+| Guardian offchain refusal path | Mobile boundary flow | **ACTIVE** | Mobile Guardian flow can record **Not this time** as `REFUSED` and emit a public receipt at code/build scope; live relay and device runtime evidence remain pending. |
 | Negative Path Gate | All serious builds | **ACTIVE** | Wallet decline is runtime-proven; product-level 12-unit refusal, changed-recipient refusal, replay refusal and recovery remain to be proven in the integrated live path. |
 | Evidence Integrity Gate | All material proof | **ACTIVE** | LOCAL/PARTIAL/TESTED/MOCKED/NOT_PROVEN distinctions remain mandatory. Failures are preserved. |
 | Reality Ledger | Competitive/release claims | **PROVEN** | `evidence/REALITY-LEDGER.md` exists and is reconciled at this material touch; it must stay current. |
