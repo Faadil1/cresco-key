@@ -113,6 +113,30 @@ Truth boundary:
 
 Material user/operator capability delta since previous milestone: **RELAY_OPERATOR_READY_CHECK_MERGED_TO_MAIN_AT_BUILD_CONFIGURATION_SCOPE**.
 
+## Mobile judge-path UX delta - 2026-10-07
+
+Material user/operator capability delta since previous milestone: **JUDGE_SELF_ORIENTATION_LOOP_ADDED_AT_BUILD_CONFIGURATION_SCOPE**.
+
+The mobile app now exposes a judge/operator-facing product loop checklist across the role selection, young-person, and guardian surfaces:
+
+1. payment intent;
+2. boundary/guardian decision;
+3. exact retry or replay/mutation refusal;
+4. shareable public receipt.
+
+This is a product-readiness and UX clarity delta: an external reviewer can understand what the app is trying to prove before the final G1 device run.
+
+Truth boundary:
+- code/build capability only until CI completes and the branch is merged;
+- no live Cloudflare relay deployment is claimed;
+- no physical Android/prod-wallet G1 is claimed;
+- no mobile CRESCO transaction or Live Core Loop is claimed;
+- current CLOCK IN submission-comparison against live/current submissions remains **UNKNOWN** because no reliable public gallery was observed.
+
+Current primary workstream: **PRODUCT_EXPLOITATION**.
+Workstream drift status: **CLEAR_FOR_THIS_PRODUCT_DELTA**.
+Next highest-value depth delta after this branch: live relay deployment with explicit human authorization or final LIVE_CORE_G1 on physical Android/prod wallet.
+
 ## What is locked
 
 - Product: **CRESCO Key**
