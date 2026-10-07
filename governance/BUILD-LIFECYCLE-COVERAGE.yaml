@@ -21,7 +21,7 @@ build_lifecycle_coverage:
     baseline_delta_status: NON_MATERIAL_DELTA
     material_delta: Eval-Driven Reliability v1 is non-material for deterministic mobile guardian refusal path; no AI/agent/stochastic retrofit triggered.
     first_live_slice_proven: false
-    material_user_capability_delta_since_previous_milestone: RELAY_OPERATOR_READY_CHECK_ADDED_AT_BUILD_CONFIGURATION_SCOPE
+    material_user_capability_delta_since_previous_milestone: RELAY_OPERATOR_READY_CHECK_MERGED_TO_MAIN_AT_BUILD_CONFIGURATION_SCOPE
     operator_depth_delta_since_previous_milestone: deterministic npm dependency lockfiles for mobile, relay, and Devnet tooling
     workstream_drift_status: CLEAR_FOR_THIS_PRODUCT_DELTA
     current_primary_workstream: PRODUCT_EXPLOITATION
@@ -37,7 +37,10 @@ build_lifecycle_coverage:
     pr_52_merge_commit: a52000c0c16f073a39c295618e2f9522217e007d
     pr_52_head_commit: 430db6a79628df185fa257db535ac461bf34b000
     pr_52_ci_status: SUCCESS_ON_VERIFY_MOBILE_CONFIGURED_BUILD_APK_EMULATOR_SMOKE_MWA_SESSION
-    relay_readiness_endpoint_status: ACTIVE_BRANCH_PENDING_CI
+    relay_readiness_endpoint_status: MERGED_TO_MAIN_WITH_RELAY_CHECK_SUCCESS
+    pr_54_merge_commit: 313a4b130261a57d971e611db27c2d38eb2dd612
+    pr_54_head_commit: ac381c0b2b38a3e0c2302b86ef5751ec4aa62317
+    pr_54_ci_status: SUCCESS_ON_RELAY_CHECK_RUN_37607355212
 
   bootstrap:
     faadil_system_router_activated: true
