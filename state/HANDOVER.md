@@ -30,6 +30,29 @@ Current production phase:
 
 System Control Plane v1 and Integration-First Product Exploitation v1.5 were adopted prospectively on **2026-10-01**. Do not rewrite earlier history to imply those policies were already active.
 
+## Guardian refusal path delta - 2026-10-07
+
+Central canonical baseline observed at this material touch: `0.1.58-eval-driven-reliability-v1-promoted` at `2ef16fdcf2166385d08676c8dd680962cc3745e2`.
+
+Baseline delta status: **NON_MATERIAL_DELTA**. Eval-Driven Reliability v1 is not materially triggered by this deterministic mobile/relay product-path change because it does not add or modify AI, agentic, stochastic, or load-bearing model behavior.
+
+G1 remains intentionally deferred to the final physical Android/wallet proof.
+
+Material user capability delta since previous milestone: **GUARDIAN_REFUSAL_PATH_ADDED_AT_BUILD_CONFIGURATION_SCOPE**. The Guardian mobile flow can now choose **Not this time** on a pending boundary request, records a `REFUSED` relay event, and emits a public `GUARDIAN_REFUSE` runtime receipt.
+
+Remaining material product-depth gaps:
+- live Cloudflare relay deployment with human authorization;
+- physical Android/prod-wallet G1 execution;
+- mobile CRESCO transaction against Devnet;
+- representative failure/recovery evidence beyond branch-level code and CI;
+- operator self-serve clean-room replay after the next release artifact.
+
+Current primary workstream: **PRODUCT_EXPLOITATION**.
+Workstream drift status: **CLEAR_FOR_THIS_PRODUCT_DELTA**.
+Exact next gate: **LIVE_RELAY_DEPLOYMENT_WITH_HUMAN_AUTHORIZATION_OR_FINAL_LIVE_CORE_G1**.
+Exact next owner: **Codex for branch/product readiness; human operator for protected deploy and Android/wallet G1**.
+Exact next action: merge the guardian refusal product delta after CI, then either authorize live relay deploy or wait for final G1 Android execution.
+
 ## What is locked
 
 - Product: **CRESCO Key**
