@@ -169,6 +169,21 @@ function demoIntentOptions(config: ReturnType<typeof demoConfig>) {
   ].filter((option) => option.value.length > 0);
 }
 
+function relayDecisionLabel(request: BoundaryRelayRequest | null): string {
+  if (!request) return "Waiting for boundary";
+  if (request.status === "PENDING") return "Guardian decision pending";
+  if (request.status === "REFUSED") return "Not this time";
+  if (request.status === "ALLOWANCE_SUBMITTED") return "Allow once submitted";
+  return request.status;
+}
+
+function exactUseLabel(state: ExactExecutionState): string {
+  if (state === "ALLOW") return "Exact use consumed";
+  if (state === "REFUSE") return "Mutation/replay refused";
+  if (state === "UNKNOWN") return "Unknown is not success";
+  return "Not retried yet";
+}
+
 export function BoundaryWorkspace() {
   const {
     account,
@@ -732,6 +747,13 @@ export function BoundaryWorkspace() {
           Choose the human role on this device. Each role still uses its own
           local wallet session.
         </Text>
+        <JudgePathCard />
+        <CoreLoopCard
+          intentLoaded={Boolean(intent)}
+          relayDecision={relayDecisionLabel(relayRequest)}
+          exactUse={exactUseLabel(exactExecutionState)}
+          receiptReady={Boolean(latestReceiptJson)}
+        />
         <View style={styles.truthCard}>
           <Text style={styles.truthTitle}>Local wallet proof</Text>
           <Text style={styles.body}>{walletProof}</Text>
@@ -759,6 +781,13 @@ export function BoundaryWorkspace() {
       <ScrollView contentContainerStyle={styles.section}>
         <Text style={styles.eyebrow}>GUARDIAN DEVICE</Text>
         <Text style={styles.sectionTitle}>Review the exact request</Text>
+
+        <CoreLoopCard
+          intentLoaded={Boolean(relayRequest)}
+          relayDecision={relayDecisionLabel(relayRequest)}
+          exactUse={exactUseLabel(exactExecutionState)}
+          receiptReady={Boolean(latestReceiptJson)}
+        />
 
         {relayRequest ? (
           <View style={styles.card}>
@@ -834,6 +863,13 @@ export function BoundaryWorkspace() {
         Scan the exact action first. CRESCO sends that action through the
         standing Key before a guardian request is even possible.
       </Text>
+
+      <CoreLoopCard
+        intentLoaded={Boolean(intent)}
+        relayDecision={relayDecisionLabel(relayRequest)}
+        exactUse={exactUseLabel(exactExecutionState)}
+        receiptReady={Boolean(latestReceiptJson)}
+      />
 
       <Pressable style={styles.button} onPress={() => setScanning(true)}>
         <Text style={styles.buttonText}>Scan Solana Pay QR</Text>
@@ -950,6 +986,68 @@ export function BoundaryWorkspace() {
   );
 }
 
+function JudgePathCard() {
+  return (
+    <View style={styles.heroCard}>
+      <Text style={styles.eyebrow}>JUDGE PATH</Text>
+      <Text style={styles.heroTitle}>The exception moves. The boundary does not.</Text>
+      <Text style={styles.body}>
+        CRESCO Key is not another wallet screen. It is a mobile trust loop:
+        independence inside a standing Key, explicit guardian choice at the
+        boundary, and receipts when the product refuses replay or mutation.
+      </Text>
+      <View style={styles.tagRow}>
+        <Text style={styles.tag}>Mobile-first</Text>
+        <Text style={styles.tag}>Devnet</Text>
+        <Text style={styles.tag}>No silent widening</Text>
+      </View>
+    </View>
+  );
+}
+
+function CoreLoopCard({
+  intentLoaded,
+  relayDecision,
+  exactUse,
+  receiptReady,
+}: {
+  intentLoaded: boolean;
+  relayDecision: string;
+  exactUse: string;
+  receiptReady: boolean;
+}) {
+  return (
+    <View style={styles.loopCard}>
+      <Text style={styles.truthTitle}>Live core loop checklist</Text>
+      <View style={styles.stepRail}>
+        <StepPill active={intentLoaded} label="1. Intent" value={intentLoaded ? "Loaded" : "Scan or load demo"} />
+        <StepPill active={relayDecision !== "Waiting for boundary"} label="2. Boundary" value={relayDecision} />
+        <StepPill active={exactUse !== "Not retried yet"} label="3. Retry" value={exactUse} />
+        <StepPill active={receiptReady} label="4. Receipt" value={receiptReady ? "Shareable JSON" : "Not captured yet"} />
+      </View>
+    </View>
+  );
+}
+
+function StepPill({
+  active,
+  label,
+  value,
+}: {
+  active: boolean;
+  label: string;
+  value: string;
+}) {
+  return (
+    <View style={[styles.stepPill, active ? styles.stepPillActive : null]}>
+      <Text style={styles.stepLabel}>{label}</Text>
+      <Text style={styles.stepValue} numberOfLines={2}>
+        {value}
+      </Text>
+    </View>
+  );
+}
+
 function LatestReceiptCard({
   receiptJson,
   busy,
@@ -1019,6 +1117,61 @@ const styles = StyleSheet.create({
     borderRadius: 18,
     padding: 16,
     gap: 12,
+  },
+  heroCard: {
+    borderWidth: 1,
+    borderRadius: 18,
+    padding: 18,
+    gap: 10,
+    backgroundColor: "#f7f2e8",
+  },
+  heroTitle: {
+    fontSize: 21,
+    lineHeight: 26,
+    fontWeight: "800",
+  },
+  tagRow: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 8,
+  },
+  tag: {
+    borderWidth: 1,
+    borderRadius: 999,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    fontSize: 11,
+    fontWeight: "700",
+  },
+  loopCard: {
+    borderWidth: 1,
+    borderRadius: 18,
+    padding: 16,
+    gap: 12,
+    backgroundColor: "#fbfaf7",
+  },
+  stepRail: {
+    gap: 8,
+  },
+  stepPill: {
+    borderWidth: 1,
+    borderRadius: 14,
+    padding: 12,
+    opacity: 0.62,
+  },
+  stepPillActive: {
+    opacity: 1,
+    backgroundColor: "#eef7ef",
+  },
+  stepLabel: {
+    fontSize: 11,
+    fontWeight: "800",
+    textTransform: "uppercase",
+  },
+  stepValue: {
+    marginTop: 3,
+    fontSize: 13,
+    lineHeight: 18,
   },
   truthCard: {
     borderWidth: 1,
