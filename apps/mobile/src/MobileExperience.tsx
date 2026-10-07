@@ -15,7 +15,7 @@ export function MobileExperience() {
     <View style={styles.root}>
       <ScrollView contentContainerStyle={styles.header}>
         <Text style={styles.eyebrow}>CRESCO KEY · DEVNET P0</Text>
-        <Text style={styles.title}>Your Key travels with you.</Text>
+        <Text style={styles.title}>Spend inside the Key. Ask only at the boundary.</Text>
         <Text style={styles.wallet} numberOfLines={1}>
           {account.address.toString()}
         </Text>
