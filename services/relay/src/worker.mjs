@@ -36,6 +36,24 @@ function bearerToken(request) {
   return match?.[1]?.toLowerCase() ?? null;
 }
 
+export function relayReadiness(env) {
+  const boundaryRequests = env?.BOUNDARY_REQUESTS;
+  const durableObjectConfigured =
+    typeof boundaryRequests?.idFromName === "function" &&
+    typeof boundaryRequests?.get === "function";
+
+  return {
+    ok: durableObjectConfigured,
+    service: "cresco-key-boundary-relay",
+    authority: "coordination-only",
+    checks: {
+      boundaryRequestsDurableObject: durableObjectConfigured
+        ? "configured"
+        : "missing",
+    },
+  };
+}
+
 function expirePendingRecord(record, nowMs) {
   if (
     record.status !== "PENDING" ||
@@ -189,6 +207,11 @@ export default {
         service: "cresco-key-boundary-relay",
         authority: "coordination-only",
       });
+    }
+
+    if (url.pathname === "/ready" && request.method === "GET") {
+      const readiness = relayReadiness(env);
+      return json(readiness, readiness.ok ? 200 : 503);
     }
 
     if (url.pathname === "/v1/requests" && request.method === "POST") {

@@ -77,6 +77,22 @@ Truth boundary:
 
 Material user capability delta since previous milestone: **GUARDIAN_REFUSAL_PATH_MERGED_TO_MAIN_AT_BUILD_CONFIGURATION_SCOPE**.
 
+## Relay readiness endpoint delta - 2026-10-07
+
+Material user/operator capability delta since previous milestone: **RELAY_OPERATOR_READY_CHECK_ADDED_AT_BUILD_CONFIGURATION_SCOPE**.
+
+The boundary relay now exposes `GET /ready`, which fails closed with `503` when the required Durable Object binding is missing and returns `200` only when the relay has the expected coordination binding.
+
+Truth boundary:
+- code/test capability only until CI completes and the branch is merged;
+- no Cloudflare production deployment is claimed;
+- no physical Android/prod-wallet G1 is claimed;
+- no mobile CRESCO transaction or Live Core Loop is claimed.
+
+Current primary workstream: **PRODUCT_EXPLOITATION**.
+Workstream drift status: **CLEAR_FOR_THIS_PRODUCT_DELTA**.
+Next highest-value depth delta after this branch: human-authorized live relay deployment or final LIVE_CORE_G1 physical Android/wallet execution.
+
 ## What is locked
 
 - Product: **CRESCO Key**
