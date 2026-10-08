@@ -156,6 +156,7 @@ adb shell svc power stayon true
 
 echo "== Build CRESCO standalone test APK =="
 cd "$MOBILE"
+node ../../tools/devnet/write-mobile-env-from-demo-state.cjs ../../evidence/devnet-distinct-program/cresco-key-demo-state-37182728261.json .env
 npx expo prebuild --platform android --no-install --non-interactive
 cd android
 NODE_ENV=production ./gradlew assembleRelease
@@ -183,6 +184,18 @@ unlock_emulator
 adb shell settings put system screen_off_timeout 1800000
 adb shell svc power stayon true
 adb logcat -c
+# Actual live emulator recording; no production wallet or onchain payment implied.
+VIDEO_PATH="/sdcard/cresco-emulator-live.mp4"
+adb shell rm -f "$VIDEO_PATH" || true
+adb shell screenrecord --bit-rate 3000000 --time-limit 175 "$VIDEO_PATH" > "$EVIDENCE/screenrecord.log" 2>&1 &
+stop_capture() {
+  adb shell pkill -2 screenrecord >/dev/null 2>&1 || true
+  sleep 3
+  adb pull "$VIDEO_PATH" "$EVIDENCE/cresco-emulator-live.mp4" >/dev/null 2>&1 || true
+  test -s "$EVIDENCE/cresco-emulator-live.mp4" || echo "SCREENRECORD_UNAVAILABLE" >> "$EVIDENCE/screenrecord.log"
+}
+trap stop_capture EXIT
+sleep 2
 adb shell monkey -p com.faadil.crescokey -c android.intent.category.LAUNCHER 1 >/dev/null
 wait_text "Connect wallet" 30
 dump_ui "01-cresco-disconnected"
@@ -241,6 +254,16 @@ tap_text "Approve" 10
 wait_text "SIGNED" 30
 dump_ui "07-cresco-signed"
 
+echo "== Capture Young intent without signing =="
+if tap_text "Young person flow" 10; then
+  sleep 2
+  dump_ui "09-cresco-young-flow"
+  if tap_text "Load 5-unit in-bounds demo intent" 15; then
+    sleep 3
+    dump_ui "10-cresco-demo-intent"
+  fi
+fi
+
 echo "== Kill/relaunch truthfulness =="
 adb shell am force-stop com.faadil.crescokey
 sleep 2
@@ -259,6 +282,8 @@ if [ "$RELAUNCH_STATE" = "UNKNOWN" ]; then
   exit 1
 fi
 
+stop_capture
+trap - EXIT
 adb logcat -d > "$EVIDENCE/logcat.txt" || true
 APK_SHA="$(sha256sum "$CRESCO_APK" | awk '{print $1}')"
 MOCK_SHA="$(sha256sum "$MOCK_APK" | awk '{print $1}')"
