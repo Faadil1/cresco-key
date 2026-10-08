@@ -44,6 +44,11 @@ PY
       adb shell input tap "$x" "$y"
       return 0
     fi
+    # Museum Ledger intentionally uses a scrollable editorial layout.
+    # Scroll only for first-party buttons; never swipe the wallet approval UI.
+    if [ "$needle" = "Sign TRC-01 proof message" ] || [ "$needle" = "Connect wallet" ]; then
+      adb shell input swipe 550 1700 550 560 320 || true
+    fi
     sleep 1
     elapsed=$((elapsed+1))
   done
@@ -192,7 +197,7 @@ while [ "$elapsed" -lt 30 ]; do
   adb shell uiautomator dump /sdcard/auth.xml >/dev/null 2>&1 || true
   adb pull /sdcard/auth.xml "$EVIDENCE/auth-prompt.xml" >/dev/null 2>&1 || true
 
-  if grep -Fq "P0 mobile workspace" "$EVIDENCE/auth-prompt.xml"; then
+  if grep -Fq "CHOOSE YOUR ROLE" "$EVIDENCE/auth-prompt.xml"; then
     break
   fi
 
@@ -215,7 +220,7 @@ while [ "$elapsed" -lt 30 ]; do
   elapsed=$((elapsed+1))
 done
 
-wait_text "P0 mobile workspace" 15
+wait_text "CHOOSE YOUR ROLE" 15
 dump_ui "05-cresco-connected"
 
 echo "== signMessage path =="
@@ -234,7 +239,7 @@ sleep 8
 dump_ui "08-cresco-relaunch"
 
 RELAUNCH_STATE="UNKNOWN"
-if grep -Fq "P0 mobile workspace" "$EVIDENCE/08-cresco-relaunch.xml"; then
+if grep -Fq "CHOOSE YOUR ROLE" "$EVIDENCE/08-cresco-relaunch.xml"; then
   RELAUNCH_STATE="CONNECTED_RESTORED"
 elif grep -Fq "Connect wallet" "$EVIDENCE/08-cresco-relaunch.xml"; then
   RELAUNCH_STATE="DISCONNECTED_TRUTHFUL"
