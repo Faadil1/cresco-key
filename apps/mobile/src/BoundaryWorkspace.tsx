@@ -51,6 +51,7 @@ type ExactExecutionState = "IDLE" | "ALLOW" | "REFUSE" | "UNKNOWN";
 type G1ReceiptScenario =
   | "WALLET_PROOF"
   | "STANDING_PAYMENT"
+  | "PRECHECK_BLOCKED"
   | "BOUNDARY_REQUEST"
   | "GUARDIAN_ALLOW_ONCE"
   | "GUARDIAN_REFUSE"
@@ -67,6 +68,7 @@ function demoConfig() {
   return {
     mandateNonce: process.env.EXPO_PUBLIC_DEMO_MANDATE_NONCE?.trim() ?? "",
     guardianWallet: process.env.EXPO_PUBLIC_DEMO_GUARDIAN_WALLET?.trim() ?? "",
+    beneficiaryWallet: process.env.EXPO_PUBLIC_DEMO_BENEFICIARY_WALLET?.trim() ?? "",
     mutatedRecipient:
       process.env.EXPO_PUBLIC_DEMO_MUTATED_RECIPIENT?.trim() ?? "",
     demoSolanaPay: {
@@ -218,6 +220,7 @@ export function BoundaryWorkspace() {
   const [exactExecutionState, setExactExecutionState] =
     useState<ExactExecutionState>("IDLE");
   const [standingOutcome, setStandingOutcome] = useState<ExactExecutionState>("IDLE");
+  const [preflightBlocked, setPreflightBlocked] = useState<string | null>(null);
 
   const config = useMemo(() => demoConfig(), []);
   const capitalConfigMissing = useMemo(
@@ -232,6 +235,14 @@ export function BoundaryWorkspace() {
     () => demoIntentOptions(config),
     [config],
   );
+  // The deployed sample mandate belongs to one beneficiary. A newly created
+  // Solflare account must not be sent a transaction for somebody else's charter.
+  // This is a public build-config check, not proof of on-chain account existence.
+  const demoBeneficiaryBlocker = !config.beneficiaryWallet
+    ? "Configured Devnet beneficiary is missing from this APK. Payment not attempted."
+    : account?.address.toString() !== config.beneficiaryWallet
+      ? "This wallet is not the beneficiary of the configured Devnet charter. Provision a new charter and mandate with authorized signatures before payment."
+      : null;
 
   const rpcForOutcome: Parameters<typeof waitForTransactionOutcome>[0] = {
     getSignatureStatuses: (signatures) =>
@@ -366,6 +377,7 @@ export function BoundaryWorkspace() {
       setShareLink(null);
       setExactExecutionState("IDLE");
       setStandingOutcome("IDLE");
+      setPreflightBlocked(null);
       setStatus(
         "Deterministic Devnet payment intent loaded. No authority decision has been made yet.",
       );
@@ -450,6 +462,22 @@ export function BoundaryWorkspace() {
 
   const attemptStandingPayment = async () => {
     if (!intent || !account) return;
+
+    if (demoBeneficiaryBlocker) {
+      // Configuration mismatch is not an on-chain REFUSE and not a submission.
+      setPreflightBlocked(demoBeneficiaryBlocker);
+      setStatus("PRECHECK BLOCKED · " + demoBeneficiaryBlocker);
+      recordReceipt("PRECHECK_BLOCKED", {
+        state: "BLOCKED",
+        reason: "DEMO_BENEFICIARY_NOT_PROVISIONED_FOR_CONNECTED_WALLET",
+        configuredBeneficiary: config.beneficiaryWallet || null,
+        connectedWallet: account.address.toString(),
+        transactionSubmitted: false,
+        signature: null,
+        proofScope: "PUBLIC_BUILD_CONFIGURATION_ONLY",
+      });
+      return;
+    }
 
     if (capitalConfigMissing.length > 0) {
       setStatus(
@@ -844,8 +872,20 @@ export function BoundaryWorkspace() {
             ))}
           </View>
         ) : null}
-        {intent && !relayRequest ? <MuseumButton label="Try payment inside my Key" disabled={busy} onPress={attemptStandingPayment} /> : null}
+        {intent && !relayRequest && demoBeneficiaryBlocker ? (
+          <MuseumPlate exhibit="G1 / DEVNET PROVISIONING REQUIRED" title="This Key is not yet provisioned" tone="boundary">
+            <Text style={styles.body}>{demoBeneficiaryBlocker}</Text>
+            <MuseumFact label="CONNECTED WALLET" value={account?.address.toString() ?? "Not connected"} />
+            <MuseumFact label="CONFIGURED BENEFICIARY" value={config.beneficiaryWallet || "Missing in APK"} />
+            <Text style={styles.body}>No transaction has been submitted. This is a setup blocker, not a spending-limit refusal.</Text>
+            <MuseumButton label="Record setup blocker (no transaction)" variant="secondary" onPress={attemptStandingPayment} />
+          </MuseumPlate>
+        ) : null}
+        {intent && !relayRequest && !demoBeneficiaryBlocker ? <MuseumButton label="Try payment inside my Key" disabled={busy} onPress={attemptStandingPayment} /> : null}
       </MuseumPlate>
+      {preflightBlocked ? <MuseumPlate exhibit="OPERATOR / CONFIGURATION BLOCKED" title="Preflight stopped safely" tone="boundary">
+        <Text style={styles.body}>{preflightBlocked}</Text>
+      </MuseumPlate> : null}
       {standingOutcome !== "IDLE" ? (
         <MuseumPlate exhibit="VERIFIED RUNTIME OUTCOME / LAST ATTEMPT"
           title={standingOutcome === "ALLOW" ? "Allowed by your Key" : standingOutcome === "REFUSE" ? "Boundary upheld" : "Outcome not confirmed"}
