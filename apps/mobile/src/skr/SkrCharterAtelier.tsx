@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Pressable, Share, StyleSheet, Text, View } from "react-native";
 
 import { MuseumButton, MuseumFact, MuseumPlate, museumColors as c } from "../design/MuseumLedgerUI";
@@ -32,6 +32,12 @@ export function SkrCharterAtelier({ walletAddress }: { walletAddress: string }) 
   const [topic, setTopic] = useState<PracticeTopic>("independence");
   const [message, setMessage] = useState("Optional Seeker ecosystem access. Never spending authority.");
 
+  useEffect(() => {
+    setState("IDLE");
+    setBalance(null);
+    setMessage("Optional Seeker ecosystem access. Never spending authority.");
+  }, [walletAddress]);
+
   const checkSkr = async () => {
     setState("LOADING");
     setMessage("Checking public mainnet token accounts. Nothing is signed or transferred.");
@@ -57,9 +63,10 @@ export function SkrCharterAtelier({ walletAddress }: { walletAddress: string }) 
       if (body.error || !body.result || !Array.isArray(body.result.value)) throw new Error("INVALID_RPC_RESPONSE");
       const total = body.result.value.reduce((sum, item) => {
         const raw = item.account?.data?.parsed?.info?.tokenAmount?.amount;
-        return sum + (typeof raw === "string" && /^\d+$/.test(raw) ? BigInt(raw) : 0n);
+        if (typeof raw !== "string" || !/^\d+$/.test(raw)) throw new Error("INVALID_TOKEN_ACCOUNT");
+        return sum + BigInt(raw);
       }, 0n);
-      // Token has 6 decimals; checking the raw amount is sufficient for nonzero presence.
+      // Only token presence is checked. No token amount is displayed or treated as spending authority.
       setBalance(total.toString());
       setState(total > 0n ? "HAS_SKR" : "NO_SKR");
       setMessage(total > 0n
