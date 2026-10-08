@@ -68,6 +68,12 @@ export function WalletGate() {
         subtitle="Your money, within rules that grow with you. Ask only when you reach a real boundary."
         showKey
       />
+      <MuseumButton
+        disabled={proofState === "CONNECTING"}
+        onPress={account ? handleDisconnect : handleConnect}
+        label={account ? "Disconnect wallet" : "Connect wallet"}
+      />
+      {proofState === "REFUSED" ? <Text style={styles.quickStatus} accessibilityLiveRegion="polite">REFUSED · Wallet approval was not completed.</Text> : null}
       <MuseumPlate exhibit="EXHIBIT 00 / YOUR WALLET" title={account ? "Wallet connected" : "Connect your Key"}>
         <Text style={styles.explanation}>
           Your wallet approves protected actions. CRESCO never handles your secret key or widens your spending rules on its own.
@@ -78,11 +84,6 @@ export function WalletGate() {
           <Text style={styles.detailLabel}>SESSION</Text><Text style={styles.detailValue}>{proofState}</Text>
           <Text style={styles.explanation}>{detail}</Text>
         </View>
-        <MuseumButton
-          disabled={proofState === "CONNECTING"}
-          onPress={account ? handleDisconnect : handleConnect}
-          label={account ? "Disconnect wallet" : "Connect wallet"}
-        />
         {account ? <MuseumButton
           disabled={proofState === "SIGNING"}
           onPress={handleSignProof}
@@ -107,4 +108,5 @@ const styles = StyleSheet.create({
   detailLabel: { color: color.deepBrass, fontSize: 10, fontWeight: "700", letterSpacing: 1.4 },
   detailValue: { color: color.ink, fontSize: 13, lineHeight: 18 },
   truth: { color: color.secondaryInk, fontSize: 11, lineHeight: 17, marginTop: 4 },
+  quickStatus: { color: color.vermilion, fontWeight: "700", fontSize: 12, lineHeight: 18 },
 });
