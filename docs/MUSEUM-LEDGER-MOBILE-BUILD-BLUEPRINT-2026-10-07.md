@@ -139,3 +139,20 @@ No standalone Story/Demo gate can promote product state. Until Build A–E actua
 `G1: BLOCKED` (physical Android + production wallet + live relay + mobile Devnet transaction not observed).
 `exact_next_owner: product engineer`.
 `exact_next_action: Build A code changes + CI; then B/C/D without waiting for extra concept ideation`.
+
+## Code integration snapshot — PR #59, 2026-10-07
+
+This PR subsequently implemented an initial *functional Museum Ledger app surface* on top of the same design specification:
+- `apps/mobile/src/design/MuseumLedgerUI.tsx`: original native key emblem, hero, exhibit plates, evidence strip and actionable buttons.
+- `apps/mobile/src/MobileExperience.tsx`: branded masthead and ivory app shell.
+- `apps/mobile/src/WalletGate.tsx`: editorial wallet entry preserving MWA connect and TRC-01 signature.
+- `apps/mobile/src/BoundaryWorkspace.tsx`: wired connected home/young/guardian states, refusal, allowed result and in-memory receipt to existing handlers; no invented spending authority or history.
+- `apps/mobile/src/skr/SkrCharterAtelier.tsx`: separate optional, user-triggered public mainnet SKR ownership check and an interactive guardian conversation atelier (SKR access, not spending authority or reward distribution). Core Key works without SKR.
+
+The actual UI must be built/verified by Mobile CI, APK Evidence, Emulator Smoke and MWA Session checks before claiming APK delivery. Screenshots from design reference are not screenshots from this code.
+
+**Bounty classification:** CLOCK IN's main prize targets mobile product quality, substantive Solana integration and UX. A separate optional $10K SKR prize requires creative and meaningful SKR integration (https://solanamobile.com/blog/clock-in-the-solana-mobile-hackathon). The optional SKR workshop adds a real read-only token account-based access mechanism, but is not asserted as bounty-winning or physically tested until confirmed on Android. Official SKR mint: https://solanamobile.com/skr. No mainnet transfer, stake, token distribution, rewards, or custody operation is implemented.
+
+**Runtime truth:** G0 distinct program on Devnet proven; G1 physical end-to-end mobile payment and live relay remain BLOCKED/unproven. Unobserved preview mocks shall not become app receipts or submission screenshots. No automatic promotion of `SUBMISSION_READY`.
+
+**Material user capability delta (pending merge/CI):** BUILD_SCOPE_MUSEUM_LEDGER_NATIVE_ACTION_SURFACES_AND_OPTIONAL_SKR_READ_ONLY_ACCESS. External end-user runtime validation: UNKNOWN. This is a code-level product capability, not a physical live claim.
