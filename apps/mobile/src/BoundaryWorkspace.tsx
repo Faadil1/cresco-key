@@ -873,7 +873,7 @@ export function BoundaryWorkspace() {
           </View>
         ) : null}
         {intent && !relayRequest && demoBeneficiaryBlocker ? (
-          <MuseumPlate exhibit="G1 / DEVNET PROVISIONING REQUIRED" title="This Key is not yet provisioned" tone="boundary">
+          <MuseumPlate exhibit="G1 / DEVNET PROVISIONING REQUIRED" title="This Key is not yet provisioned" tone="blocked">
             <Text style={styles.body}>{demoBeneficiaryBlocker}</Text>
             <MuseumFact label="CONNECTED WALLET" value={account?.address.toString() ?? "Not connected"} />
             <MuseumFact label="CONFIGURED BENEFICIARY" value={config.beneficiaryWallet || "Missing in APK"} />
@@ -883,13 +883,13 @@ export function BoundaryWorkspace() {
         ) : null}
         {intent && !relayRequest && !demoBeneficiaryBlocker ? <MuseumButton label="Try payment inside my Key" disabled={busy} onPress={attemptStandingPayment} /> : null}
       </MuseumPlate>
-      {preflightBlocked ? <MuseumPlate exhibit="OPERATOR / CONFIGURATION BLOCKED" title="Preflight stopped safely" tone="boundary">
+      {preflightBlocked ? <MuseumPlate exhibit="OPERATOR / CONFIGURATION BLOCKED" title="Preflight stopped safely" tone="blocked">
         <Text style={styles.body}>{preflightBlocked}</Text>
       </MuseumPlate> : null}
       {standingOutcome !== "IDLE" ? (
         <MuseumPlate exhibit="VERIFIED RUNTIME OUTCOME / LAST ATTEMPT"
           title={standingOutcome === "ALLOW" ? "Allowed by your Key" : standingOutcome === "REFUSE" ? "Boundary upheld" : "Outcome not confirmed"}
-          tone={standingOutcome === "REFUSE" ? "boundary" : standingOutcome === "ALLOW" ? "verified" : "pending"}>
+          tone={standingOutcome === "REFUSE" ? "boundary" : standingOutcome === "ALLOW" ? "verified" : "unknown"}>
           <Text style={styles.body} accessibilityLiveRegion="polite">{status}</Text>
           {standingOutcome === "UNKNOWN" ? <Text style={styles.body}>Unknown is not success or refusal. Check chain state before retrying.</Text> : null}
         </MuseumPlate>
@@ -914,7 +914,7 @@ export function BoundaryWorkspace() {
       {exactExecutionState !== "IDLE" ? (
         <MuseumPlate exhibit="EXHIBIT E / ONE-TIME OUTCOME"
           title={exactExecutionState === "ALLOW" ? "This approval was used once." : exactExecutionState === "REFUSE" ? "The Key refused this attempt." : "Confirmation unavailable"}
-          tone={exactExecutionState === "ALLOW" ? "verified" : exactExecutionState === "REFUSE" ? "boundary" : "pending"}>
+          tone={exactExecutionState === "ALLOW" ? "verified" : exactExecutionState === "REFUSE" ? "boundary" : "unknown"}>
           <Text style={styles.body}>{status}</Text>
         </MuseumPlate>
       ) : null}
