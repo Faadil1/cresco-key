@@ -3,7 +3,7 @@ import { Pressable, StyleSheet, Text, View } from "react-native";
 
 import { museumLedgerTokens as t } from "./museumLedger";
 
-type Tone = "neutral" | "boundary" | "verified" | "pending";
+type Tone = "neutral" | "boundary" | "verified" | "pending" | "unknown" | "blocked";
 
 export function KeyArtifact({ small = false }: { small?: boolean }) {
   const size = small ? 70 : 132;
@@ -73,12 +73,12 @@ export function MuseumPlate({
   tone?: Tone;
 }) {
   return (
-    <View style={[styles.plate, tone === "boundary" && styles.plateBoundary, tone === "verified" && styles.plateVerified]}>
+    <View style={[styles.plate, tone === "boundary" && styles.plateBoundary, tone === "verified" && styles.plateVerified, (tone === "unknown" || tone === "blocked") && styles.plateUnknown]}>
       <View style={styles.plateHeader}>
         <Text style={styles.overline}>{exhibit}</Text>
-        <View style={[styles.seal, tone === "boundary" && styles.sealBoundary, tone === "verified" && styles.sealVerified]}>
-          <Text style={[styles.sealText, tone === "boundary" && styles.sealTextBoundary, tone === "verified" && styles.sealTextVerified]}>
-            {tone === "boundary" ? "REFUSED" : tone === "verified" ? "VERIFIED" : tone === "pending" ? "PENDING" : "CRESCO"}
+        <View style={[styles.seal, tone === "boundary" && styles.sealBoundary, tone === "verified" && styles.sealVerified, (tone === "unknown" || tone === "blocked") && styles.sealUnknown]}>
+          <Text style={[styles.sealText, tone === "boundary" && styles.sealTextBoundary, tone === "verified" && styles.sealTextVerified, (tone === "unknown" || tone === "blocked") && styles.sealTextUnknown]}>
+            {tone === "boundary" ? "REFUSED" : tone === "verified" ? "VERIFIED" : tone === "pending" ? "PENDING" : tone === "unknown" ? "UNKNOWN" : tone === "blocked" ? "BLOCKED" : "CRESCO"}
           </Text>
         </View>
       </View>
@@ -180,15 +180,18 @@ const styles = StyleSheet.create({
   artifactTooth: { height: 8, width: 32, backgroundColor: t.color.brass, borderWidth: 2, borderColor: t.color.deepBrass, marginLeft: 15 },
   plate: { padding: 18, borderWidth: 1, borderColor: t.color.border, borderRadius: 13, backgroundColor: t.color.paper, gap: 12 },
   plateBoundary: { borderColor: t.color.vermilion, backgroundColor: "#FCF6F2" },
+  plateUnknown: { borderColor: t.color.unknown, backgroundColor: t.color.unknownWash },
   plateVerified: { borderColor: t.color.verified },
   plateHeader: { flexDirection: "row", gap: 8, justifyContent: "space-between", alignItems: "center" },
   plateTitle: { fontFamily: "serif", fontSize: 27, lineHeight: 32, color: t.color.ink },
   seal: { borderWidth: 1, borderColor: t.color.brass, paddingHorizontal: 8, paddingVertical: 4 },
   sealBoundary: { borderColor: t.color.vermilion },
+  sealUnknown: { borderColor: t.color.unknown },
   sealVerified: { borderColor: t.color.verified },
   sealText: { fontSize: 9, color: t.color.deepBrass, fontWeight: "700", letterSpacing: 1 },
   sealTextBoundary: { color: t.color.vermilion },
   sealTextVerified: { color: t.color.verified },
+  sealTextUnknown: { color: t.color.unknown },
   button: { minHeight: 54, backgroundColor: t.color.brass, borderRadius: 12, paddingHorizontal: 19, paddingVertical: 13, flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 12, borderWidth: 1, borderColor: t.color.deepBrass },
   buttonSecondary: { backgroundColor: "transparent", borderColor: t.color.brass },
   buttonBoundary: { backgroundColor: t.color.vermilion, borderColor: t.color.vermilion },
