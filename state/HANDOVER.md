@@ -521,3 +521,28 @@ Before terminal promotion:
 Not currently applicable.
 
 If the project is later submitted/frozen, no silent retrofit is allowed. Any further build requires explicit reopen/delta and preservation of the prior submission snapshot.
+
+## Museum Ledger native product UX + optional SKR access — PR #59 (2026-10-07)
+
+Owner selected the **Museum Ledger** artistic direction. PR #59 adds genuine native React Native screens and a typed design system; this is NOT just reference imagery.
+
+Product changes at code/build scope:
+- Museum Ledger wallet entry, young action/Key overview, refusal/boundary, guardian exact decision, conditional success and live latest-receipt card;
+- links remain on pre-existing real wallet/relay/Solana instruction handlers; no fabricated payments or receipt history;
+- opt-in Guardian SKR Charter Atelier: official SKR mint read-only presence check on Solana **mainnet**, and an interactive shareable family learning prompt gated by nonzero SKR; no Solana mainnet signing or transfers and no influence on CRESCO spending rules;
+- conditional SKR gateway classification changed from N/A to ACTIVE / NOT YET RUNTIME PROVEN, separate from G1.
+
+Scope and truth:
+- current_primary_workstream: PRODUCT_EXPLOITATION
+- material_user_capability_delta_since_previous_milestone: MUSEUM_LEDGER_NATIVE_UI_AND_READ_ONLY_SKR_ACCESS_AT_CODE_SCOPE; physical or external-run delta UNKNOWN
+- first_live_slice_proven: false
+- workstream_drift_status: NO_PROOF_ONLY_PROMOTION; code-bearing product enhancement, but Android/runtime validation still required
+- latest_project_canonical_baseline: non-material delta from 0.1.56 to central 0.1.59 as previously recorded; no retroactive rewriting
+- blocked_transition: LIVE_CORE_G1 / LIVE / BUILD_CANDIDATE_READY / SUBMISSION_READY pending live relay, physical wallet transaction, negative/recovery evidence, release QA
+- exact_next_gate: CI_TYPECHECK_AND_APK_EMULATOR_MWA_ON_PR59, followed by physical LIVE_CORE_G1 and optional SKR mainnet read-only access test
+- exact_next_owner: code/CI automation until merge; protected wallet/device proof and final submission stay human
+- exact_next_action: require successful Mobile CI + configured preflight + APK Evidence + Emulator Smoke + MWA Session on final PR head, merge after review, and download the newly built APK (not an earlier #56 artifact)
+- valid_stop_condition: no live proof when physical operator/device or protected deployment not available; do not silently upgrade
+- demo_packaging_permission: SUPPORT_ONLY / NO_NEW_LIVE_CLAIM
+
+Claims: SKR bonus integration is **a candidate at code scope**, not a proven prize-eligible live integration, payout, reward distribution or custody rail. No image-generated mockup is used as a runtime screenshot.
