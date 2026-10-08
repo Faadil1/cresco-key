@@ -42,12 +42,20 @@ export function MuseumHero({
         <Text style={styles.overline}>{exhibit}</Text>
         <View style={styles.starDot} />
       </View>
+      {showKey ? (
+        <View style={[styles.artifactStage, compact && styles.artifactStageCompact]}>
+          <View style={styles.artifactCaption}>
+            <Text style={styles.artifactIndex}>FIG. 01</Text>
+            <Text style={styles.artifactNote}>A KEY FOR MORE FREEDOM</Text>
+          </View>
+          <KeyArtifact small={compact} />
+        </View>
+      ) : null}
       <View style={styles.heroContent}>
         <View style={styles.heroCopy}>
           <Text style={[styles.heroTitle, compact && styles.heroTitleCompact]}>{title}</Text>
           {subtitle ? <Text style={styles.heroSubtitle}>{subtitle}</Text> : null}
         </View>
-        {showKey ? <KeyArtifact small={compact} /> : null}
       </View>
     </View>
   );
@@ -151,7 +159,12 @@ const styles = StyleSheet.create({
   heroCompact: { paddingTop: 10, paddingBottom: 12, gap: 8 },
   boundaryHero: { borderBottomColor: t.color.vermilion },
   heroTop: { flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
-  heroContent: { flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
+  heroContent: { flexDirection: "column", alignItems: "stretch" },
+  artifactStage: { height: 175, flexDirection: "row", justifyContent: "flex-end", alignItems: "center", gap: 16, marginVertical: 1 },
+  artifactStageCompact: { height: 100 },
+  artifactCaption: { maxWidth: 113, gap: 7, alignSelf: "center" },
+  artifactIndex: { fontFamily: "serif", color: t.color.deepBrass, fontSize: 16, fontStyle: "italic" },
+  artifactNote: { color: t.color.deepBrass, fontSize: 10, letterSpacing: 1.5, lineHeight: 16 },
   heroCopy: { flex: 1, minWidth: 0 },
   overline: { fontSize: 10, lineHeight: 15, letterSpacing: 1.85, color: t.color.deepBrass, fontWeight: "700" },
   starDot: { height: 8, width: 8, backgroundColor: t.color.brass, transform: [{ rotate: "45deg" }] },
