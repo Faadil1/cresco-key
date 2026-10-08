@@ -749,6 +749,7 @@ export function BoundaryWorkspace() {
   if (!mode) {
     return (
       <ScrollView contentContainerStyle={styles.section}>
+        <Text style={styles.eyebrow}>CHOOSE YOUR ROLE</Text>
         <MuseumHero
           exhibit="CATALOGUE 001 / THE FAMILY KEY"
           title="Freedom with Boundaries."
