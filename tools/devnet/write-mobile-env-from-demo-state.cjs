@@ -51,6 +51,12 @@ function main() {
       state.guardian,
       "GUARDIAN",
     ),
+    // Strictly bind the public demo mandate to the originally provisioned beneficiary.
+    // A new wallet requires an independently authorized Devnet charter/bootstrap.
+    EXPO_PUBLIC_DEMO_BENEFICIARY_WALLET: requireString(
+      state.beneficiary,
+      "BENEFICIARY",
+    ),
     EXPO_PUBLIC_DEMO_MUTATED_RECIPIENT: requireString(
       state.recipientB,
       "RECIPIENT_B",

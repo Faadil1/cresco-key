@@ -38,6 +38,12 @@ jobs:
       - name: Install dependencies
         run: npm install
 
+      - name: Generate public CRESCO Devnet configuration
+        run: |
+          node ../../tools/devnet/write-mobile-env-from-demo-state.cjs \
+            ../../evidence/devnet-distinct-program/cresco-key-demo-state-37182728261.json \
+            .env
+
       - name: Typecheck
         run: npm run typecheck
 
@@ -47,6 +53,60 @@ jobs:
       - name: Build installable debug APK
         run: ./gradlew assembleDebug
         working-directory: apps/mobile/android
+
+      - name: Build standalone release-mode Devnet APK (bundled JS, no Metro)
+        run: NODE_ENV=production ./gradlew assembleRelease
+        working-directory: apps/mobile/android
+
+      - name: Write standalone APK evidence receipt
+        env:
+          COMMIT_SHA: ${{ github.sha }}
+        run: |
+          mkdir -p ../../evidence/apk
+          APK="android/app/build/outputs/apk/release/app-release.apk"
+          test -s "$APK"
+          export SHA256="$(sha256sum "$APK" | awk '{print $1}')"
+          export SIZE_BYTES="$(stat -c%s "$APK")"
+          node - <<'NODE' > ../../evidence/apk/standalone-devnet-apk-receipt.json
+          const fs = require("node:fs");
+          const state = JSON.parse(fs.readFileSync(
+            "../../evidence/devnet-distinct-program/cresco-key-demo-state-37182728261.json",
+            "utf8",
+          ));
+          if (state.status !== "READY_FOR_MOBILE_RUNTIME" || state.network !== "devnet")
+            throw new Error("UNEXPECTED_DEVNET_DEMO_STATE");
+          console.log(JSON.stringify({
+            schema: "cresco-key/android-standalone-devnet-apk-receipt/v1",
+            commit: process.env.COMMIT_SHA,
+            packageId: "com.faadil.crescokey",
+            buildType: "release-mode-standalone-test",
+            requiresMetro: false,
+            artifactName: "cresco-key-standalone-devnet-apk",
+            programId: state.programId,
+            network: state.network,
+            configurationSourceRun: state.source?.githubActionsRun ?? null,
+            apkSha256: process.env.SHA256,
+            sizeBytes: Number(process.env.SIZE_BYTES),
+            evidenceClass: "BUILD_CONFIGURATION",
+            truthBoundary: {
+              installationOnPhysicalDeviceProven: false,
+              productionWalletCompatibilityProven: false,
+              liveG1TransactionProven: false,
+              storeSigningAndReleaseCertificationProven: false
+            },
+            generatedAt: new Date().toISOString()
+          }, null, 2));
+          NODE
+
+      - name: Upload standalone Devnet APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: cresco-key-standalone-devnet-apk
+          path: |
+            apps/mobile/android/app/build/outputs/apk/release/app-release.apk
+            evidence/apk/standalone-devnet-apk-receipt.json
+          if-no-files-found: error
+          retention-days: 14
 
       - name: Write APK evidence receipt
         env:
