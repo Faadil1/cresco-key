@@ -1,6 +1,7 @@
 import { useMobileWallet } from "@wallet-ui/react-native-kit";
 import { useState } from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { MuseumHero, MuseumPlate, MuseumButton, ProofStrip, museumColors as color } from "./design/MuseumLedgerUI";
 
 type WalletProofState =
   | "IDLE"
@@ -56,124 +57,54 @@ export function WalletGate() {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.eyebrow}>CRESCO KEY · TRC-01</Text>
-      <Text style={styles.title}>Act freely inside your Key.</Text>
-      <Text style={styles.body}>
-        This screen is intentionally small: first prove that the Android app can
-        establish a real local wallet session and obtain an explicit signature.
-      </Text>
-
-      <View style={styles.card}>
-        <Text style={styles.label}>Network</Text>
-        <Text style={styles.value}>{chain}</Text>
-
-        <Text style={styles.label}>Wallet</Text>
-        <Text style={styles.value} numberOfLines={1}>
-          {account?.address?.toString() ?? "Not connected"}
-        </Text>
-
-        <Text style={styles.label}>Proof state</Text>
-        <Text style={styles.value}>{proofState}</Text>
-        <Text style={styles.detail}>{detail}</Text>
+    <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
+      <View style={styles.brandRow}>
+        <Text style={styles.wordmark}>CRESCO <Text style={styles.italic}>Key</Text></Text>
+        <Text style={styles.edition}>SOLANA / DEVNET</Text>
       </View>
-
-      <Pressable
-        accessibilityRole="button"
-        disabled={proofState === "CONNECTING"}
-        onPress={account ? handleDisconnect : handleConnect}
-        style={styles.button}
-      >
-        <Text style={styles.buttonText}>
-          {account ? "Disconnect wallet" : "Connect wallet"}
+      <MuseumHero
+        exhibit="AN INSTRUMENT FOR GROWING INDEPENDENCE"
+        title="Freedom with Boundaries."
+        subtitle="Your money, within rules that grow with you. Ask only when you reach a real boundary."
+        showKey
+      />
+      <MuseumPlate exhibit="EXHIBIT 00 / YOUR WALLET" title={account ? "Wallet connected" : "Connect your Key"}>
+        <Text style={styles.explanation}>
+          Your wallet approves protected actions. CRESCO never handles your secret key or widens your spending rules on its own.
         </Text>
-      </Pressable>
-
-      {account ? (
-        <Pressable
-          accessibilityRole="button"
+        <View style={styles.walletDetails}>
+          <Text style={styles.detailLabel}>NETWORK</Text><Text style={styles.detailValue}>{chain}</Text>
+          <Text style={styles.detailLabel}>WALLET</Text><Text style={styles.detailValue} numberOfLines={1}>{account?.address?.toString() ?? "Not connected"}</Text>
+          <Text style={styles.detailLabel}>SESSION</Text><Text style={styles.detailValue}>{proofState}</Text>
+          <Text style={styles.explanation}>{detail}</Text>
+        </View>
+        <MuseumButton
+          disabled={proofState === "CONNECTING"}
+          onPress={account ? handleDisconnect : handleConnect}
+          label={account ? "Disconnect wallet" : "Connect wallet"}
+        />
+        {account ? <MuseumButton
           disabled={proofState === "SIGNING"}
           onPress={handleSignProof}
-          style={styles.secondaryButton}
-        >
-          <Text style={styles.buttonText}>Sign TRC-01 proof message</Text>
-        </Pressable>
-      ) : null}
-
-      <Text style={styles.truth}>
-        Devnet scaffold. A wallet cancellation remains a non-success state. No
-        production custody, brokerage, or mainnet claim.
-      </Text>
-    </View>
+          label="Sign TRC-01 proof message"
+          variant="secondary"
+        /> : null}
+      </MuseumPlate>
+      <ProofStrip />
+      <Text style={styles.truth}>A Devnet build with genuine program-deployment evidence. Mobile G1 and physical-device transaction proof remain pending. No mainnet custody, brokerage or production payment claim.</Text>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    paddingHorizontal: 24,
-    paddingTop: 48,
-    gap: 18,
-  },
-  eyebrow: {
-    fontSize: 12,
-    fontWeight: "700",
-    letterSpacing: 1.8,
-  },
-  title: {
-    fontSize: 34,
-    lineHeight: 39,
-    fontWeight: "700",
-  },
-  body: {
-    fontSize: 17,
-    lineHeight: 25,
-    maxWidth: 520,
-  },
-  card: {
-    padding: 18,
-    borderWidth: 1,
-    borderRadius: 18,
-    gap: 6,
-  },
-  label: {
-    marginTop: 6,
-    fontSize: 12,
-    fontWeight: "700",
-    opacity: 0.6,
-  },
-  value: {
-    fontSize: 15,
-  },
-  detail: {
-    marginTop: 4,
-    fontSize: 13,
-    lineHeight: 19,
-    opacity: 0.7,
-  },
-  button: {
-    minHeight: 52,
-    borderWidth: 1,
-    borderRadius: 16,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  secondaryButton: {
-    minHeight: 52,
-    borderWidth: 1,
-    borderRadius: 16,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  buttonText: {
-    fontSize: 16,
-    fontWeight: "700",
-  },
-  truth: {
-    marginTop: "auto",
-    paddingBottom: 24,
-    fontSize: 12,
-    lineHeight: 18,
-    opacity: 0.65,
-  },
+  container: { padding: 22, paddingBottom: 52, backgroundColor: color.ivory, gap: 18, flexGrow: 1 },
+  brandRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingBottom: 5 },
+  wordmark: { color: color.ink, fontFamily: "serif", fontSize: 25, letterSpacing: 1.1 },
+  italic: { fontStyle: "italic" },
+  edition: { color: color.deepBrass, fontSize: 9, fontWeight: "700", letterSpacing: 1.1 },
+  explanation: { color: color.secondaryInk, fontSize: 13, lineHeight: 19 },
+  walletDetails: { gap: 5, borderTopWidth: 1, borderTopColor: color.border, paddingTop: 10 },
+  detailLabel: { color: color.deepBrass, fontSize: 10, fontWeight: "700", letterSpacing: 1.4 },
+  detailValue: { color: color.ink, fontSize: 13, lineHeight: 18 },
+  truth: { color: color.secondaryInk, fontSize: 11, lineHeight: 17, marginTop: 4 },
 });
