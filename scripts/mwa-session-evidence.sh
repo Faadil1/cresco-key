@@ -149,6 +149,10 @@ unlock_emulator() {
 echo "== Configure and unlock emulator credential =="
 adb shell locksettings set-pin "$PIN" > "$EVIDENCE/locksettings.txt" 2>&1
 unlock_emulator
+# MWA build compiles two Android apps and can take long enough for the test
+# emulator to auto-lock; keep the screen awake throughout this local CI test.
+adb shell settings put system screen_off_timeout 1800000
+adb shell svc power stayon true
 
 echo "== Build CRESCO standalone test APK =="
 cd "$MOBILE"
@@ -172,9 +176,15 @@ adb shell pm list packages | grep -q 'package:com.faadil.crescokey'
 adb shell pm list packages | grep -q 'package:com.solana.mwallet'
 
 echo "== Launch CRESCO =="
+# Device can lock again after the long Gradle prebuild even if it was already
+# unlocked once. Revalidate and unlock immediately before UI automation.
+adb shell input keyevent 224 || true
+unlock_emulator
+adb shell settings put system screen_off_timeout 1800000
+adb shell svc power stayon true
 adb logcat -c
 adb shell monkey -p com.faadil.crescokey -c android.intent.category.LAUNCHER 1 >/dev/null
-wait_text "Connect wallet" 20
+wait_text "Connect wallet" 30
 dump_ui "01-cresco-disconnected"
 
 echo "== Negative path: decline authorize =="
