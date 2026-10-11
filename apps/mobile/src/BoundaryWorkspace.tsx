@@ -238,6 +238,7 @@ export function BoundaryWorkspace() {
   const [preflightBlocked, setPreflightBlocked] = useState<string | null>(null);
   const [paymentReadiness, setPaymentReadiness] = useState<PaymentReadiness | null>(null);
   const [guardianKeyInspection, setGuardianKeyInspection] = useState<KeyInspection | null>(null);
+  const [youngKeyInspection, setYoungKeyInspection] = useState<KeyInspection | null>(null);
   const [nextActionLimit, setNextActionLimit] = useState("");
   const [nextPeriodLimit, setNextPeriodLimit] = useState("");
   const [widenAcknowledged, setWidenAcknowledged] = useState(false);
@@ -415,6 +416,7 @@ export function BoundaryWorkspace() {
       setStandingOutcome("IDLE");
       setPreflightBlocked(null);
       setPaymentReadiness(null);
+      setYoungKeyInspection(null);
       setStatus(
         "Deterministic Devnet payment intent loaded. No authority decision has been made yet.",
       );
@@ -733,6 +735,48 @@ export function BoundaryWorkspace() {
         state: "UNKNOWN",
         reason: error instanceof Error ? error.message : "KEY_POLICY_RPC_UNKNOWN",
       };
+    }
+  };
+
+  const inspectYoungCurrentKey = async () => {
+    if (!account || !intent || busy) return;
+    setBusy(true);
+    try {
+      const result = await readYoungStandingKey();
+      setYoungKeyInspection(result);
+      setStatus(result.state === "READY"
+        ? `Live Key read: action limit ${displayTokenUnits(result.key.maxActionAmount, config.tokenDecimals)}, period limit ${displayTokenUnits(result.key.maxPeriodAmount, config.tokenDecimals)}, nonce ${result.key.nonce}.`
+        : `Live Key ${result.state}: ${result.reason}`);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const resumeAfterReportedKeyChange = async () => {
+    if (!account || !intent || !relayRequest || relayRequest.status !== "KEY_CHANGE_REPORTED" || busy) {
+      return;
+    }
+    setBusy(true);
+    try {
+      const result = await readYoungStandingKey();
+      setYoungKeyInspection(result);
+      if (result.state !== "READY") {
+        setStatus(`Cannot resume: live Key ${result.state} — ${result.reason}`);
+        return;
+      }
+      if (result.key.nonce <= BigInt(relayRequest.mandateNonce)) {
+        setStatus("Relay reported a Key change, but the real mandate nonce has NOT advanced. A relay update is not onchain proof.");
+        return;
+      }
+      setRelayRequest(null);
+      setYoungCapability(null);
+      setShareLink(null);
+      setPaymentReadiness(null);
+      setStandingOutcome("IDLE");
+      setExactExecutionState("IDLE");
+      setStatus(`Real standing Key nonce is now ${result.key.nonce}. You may retry this payment intent under the updated Key. No payment has been submitted yet.`);
+    } finally {
+      setBusy(false);
     }
   };
 
@@ -1272,6 +1316,18 @@ export function BoundaryWorkspace() {
         ) : null}
         {intent && !relayRequest && !demoBeneficiaryBlocker ? (
           <View style={styles.scenarios}>
+            <MuseumButton label="View my live standing Key limits" disabled={busy}
+              variant="secondary" onPress={inspectYoungCurrentKey} />
+            {youngKeyInspection?.state === "READY" ? (
+              <MuseumPlate exhibit="YOUR REAL KEY / DEVNET" title="Standing authority right now" tone="neutral">
+                <MuseumFact label="PER-ACTION LIMIT" value={displayTokenUnits(youngKeyInspection.key.maxActionAmount, config.tokenDecimals)} />
+                <MuseumFact label="PER-PERIOD LIMIT" value={displayTokenUnits(youngKeyInspection.key.maxPeriodAmount, config.tokenDecimals)} />
+                <MuseumFact label="MANDATE NONCE" value={youngKeyInspection.key.nonce.toString()} />
+                <Text style={styles.body}>These limits are read from the CRESCO program. A payment still needs its own wallet approval and onchain enforcement.</Text>
+              </MuseumPlate>
+            ) : youngKeyInspection ? (
+              <Text style={styles.status}>Unable to verify live Key: {youngKeyInspection.reason}</Text>
+            ) : null}
             <MuseumButton label="Check live Devnet payment readiness" disabled={busy}
               variant="secondary" onPress={checkReadinessOnDemand} />
             {paymentReadiness ? (
@@ -1310,6 +1366,13 @@ export function BoundaryWorkspace() {
           tone={standingOutcome === "REFUSE" ? "boundary" : standingOutcome === "ALLOW" ? "verified" : "unknown"}>
           <Text style={styles.body} accessibilityLiveRegion="polite">{status}</Text>
           {standingOutcome === "UNKNOWN" ? <Text style={styles.body}>Unknown is not success or refusal. Check chain state before retrying.</Text> : null}
+        </MuseumPlate>
+      ) : null}
+      {relayRequest?.status === "KEY_CHANGE_REPORTED" ? (
+        <MuseumPlate exhibit="KEY UPDATE / RE-VERIFY" title="Guardian reported a new standing Key" tone="pending">
+          <Text style={styles.body}>This coordination report is not authority. Read the actual Devnet Key nonce and limits before treating them as changed. A newly widened Key may permit payments without a per-payment approval.</Text>
+          <MuseumButton label="Verify updated Key and resume payment" disabled={busy}
+            onPress={resumeAfterReportedKeyChange} />
         </MuseumPlate>
       ) : null}
       {relayRequest ? (
