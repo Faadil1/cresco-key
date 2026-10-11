@@ -8,6 +8,7 @@ import {
   ScrollView,
   Share,
   StyleSheet,
+  TextInput,
   Text,
   View,
 } from "react-native";
@@ -20,6 +21,13 @@ import {
 } from "./solana/paymentReadiness";
 import { MuseumHero, MuseumPlate, MuseumButton, MuseumFact, ProofStrip, museumColors as color } from "./design/MuseumLedgerUI";
 import { SkrCharterAtelier } from "./skr/SkrCharterAtelier";
+import {
+  inspectStandingKey,
+  buildWidenStandingKeyInstruction,
+  displayTokenUnits,
+  type KeyInspection,
+  type StandingKeyRpc,
+} from "./solana/standingKey";
 import {
   decimalToBaseUnits,
   parseSolanaPayTransferRequest,
@@ -60,6 +68,7 @@ type G1ReceiptScenario =
   | "BOUNDARY_REQUEST"
   | "GUARDIAN_ALLOW_ONCE"
   | "GUARDIAN_REFUSE"
+  | "GUARDIAN_WIDEN_KEY"
   | "EXACT_ALLOWANCE_EXECUTION"
   | "CHANGED_RECIPIENT_MUTATION";
 
@@ -183,6 +192,7 @@ function relayDecisionLabel(request: BoundaryRelayRequest | null): string {
   if (request.status === "PENDING") return "Guardian decision pending";
   if (request.status === "REFUSED") return "Not this time";
   if (request.status === "ALLOWANCE_SUBMITTED") return "Allow once submitted";
+  if (request.status === "KEY_CHANGE_REPORTED") return "Standing Key change reported — verify onchain";
   return request.status;
 }
 
@@ -227,6 +237,11 @@ export function BoundaryWorkspace() {
   const [standingOutcome, setStandingOutcome] = useState<ExactExecutionState>("IDLE");
   const [preflightBlocked, setPreflightBlocked] = useState<string | null>(null);
   const [paymentReadiness, setPaymentReadiness] = useState<PaymentReadiness | null>(null);
+  const [guardianKeyInspection, setGuardianKeyInspection] = useState<KeyInspection | null>(null);
+  const [youngKeyInspection, setYoungKeyInspection] = useState<KeyInspection | null>(null);
+  const [nextActionLimit, setNextActionLimit] = useState("");
+  const [nextPeriodLimit, setNextPeriodLimit] = useState("");
+  const [widenAcknowledged, setWidenAcknowledged] = useState(false);
 
   const config = useMemo(() => demoConfig(), []);
   const capitalConfigMissing = useMemo(
@@ -249,6 +264,19 @@ export function BoundaryWorkspace() {
     : account?.address.toString() !== config.beneficiaryWallet
       ? "This wallet is not the beneficiary of the configured Devnet charter. Provision a new charter and mandate with authorized signatures before payment."
       : null;
+
+  const makeStandingKeyRpc = (): StandingKeyRpc => ({
+    getAccountInfo: (key, options) => ({
+      send: async () => {
+        const response = await client.rpc.getAccountInfo(key, options).send();
+        return {
+          value: response.value
+            ? { owner: response.value.owner, data: response.value.data as readonly [string, string] }
+            : null,
+        };
+      },
+    }),
+  });
 
   const rpcForOutcome: Parameters<typeof waitForTransactionOutcome>[0] = {
     getSignatureStatuses: (signatures) =>
@@ -275,6 +303,7 @@ export function BoundaryWorkspace() {
         programId:
           process.env.EXPO_PUBLIC_CRESCO_KEY_PROGRAM_ID?.trim() ?? null,
         mandateNonce: config.mandateNonce || null,
+        mandateNonceSource: "BUILD_CONFIG_NOT_LIVE_AT_RECEIPT_TIME",
         tokenProgramId:
           process.env.EXPO_PUBLIC_DEMO_TOKEN_PROGRAM_ID?.trim() ?? null,
       },
@@ -310,6 +339,8 @@ export function BoundaryWorkspace() {
 
     setMode("GUARDIAN");
     setGuardianCapability(capability);
+    setGuardianKeyInspection(null);
+    setWidenAcknowledged(false);
     setBusy(true);
     setStatus("Opening private boundary request.");
 
@@ -385,6 +416,7 @@ export function BoundaryWorkspace() {
       setStandingOutcome("IDLE");
       setPreflightBlocked(null);
       setPaymentReadiness(null);
+      setYoungKeyInspection(null);
       setStatus(
         "Deterministic Devnet payment intent loaded. No authority decision has been made yet.",
       );
@@ -397,6 +429,7 @@ export function BoundaryWorkspace() {
 
   const createBoundaryFromVerifiedRefusal = async (
     refusal: Extract<TransactionOutcome, { state: "REFUSE" }>,
+    liveMandateNonce: bigint,
   ) => {
     if (!intent || !account) return;
 
@@ -429,7 +462,7 @@ export function BoundaryWorkspace() {
     const created = await createBoundaryRequest({
       requestId,
       mandate: accounts.mandate,
-      mandateNonce: config.mandateNonce,
+      mandateNonce: liveMandateNonce.toString(),
       mint: intent.mint,
       recipient: intent.recipient,
       amountBaseUnits,
@@ -589,8 +622,18 @@ export function BoundaryWorkspace() {
       setBusy(false);
       return;
     }
+    // A real Key may have changed after the initial APK was built.
+    const standingKey = await readYoungStandingKey();
+    if (standingKey.state !== "READY") {
+      const reason = standingKey.reason;
+      setPreflightBlocked(reason);
+      setStatus(`STANDING KEY ${standingKey.state} · ${reason}`);
+      setBusy(false);
+      return;
+    }
+    const liveMandateNonce = standingKey.key.nonce;
     setPreflightBlocked(null);
-    setStatus("Live Devnet accounts checked; requesting the actual CRESCO payment via wallet.");
+    setStatus(`Live Key nonce ${liveMandateNonce} and accounts checked; requesting the actual payment via wallet.`);
 
     try {
       const programConfig = paymentProgramConfigFromEnv();
@@ -603,7 +646,7 @@ export function BoundaryWorkspace() {
           amountBaseUnits: BigInt(
             decimalToBaseUnits(intent.amountUi, config.tokenDecimals),
           ),
-          expectedNonce: BigInt(config.mandateNonce),
+          expectedNonce: liveMandateNonce,
         });
 
       let outcome: TransactionOutcome;
@@ -618,10 +661,11 @@ export function BoundaryWorkspace() {
       setStandingOutcome(outcome.state);
       recordReceipt("STANDING_PAYMENT", {
         outcome: outcomeReceipt(outcome),
+        verifiedBeforeSubmissionMandateNonce: liveMandateNonce.toString(),
       });
 
       if (outcome.state === "REFUSE") {
-        await createBoundaryFromVerifiedRefusal(outcome);
+        await createBoundaryFromVerifiedRefusal(outcome, liveMandateNonce);
       }
     } catch (error) {
       setStandingOutcome("UNKNOWN");
@@ -659,10 +703,253 @@ export function BoundaryWorkspace() {
         guardianCapability.relayToken,
       );
       setRelayRequest(request);
+      setGuardianKeyInspection(null);
+      setWidenAcknowledged(false);
       setStatus(`Relay status: ${request.status}`);
     } catch (error) {
       setStatus(error instanceof Error ? error.message : "REFRESH_FAILED");
     } finally {
+      setBusy(false);
+    }
+  };
+
+  // The young person's Key is dynamic. A guardian Widen increments the live
+  // nonce, so a compiled demo nonce must never be used for a subsequent payment.
+  const readYoungStandingKey = async (): Promise<KeyInspection> => {
+    if (!account || !intent) {
+      return { state: "BLOCKED", reason: "WALLET_OR_PAYMENT_INTENT_MISSING" };
+    }
+    if (!config.guardianWallet) {
+      return { state: "BLOCKED", reason: "EXPECTED_GUARDIAN_NOT_CONFIGURED" };
+    }
+    try {
+      return await inspectStandingKey(makeStandingKeyRpc(), {
+        chain,
+        config: paymentProgramConfigFromEnv(),
+        beneficiaryWallet: account.address.toString(),
+        guardianWallet: config.guardianWallet,
+        mint: intent.mint,
+      });
+    } catch (error) {
+      return {
+        state: "UNKNOWN",
+        reason: error instanceof Error ? error.message : "KEY_POLICY_RPC_UNKNOWN",
+      };
+    }
+  };
+
+  const inspectYoungCurrentKey = async () => {
+    if (!account || !intent || busy) return;
+    setBusy(true);
+    try {
+      const result = await readYoungStandingKey();
+      setYoungKeyInspection(result);
+      setStatus(result.state === "READY"
+        ? `Live Key read: action limit ${displayTokenUnits(result.key.maxActionAmount, config.tokenDecimals)}, period limit ${displayTokenUnits(result.key.maxPeriodAmount, config.tokenDecimals)}, nonce ${result.key.nonce}.`
+        : `Live Key ${result.state}: ${result.reason}`);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const resumeAfterReportedKeyChange = async () => {
+    if (!account || !intent || !relayRequest || relayRequest.status !== "KEY_CHANGE_REPORTED" || busy) {
+      return;
+    }
+    setBusy(true);
+    try {
+      const result = await readYoungStandingKey();
+      setYoungKeyInspection(result);
+      if (result.state !== "READY") {
+        setStatus(`Cannot resume: live Key ${result.state} — ${result.reason}`);
+        return;
+      }
+      if (result.key.nonce <= BigInt(relayRequest.mandateNonce)) {
+        setStatus("Relay reported a Key change, but the real mandate nonce has NOT advanced. A relay update is not onchain proof.");
+        return;
+      }
+      setRelayRequest(null);
+      setYoungCapability(null);
+      setShareLink(null);
+      setPaymentReadiness(null);
+      setStandingOutcome("IDLE");
+      setExactExecutionState("IDLE");
+      setStatus(`Real standing Key nonce is now ${result.key.nonce}. You may retry this payment intent under the updated Key. No payment has been submitted yet.`);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  // Read the actual standing Key from the CRESCO program. The relay only
+  // provides the requested beneficiary/mint and never grants any authority.
+  const readGuardianKey = async (requireRequestNonce = true): Promise<KeyInspection> => {
+    if (!account || !relayRequest) {
+      return { state: "BLOCKED", reason: "GUARDIAN_WALLET_OR_REQUEST_MISSING" };
+    }
+    if (capitalConfigMissing.length > 0) {
+      return { state: "BLOCKED", reason: "CRESCO_PROGRAM_NOT_CONFIGURED" };
+    }
+    if (relayRequest.guardianWallet !== account.address.toString()) {
+      return { state: "BLOCKED", reason: "CONNECTED_WALLET_NOT_REQUEST_GUARDIAN" };
+    }
+    try {
+      const reader = makeStandingKeyRpc();
+      const result = await inspectStandingKey(reader, {
+        chain,
+        config: paymentProgramConfigFromEnv(),
+        beneficiaryWallet: relayRequest.requesterWallet,
+        guardianWallet: account.address.toString(),
+        mint: relayRequest.mint,
+      });
+      if (result.state === "READY") {
+        if (result.key.mandate.toString() !== relayRequest.mandate) {
+          return { state: "BLOCKED", reason: "RELAY_MANDATE_NOT_ACTUAL_ONCHAIN_MANDATE" };
+        }
+        if (requireRequestNonce && result.key.nonce.toString() !== relayRequest.mandateNonce) {
+          return { state: "BLOCKED", reason: "REQUEST_STALE_AFTER_STANDING_KEY_CHANGE" };
+        }
+      }
+      return result;
+    } catch (error) {
+      return {
+        state: "UNKNOWN",
+        reason: error instanceof Error ? error.message : "GUARDIAN_CHAIN_READ_FAILED",
+      };
+    }
+  };
+
+  const inspectGuardianStandingKey = async () => {
+    if (busy || !account || !relayRequest) return;
+    setBusy(true);
+    setStatus("Reading the guardian's real standing Key from Devnet.");
+    try {
+      const result = await readGuardianKey(false);
+      setGuardianKeyInspection(result);
+      setWidenAcknowledged(false);
+      if (result.state === "READY") {
+        setNextActionLimit(displayTokenUnits(result.key.maxActionAmount, config.tokenDecimals));
+        setNextPeriodLimit(displayTokenUnits(result.key.maxPeriodAmount, config.tokenDecimals));
+        setStatus(result.key.nonce.toString() === relayRequest?.mandateNonce
+          ? "Onchain Key loaded. No rule has been changed."
+          : "Onchain Key read: this boundary request has a stale nonce. Do not re-submit the old request; use current Key authority.");
+      } else {
+        setStatus(`KEY ${result.state} · ${result.reason}`);
+      }
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const widenStandingKey = async () => {
+    if (busy || !account || !relayRequest || !guardianCapability ||
+        !widenAcknowledged || guardianKeyInspection?.state !== "READY") return;
+    if (relayRequest.status !== "PENDING") {
+      setStatus("This boundary request is no longer pending.");
+      return;
+    }
+    const original = guardianKeyInspection.key;
+    setBusy(true);
+    setStatus("Re-checking real Devnet authority and limits before guardian signature.");
+    try {
+      const nextAction = BigInt(decimalToBaseUnits(nextActionLimit, config.tokenDecimals));
+      const nextPeriod = BigInt(decimalToBaseUnits(nextPeriodLimit, config.tokenDecimals));
+
+      // Never trust a preview that may have become stale while the user decides.
+      const fresh = await readGuardianKey();
+      setGuardianKeyInspection(fresh);
+      if (fresh.state !== "READY") throw new Error(
+        fresh.state === "BLOCKED" ? fresh.reason : `UNKNOWN: ${fresh.reason}`);
+      if (fresh.key.nonce !== original.nonce ||
+          fresh.key.maxActionAmount !== original.maxActionAmount ||
+          fresh.key.maxPeriodAmount !== original.maxPeriodAmount ||
+          fresh.key.version !== original.version) {
+        throw new Error("STANDING_KEY_CHANGED_SINCE_PREVIEW_REFRESH_BEFORE_APPROVAL");
+      }
+
+      const instruction = buildWidenStandingKeyInstruction({
+        key: fresh.key,
+        nextMaxActionAmount: nextAction,
+        nextMaxPeriodAmount: nextPeriod,
+      });
+      setStatus("Guardian approval required: permanent rule change. This is NOT Allow Once.");
+      let outcome: TransactionOutcome;
+      try {
+        const signature = await sendTransactions([instruction]);
+        outcome = await waitForTransactionOutcome(rpcForOutcome, signature);
+      } catch (sendError) {
+        outcome = classifyProgramSubmissionError(sendError);
+      }
+      if (outcome.state !== "ALLOW") {
+        recordReceipt("GUARDIAN_WIDEN_KEY", {
+          state: outcome.state === "REFUSE" ? "REFUSED" : "UNKNOWN",
+          outcome: outcomeReceipt(outcome),
+          beforeNonce: original.nonce.toString(),
+          attemptedActionCap: nextAction.toString(),
+          attemptedPeriodCap: nextPeriod.toString(),
+        });
+        setStatus(`Standing change NOT VERIFIED · ${outcomeLabel(outcome)}`);
+        return;
+      }
+
+      // Transaction confirmation alone is NOT enough: independently inspect
+      // the actual authority accounts and verify nonce and BOTH cap changes.
+      // Request nonce is now intentionally old, so read the same Key without
+      // applying the request-staleness check used for new decisions.
+      const reader = makeStandingKeyRpc();
+      const verified = await inspectStandingKey(reader, {
+        chain, config: paymentProgramConfigFromEnv(),
+        beneficiaryWallet: relayRequest.requesterWallet,
+        guardianWallet: account.address.toString(),
+        mint: relayRequest.mint,
+      });
+      setGuardianKeyInspection(verified);
+      if (verified.state !== "READY" ||
+          verified.key.nonce !== original.nonce + 1n ||
+          verified.key.maxActionAmount !== nextAction ||
+          verified.key.maxPeriodAmount !== nextPeriod) {
+        recordReceipt("GUARDIAN_WIDEN_KEY", {
+          state: "UNKNOWN",
+          signature: outcome.signature,
+          beforeNonce: original.nonce.toString(),
+          reason: "POST_TRANSACTION_ONCHAIN_POLICY_NOT_YET_VERIFIED",
+        });
+        setStatus("Transaction confirmed but current standing Key changes are not independently verified. Read chain before retry; never submit blindly.");
+        return;
+      }
+
+      // Relay sync is secondary and can fail independently of real onchain
+      // authority. Do not turn a chain success into a falsely failed action.
+      let relayState: string = "SYNC_NOT_ATTEMPTED";
+      try {
+        const request = await postBoundaryRelayEvent(
+          guardianCapability.requestId, guardianCapability.relayToken,
+          { type: "KEY_CHANGE_REPORTED", txSignature: outcome.signature },
+        );
+        setRelayRequest(request);
+        relayState = request.status;
+      } catch {
+        relayState = "SYNC_UNKNOWN";
+      }
+      recordReceipt("GUARDIAN_WIDEN_KEY", {
+        state: "VERIFIED_ONCHAIN",
+        signature: outcome.signature,
+        mandate: original.mandate,
+        beforeNonce: original.nonce.toString(),
+        afterNonce: verified.key.nonce.toString(),
+        beforeActionCap: original.maxActionAmount.toString(),
+        afterActionCap: verified.key.maxActionAmount.toString(),
+        beforePeriodCap: original.maxPeriodAmount.toString(),
+        afterPeriodCap: verified.key.maxPeriodAmount.toString(),
+        previousPeriodSpent: original.spentThisPeriod.toString(),
+        currentPeriodSpent: verified.key.spentThisPeriod.toString(),
+        counterResetIsCurrentDeployedProgramBehavior: true,
+        relayState,
+      });
+      setStatus(`Standing Key widened onchain; nonce moved ${original.nonce} → ${verified.key.nonce}. Existing exact request is stale. Relay: ${relayState}. A new payment must read the new limits.`);
+    } catch (error) {
+      setStatus(error instanceof Error ? error.message : "WIDEN_BLOCKED_OR_UNKNOWN");
+    } finally {
+      setWidenAcknowledged(false);
       setBusy(false);
     }
   };
@@ -906,7 +1193,7 @@ export function BoundaryWorkspace() {
     return (
       <ScrollView contentContainerStyle={styles.section}>
         <MuseumHero exhibit="EXHIBIT C / THE DECISION" title="One action. Your call."
-          subtitle="Review exactly what was requested. Your choice does not rewrite the standing Key." compact />
+          subtitle="Choose consciously: refuse, allow exactly once, or change the standing Key. Only the last choice changes ongoing authority." compact />
         {relayRequest ? (
           <MuseumPlate exhibit="REQUEST / EXACT BOUNDARY" title={relayRequest.display?.label ?? "Guardian review"}
             tone={relayRequest.status === "REFUSED" ? "boundary" : "pending"}>
@@ -929,6 +1216,61 @@ export function BoundaryWorkspace() {
           <>
             <MuseumButton label="Allow this exact payment once" disabled={busy} onPress={grantExactAllowanceOnce} />
             <MuseumButton label="Not this time" variant="boundary" disabled={busy} onPress={refuseBoundaryRequest} />
+            <MuseumPlate exhibit="THIRD CHOICE / PERMANENT AUTHORITY" title="Widen the standing Key" tone="neutral">
+              <Text style={styles.body}>This is NOT Allow Once. Widen changes the permanent amount limits of the actual onchain asset rule. It advances the mandate nonce and invalidates pending exact authorizations tied to the old version.</Text>
+              <MuseumButton label="Read current standing Key from Devnet" variant="secondary"
+                disabled={busy} onPress={inspectGuardianStandingKey} />
+              {guardianKeyInspection?.state === "READY" ? (
+                <View style={styles.scenarios}>
+                  <MuseumFact label="LIVE ACTION LIMIT / TOKEN UNITS" value={displayTokenUnits(guardianKeyInspection.key.maxActionAmount, config.tokenDecimals)} />
+                  <MuseumFact label="LIVE PERIOD LIMIT / TOKEN UNITS" value={displayTokenUnits(guardianKeyInspection.key.maxPeriodAmount, config.tokenDecimals)} />
+                  <MuseumFact label="SPENT IN CURRENT PERIOD / TOKEN UNITS" value={displayTokenUnits(guardianKeyInspection.key.spentThisPeriod, config.tokenDecimals)} />
+                  <MuseumFact label="MANDATE NONCE" value={guardianKeyInspection.key.nonce.toString()} />
+                  <Text style={styles.scenarioLabel}>NEW PER-ACTION LIMIT / TOKEN UNITS</Text>
+                  <TextInput
+                    accessibilityLabel="New standing Key per-action limit in token units"
+                    style={styles.limitInput}
+                    keyboardType="decimal-pad"
+                    value={nextActionLimit}
+                    onChangeText={(value) => { setNextActionLimit(value); setWidenAcknowledged(false); }}
+                    autoCorrect={false}
+                    placeholder="Enter a higher amount"
+                    placeholderTextColor={color.unknown}
+                  />
+                  <Text style={styles.scenarioLabel}>NEW PER-PERIOD LIMIT / TOKEN UNITS</Text>
+                  <TextInput
+                    accessibilityLabel="New standing Key per-period limit in token units"
+                    style={styles.limitInput}
+                    keyboardType="decimal-pad"
+                    value={nextPeriodLimit}
+                    onChangeText={(value) => { setNextPeriodLimit(value); setWidenAcknowledged(false); }}
+                    autoCorrect={false}
+                    placeholder="Must be at least the action limit"
+                    placeholderTextColor={color.unknown}
+                  />
+                  <Text style={styles.body}>IMPORTANT: the deployed CRESCO program resets the period counter and starts a new period whenever a guardian updates its asset rule. That can make more spending immediately available. Review both limits and current spending before signing.</Text>
+                  <Pressable
+                    accessibilityRole="checkbox"
+                    accessibilityState={{ checked: widenAcknowledged }}
+                    accessibilityLabel="I understand permanent limits change, the current spend counter resets, and this is not Allow Once"
+                    onPress={() => setWidenAcknowledged((current) => !current)}
+                    style={styles.acknowledgement}>
+                    <Text style={styles.body}>{widenAcknowledged ? "☑" : "☐"} I understand: the new limits are permanent until another change, and the onchain spending-period counter restarts. My wallet must approve this distinct action.</Text>
+                  </Pressable>
+                  {guardianKeyInspection.key.nonce.toString() !== relayRequest.mandateNonce ? (
+                    <Text style={styles.status}>This request uses an older nonce. The current Key can be inspected, but the old request cannot authorize a new change.</Text>
+                  ) : null}
+                  <MuseumButton label="Request guardian wallet signature to WIDEN KEY"
+                    disabled={busy || !widenAcknowledged ||
+                      guardianKeyInspection.key.nonce.toString() !== relayRequest.mandateNonce}
+                    onPress={widenStandingKey} />
+                </View>
+              ) : guardianKeyInspection ? (
+                <Text style={styles.status} accessibilityLiveRegion="polite">
+                  {guardianKeyInspection.state}: {guardianKeyInspection.reason}. No authority has changed.
+                </Text>
+              ) : null}
+            </MuseumPlate>
           </>
         ) : null}
         <MuseumPlate exhibit="AUTHORITY / IMPORTANT">
@@ -986,6 +1328,18 @@ export function BoundaryWorkspace() {
         ) : null}
         {intent && !relayRequest && !demoBeneficiaryBlocker ? (
           <View style={styles.scenarios}>
+            <MuseumButton label="View my live standing Key limits" disabled={busy}
+              variant="secondary" onPress={inspectYoungCurrentKey} />
+            {youngKeyInspection?.state === "READY" ? (
+              <MuseumPlate exhibit="YOUR REAL KEY / DEVNET" title="Standing authority right now" tone="neutral">
+                <MuseumFact label="PER-ACTION LIMIT" value={displayTokenUnits(youngKeyInspection.key.maxActionAmount, config.tokenDecimals)} />
+                <MuseumFact label="PER-PERIOD LIMIT" value={displayTokenUnits(youngKeyInspection.key.maxPeriodAmount, config.tokenDecimals)} />
+                <MuseumFact label="MANDATE NONCE" value={youngKeyInspection.key.nonce.toString()} />
+                <Text style={styles.body}>These limits are read from the CRESCO program. A payment still needs its own wallet approval and onchain enforcement.</Text>
+              </MuseumPlate>
+            ) : youngKeyInspection ? (
+              <Text style={styles.status}>Unable to verify live Key: {youngKeyInspection.reason}</Text>
+            ) : null}
             <MuseumButton label="Check live Devnet payment readiness" disabled={busy}
               variant="secondary" onPress={checkReadinessOnDemand} />
             {paymentReadiness ? (
@@ -1024,6 +1378,13 @@ export function BoundaryWorkspace() {
           tone={standingOutcome === "REFUSE" ? "boundary" : standingOutcome === "ALLOW" ? "verified" : "unknown"}>
           <Text style={styles.body} accessibilityLiveRegion="polite">{status}</Text>
           {standingOutcome === "UNKNOWN" ? <Text style={styles.body}>Unknown is not success or refusal. Check chain state before retrying.</Text> : null}
+        </MuseumPlate>
+      ) : null}
+      {relayRequest?.status === "KEY_CHANGE_REPORTED" ? (
+        <MuseumPlate exhibit="KEY UPDATE / RE-VERIFY" title="Guardian reported a new standing Key" tone="pending">
+          <Text style={styles.body}>This coordination report is not authority. Read the actual Devnet Key nonce and limits before treating them as changed. A newly widened Key may permit payments without a per-payment approval.</Text>
+          <MuseumButton label="Verify updated Key and resume payment" disabled={busy}
+            onPress={resumeAfterReportedKeyChange} />
         </MuseumPlate>
       ) : null}
       {relayRequest ? (
@@ -1165,6 +1526,12 @@ const styles = StyleSheet.create({
     flexGrow: 1,
   },
   scenarios: { gap: 10, borderTopWidth: 1, borderTopColor: color.border, paddingTop: 12 },
+  limitInput: {
+    minHeight: 48, borderColor: color.border, borderWidth: 1, borderRadius: 8,
+    paddingHorizontal: 12, color: color.ink, backgroundColor: color.paper,
+    fontSize: 17,
+  },
+  acknowledgement: { minHeight: 48, paddingVertical: 12, justifyContent: "center" },
   scenarioLabel: { color: color.deepBrass, fontSize: 10, fontWeight: "700", letterSpacing: 1.1 },
   eyebrow: {
     fontSize: 11,
