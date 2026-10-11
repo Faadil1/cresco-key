@@ -14,13 +14,13 @@ const compiled = ts.transpileModule(source, {
   fileName: name,
   compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 },
 });
-const module = { exports: {} };
+const testModule = { exports: {} };
 const wrapper = vm.runInNewContext(
   "(function(require,module,exports){\n" + compiled.outputText + "\n})",
   { BigInt, Date },
 );
-wrapper(importName => { throw Error("NO_RUNTIME_EXTERNAL_DEPENDENCY_EXPECTED:" + importName); }, module, module.exports);
-const { buildLiveSkrKeyReview } = module.exports;
+wrapper(importName => { throw Error("NO_RUNTIME_EXTERNAL_DEPENDENCY_EXPECTED:" + importName); }, testModule, testModule.exports);
+const { buildLiveSkrKeyReview } = testModule.exports;
 const beneficiary = "BENEFICIARY";
 const guardian = "GUARDIAN";
 const key = {
