@@ -61,7 +61,7 @@ jobs:
         env:
           CRESCO_REQUIRE_INTEGRATION_CONFIG: ${{ inputs.integrated_candidate && '1' || '0' }}
           CRESCO_MOBILE_IDENTITY_URI: ${{ inputs.app_identity_uri }}
-          CRESCO_MOBILE_RELAY_URL: ${{ inputs.boundary_relay_url }}
+          CRESCO_MOBILE_RELAY_URL: ${{ inputs.boundary_relay_url || 'https://cresco-key-boundary-relay.faadil-casecraft.workers.dev' }}
           CRESCO_STATE_PATH: ${{ inputs.devnet_state_path }}
         run: |
           STATE_PATH="${CRESCO_STATE_PATH:-evidence/devnet-distinct-program/cresco-key-demo-state-37182728261.json}"
