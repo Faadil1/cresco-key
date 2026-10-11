@@ -93,7 +93,7 @@ The optional SKR feature is designed to make family policy review more useful, *
 
 On the [PR #62 Android candidate](https://github.com/Faadil1/cresco-key/pull/62), a connected wallet can voluntarily check the official SKR mint on **Solana Mainnet** using public token accounts. A holder can access family discussion prompts. If that same wallet has an independently inspected, valid CRESCO Devnet standing Key as Guardian or Beneficiary, the Atelier can build a **public read-only review** of its real per-action cap, period cap, recorded spending and nonce. It cannot sign, transfer, stake, distribute rewards or widen any Key. Core CRESCO remains available without SKR.
 
-This is a **bonus-bounty candidate**, not proof of real-holder adoption, bonus eligibility or a complete on-device SKR test. A wallet displaying **10 SOL Devnet does not thereby hold any Mainnet SKR**. See [SKR source](apps/mobile/src/skr/SkrCharterAtelier.tsx) and [Key-review logic](apps/mobile/src/skr/liveKeyCharterReview.ts).
+This is a **bonus-bounty candidate**, not proof of real-holder adoption, bonus eligibility or a complete on-device SKR test. A wallet displaying **10 SOL Devnet does not thereby hold any Mainnet SKR**. See [SKR source in PR #62](https://github.com/Faadil1/cresco-key/blob/product/integrated-live-key-capabilities-20261010/apps/mobile/src/skr/SkrCharterAtelier.tsx) and [Key-review logic in PR #62](https://github.com/Faadil1/cresco-key/blob/product/integrated-live-key-capabilities-20261010/apps/mobile/src/skr/liveKeyCharterReview.ts).
 
 ## Evidence links
 
