@@ -782,7 +782,7 @@ export function BoundaryWorkspace() {
 
   // Read the actual standing Key from the CRESCO program. The relay only
   // provides the requested beneficiary/mint and never grants any authority.
-  const readGuardianKey = async (): Promise<KeyInspection> => {
+  const readGuardianKey = async (requireRequestNonce = true): Promise<KeyInspection> => {
     if (!account || !relayRequest) {
       return { state: "BLOCKED", reason: "GUARDIAN_WALLET_OR_REQUEST_MISSING" };
     }
@@ -805,7 +805,7 @@ export function BoundaryWorkspace() {
         if (result.key.mandate.toString() !== relayRequest.mandate) {
           return { state: "BLOCKED", reason: "RELAY_MANDATE_NOT_ACTUAL_ONCHAIN_MANDATE" };
         }
-        if (result.key.nonce.toString() !== relayRequest.mandateNonce) {
+        if (requireRequestNonce && result.key.nonce.toString() !== relayRequest.mandateNonce) {
           return { state: "BLOCKED", reason: "REQUEST_STALE_AFTER_STANDING_KEY_CHANGE" };
         }
       }
@@ -823,13 +823,15 @@ export function BoundaryWorkspace() {
     setBusy(true);
     setStatus("Reading the guardian's real standing Key from Devnet.");
     try {
-      const result = await readGuardianKey();
+      const result = await readGuardianKey(false);
       setGuardianKeyInspection(result);
       setWidenAcknowledged(false);
       if (result.state === "READY") {
         setNextActionLimit(displayTokenUnits(result.key.maxActionAmount, config.tokenDecimals));
         setNextPeriodLimit(displayTokenUnits(result.key.maxPeriodAmount, config.tokenDecimals));
-        setStatus("Onchain Key loaded. No rule has been changed.");
+        setStatus(result.key.nonce.toString() === relayRequest?.mandateNonce
+          ? "Onchain Key loaded. No rule has been changed."
+          : "Onchain Key read: this boundary request has a stale nonce. Do not re-submit the old request; use current Key authority.");
       } else {
         setStatus(`KEY ${result.state} · ${result.reason}`);
       }
@@ -1250,8 +1252,13 @@ export function BoundaryWorkspace() {
                     style={styles.acknowledgement}>
                     <Text style={styles.body}>{widenAcknowledged ? "☑" : "☐"} I understand: this permanently changes the Key, not just this payment. My wallet must approve the onchain update.</Text>
                   </Pressable>
+                  {guardianKeyInspection.key.nonce.toString() !== relayRequest.mandateNonce ? (
+                    <Text style={styles.status}>This request uses an older nonce. The current Key can be inspected, but the old request cannot authorize a new change.</Text>
+                  ) : null}
                   <MuseumButton label="Request guardian wallet signature to WIDEN KEY"
-                    disabled={busy || !widenAcknowledged} onPress={widenStandingKey} />
+                    disabled={busy || !widenAcknowledged ||
+                      guardianKeyInspection.key.nonce.toString() !== relayRequest.mandateNonce}
+                    onPress={widenStandingKey} />
                 </View>
               ) : guardianKeyInspection ? (
                 <Text style={styles.status} accessibilityLiveRegion="polite">
