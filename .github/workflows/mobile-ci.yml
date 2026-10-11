@@ -44,5 +44,8 @@ jobs:
       - name: Test noncustodial Key enrollment setup
         run: npm run test:enrollment
 
+      - name: Test SKR optional live-Key review boundaries
+        run: npm run test:skr-live-review
+
       - name: Expo prebuild Android
         run: npx expo prebuild --platform android --no-install --non-interactive
