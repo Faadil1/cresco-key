@@ -1,0 +1,10 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "cresco-key-identity",
+  "main": "src/worker.mjs",
+  "compatibility_date": "2026-10-11",
+  "workers_dev": true,
+  "observability": {
+    "enabled": true
+  }
+}
