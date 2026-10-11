@@ -631,6 +631,12 @@ export function BoundaryWorkspace() {
       setBusy(false);
       return;
     }
+    if (standingKey.key.mandateStage < 3) {
+      setPreflightBlocked("KEY_NOT_YET_AT_BOUNDED_OR_INDEPENDENT_STAGE");
+      setStatus("Your actual Key is not yet at a stage that permits independent payments. Only the onchain guardian/mandate workflow can advance it.");
+      setBusy(false);
+      return;
+    }
     const liveMandateNonce = standingKey.key.nonce;
     setPreflightBlocked(null);
     setStatus(`Live Key nonce ${liveMandateNonce} and accounts checked; requesting the actual payment via wallet.`);
@@ -905,6 +911,7 @@ export function BoundaryWorkspace() {
       setGuardianKeyInspection(verified);
       if (verified.state !== "READY" ||
           verified.key.nonce !== original.nonce + 1n ||
+          verified.key.version !== original.version + 1n ||
           verified.key.maxActionAmount !== nextAction ||
           verified.key.maxPeriodAmount !== nextPeriod) {
         recordReceipt("GUARDIAN_WIDEN_KEY", {
@@ -936,6 +943,8 @@ export function BoundaryWorkspace() {
         mandate: original.mandate,
         beforeNonce: original.nonce.toString(),
         afterNonce: verified.key.nonce.toString(),
+        beforeVersion: original.version.toString(),
+        afterVersion: verified.key.version.toString(),
         beforeActionCap: original.maxActionAmount.toString(),
         afterActionCap: verified.key.maxActionAmount.toString(),
         beforePeriodCap: original.maxPeriodAmount.toString(),
@@ -1335,6 +1344,7 @@ export function BoundaryWorkspace() {
                 <MuseumFact label="PER-ACTION LIMIT" value={displayTokenUnits(youngKeyInspection.key.maxActionAmount, config.tokenDecimals)} />
                 <MuseumFact label="PER-PERIOD LIMIT" value={displayTokenUnits(youngKeyInspection.key.maxPeriodAmount, config.tokenDecimals)} />
                 <MuseumFact label="MANDATE NONCE" value={youngKeyInspection.key.nonce.toString()} />
+                <MuseumFact label="AUTHORITY STAGE" value={youngKeyInspection.key.mandateStage.toString()} />
                 <Text style={styles.body}>These limits are read from the CRESCO program. A payment still needs its own wallet approval and onchain enforcement.</Text>
               </MuseumPlate>
             ) : youngKeyInspection ? (
