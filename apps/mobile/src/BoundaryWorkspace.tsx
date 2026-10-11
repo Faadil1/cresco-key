@@ -253,9 +253,9 @@ export function BoundaryWorkspace() {
   const [widenAcknowledged, setWidenAcknowledged] = useState(false);
 
   const config = useMemo(() => demoConfig(), []);
-  const youngDisplayDecimals = verifiedMintInfo?.mint === intent?.mint
+  const youngDisplayDecimals = verifiedMintInfo && verifiedMintInfo.mint === intent?.mint
     ? verifiedMintInfo.decimals : null;
-  const guardianDisplayDecimals = verifiedMintInfo?.mint === relayRequest?.mint
+  const guardianDisplayDecimals = verifiedMintInfo && verifiedMintInfo.mint === relayRequest?.mint
     ? verifiedMintInfo.decimals : null;
   const capitalConfigMissing = useMemo(
     () => missingCapitalConfig(config),
@@ -1396,7 +1396,8 @@ export function BoundaryWorkspace() {
                 </View>
               ) : guardianKeyInspection ? (
                 <Text style={styles.status} accessibilityLiveRegion="polite">
-                  {guardianKeyInspection.state}: {guardianKeyInspection.reason}. No authority has changed.
+                  {guardianKeyInspection.state}: {guardianKeyInspection.state === "READY"
+                    ? "Mint decimals unavailable" : guardianKeyInspection.reason}. No authority has changed.
                 </Text>
               ) : null}
             </MuseumPlate>
@@ -1472,7 +1473,8 @@ export function BoundaryWorkspace() {
                 <Text style={styles.body}>These limits are read from the CRESCO program. A payment still needs its own wallet approval and onchain enforcement.</Text>
               </MuseumPlate>
             ) : youngKeyInspection ? (
-              <Text style={styles.status}>Unable to verify live Key: {youngKeyInspection.reason}</Text>
+              <Text style={styles.status}>Unable to verify live Key: {youngKeyInspection.state === "READY"
+                ? "Mint decimals unavailable" : youngKeyInspection.reason}</Text>
             ) : null}
             <MuseumButton label="Check live Devnet payment readiness" disabled={busy}
               variant="secondary" onPress={checkReadinessOnDemand} />
