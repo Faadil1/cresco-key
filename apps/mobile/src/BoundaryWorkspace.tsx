@@ -46,7 +46,11 @@ import {
   postBoundaryRelayEvent,
   type BoundaryRelayRequest,
 } from "./relay/client";
-import { saveBoundaryCapability } from "./relay/storage";
+import {
+  saveBoundaryCapability,
+  saveRecentYoungSession,
+  loadRecentYoungSession,
+} from "./relay/storage";
 import {
   buildExecutePaymentOnceInstruction,
   buildExecutePaymentWithinMandateInstruction,
@@ -504,6 +508,11 @@ export function BoundaryWorkspace() {
     });
     const capability = { requestId, relayToken: created.relayToken };
     await saveBoundaryCapability(capability);
+    await saveRecentYoungSession({
+      ...capability,
+      beneficiaryWallet: account.address.toString(),
+      intentRaw: intent.raw,
+    });
     const link = createBoundaryDeepLink(requestId, created.relayToken);
     setYoungCapability(capability);
     setRelayRequest(created.request);
@@ -707,6 +716,47 @@ export function BoundaryWorkspace() {
     } catch (error) {
       setStandingOutcome("UNKNOWN");
       setStatus(error instanceof Error ? error.message : "PAYMENT_ACTION_UNKNOWN");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const restoreYoungSession = async () => {
+    if (!account || busy) return;
+    setBusy(true);
+    setStatus("Reopening the last private request for this wallet; no transaction.");
+    try {
+      const stored = await loadRecentYoungSession(account.address.toString());
+      if (!stored) {
+        setStatus("No previous boundary request belongs to this connected wallet.");
+        return;
+      }
+      const request = await getBoundaryRequest(stored.requestId, stored.relayToken);
+      const parsed = parseSolanaPayTransferRequest(stored.intentRaw);
+      const decimals = await readLiveMintDecimals(parsed.mint);
+      const actualAmount = decimalToBaseUnits(parsed.amountUi, decimals);
+      if (request.requesterWallet !== account.address.toString() ||
+          request.requestId !== stored.requestId ||
+          request.mint !== parsed.mint ||
+          request.recipient !== parsed.recipient ||
+          request.amountBaseUnits !== actualAmount) {
+        setStatus("Saved request and live relay data do not agree. Nothing was restored or signed.");
+        return;
+      }
+      setIntent(parsed);
+      setUsingConfiguredTestIntent(false);
+      setRelayRequest(request);
+      setYoungCapability({ requestId: stored.requestId, relayToken: stored.relayToken });
+      setShareLink(createBoundaryDeepLink(stored.requestId, stored.relayToken));
+      setExactExecutionState("IDLE");
+      setStandingOutcome("IDLE");
+      setPaymentReadiness(null);
+      setYoungKeyInspection(null);
+      setStatus(
+        `Request safely restored from private relay: ${request.status}. No new approval or payment has been executed.`,
+      );
+    } catch (error) {
+      setStatus(`Session recovery UNKNOWN · ${error instanceof Error ? error.message : "RELAY_UNAVAILABLE"}`);
     } finally {
       setBusy(false);
     }
@@ -1365,6 +1415,10 @@ export function BoundaryWorkspace() {
 
   return (
     <ScrollView contentContainerStyle={styles.section}>
+      {!relayRequest ? (
+        <MuseumButton label="Resume my previous private request" disabled={busy}
+          variant="secondary" onPress={restoreYoungSession} />
+      ) : null}
       <MuseumHero
         exhibit={standingOutcome === "REFUSE" ? "EXHIBIT B / BOUNDARY REACHED" : standingOutcome === "ALLOW" ? "EXHIBIT E / WITHIN THE KEY" : "EXHIBIT A / YOUR KEY"}
         title={standingOutcome === "REFUSE" ? "This action needs a guardian." : standingOutcome === "ALLOW" ? "Within your Key." : "Freedom with Boundaries."}
