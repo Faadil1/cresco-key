@@ -524,7 +524,7 @@ export function BoundaryWorkspace() {
 
   // Actual Devnet account inspection, not a generated setup checklist or demo
   // proof. Every payment rechecks before requesting a wallet signature.
-  const inspectLivePaymentReadiness = async (): Promise<PaymentReadiness> => {
+  const inspectLivePaymentReadiness = async (requestedAmountBaseUnits?: bigint): Promise<PaymentReadiness> => {
     if (!account || !intent) {
       const result: PaymentReadiness = {
         state: "BLOCKED", reasons: ["WALLET_OR_PAYMENT_INTENT_MISSING"], evidence: [],
@@ -560,6 +560,9 @@ export function BoundaryWorkspace() {
           },
         }),
       };
+      const amount = requestedAmountBaseUnits ?? BigInt(
+        decimalToBaseUnits(intent.amountUi, await readLiveMintDecimals(intent.mint)),
+      );
       const result = await checkPaymentReadiness(readinessRpc, {
         chain,
         connectedWallet: account.address.toString(),
@@ -567,9 +570,7 @@ export function BoundaryWorkspace() {
         config: paymentProgramConfigFromEnv(),
         mint: intent.mint,
         recipient: intent.recipient,
-        requestedAmountBaseUnits: BigInt(
-          decimalToBaseUnits(intent.amountUi, config.tokenDecimals),
-        ),
+        requestedAmountBaseUnits: amount,
       });
       setPaymentReadiness(result);
       return result;
@@ -603,80 +604,76 @@ export function BoundaryWorkspace() {
   };
 
   const attemptStandingPayment = async () => {
-    if (!intent || !account) return;
-
+    if (!intent || !account || busy) return;
     if (demoBeneficiaryBlocker) {
-      // Configuration mismatch is not an on-chain REFUSE and not a submission.
       setPreflightBlocked(demoBeneficiaryBlocker);
-      setStatus("PRECHECK BLOCKED · " + demoBeneficiaryBlocker);
-      recordReceipt("PRECHECK_BLOCKED", {
-        state: "BLOCKED",
-        reason: "DEMO_BENEFICIARY_NOT_PROVISIONED_FOR_CONNECTED_WALLET",
-        configuredBeneficiary: config.beneficiaryWallet || null,
-        connectedWallet: account.address.toString(),
-        transactionSubmitted: false,
-        signature: null,
-        proofScope: "PUBLIC_BUILD_CONFIGURATION_ONLY",
-      });
+      setStatus("TEST CONFIG BLOCKED · " + demoBeneficiaryBlocker);
       return;
     }
-
     if (capitalConfigMissing.length > 0) {
-      setStatus(
-        `Capital path is not configured: ${capitalConfigMissing.join(", ")}`,
-      );
+      setStatus(`Capital path not configured: ${capitalConfigMissing.join(", ")}`);
       return;
     }
 
     setBusy(true);
-    setStatus("Checking live Devnet account readiness before wallet approval.");
-
-    const readiness = await inspectLivePaymentReadiness();
-    if (readiness.state !== "READY_FOR_WALLET_ATTEMPT") {
-      setPreflightBlocked(
-        readiness.state === "BLOCKED" ? readiness.reasons.join(", ") : readiness.reason,
-      );
-      setStatus(
-        readiness.state === "BLOCKED"
-          ? `PRECHECK BLOCKED · ${readiness.reasons.join(", ")}`
-          : `PRECHECK UNKNOWN · ${readiness.reason}`,
-      );
-      setBusy(false);
-      return;
-    }
-    // A real Key may have changed after the initial APK was built.
-    const standingKey = await readYoungStandingKey();
-    if (standingKey.state !== "READY") {
-      const reason = standingKey.reason;
-      setPreflightBlocked(reason);
-      setStatus(`STANDING KEY ${standingKey.state} · ${reason}`);
-      setBusy(false);
-      return;
-    }
-    if (standingKey.key.mandateStage < 3) {
-      setPreflightBlocked("KEY_NOT_YET_AT_BOUNDED_OR_INDEPENDENT_STAGE");
-      setStatus("Your actual Key is not yet at a stage that permits independent payments. Only the onchain guardian/mandate workflow can advance it.");
-      setBusy(false);
-      return;
-    }
-    const liveMandateNonce = standingKey.key.nonce;
     setPreflightBlocked(null);
-    setStatus(`Live Key nonce ${liveMandateNonce} and accounts checked; requesting the actual payment via wallet.`);
-
+    setStatus("Reading actual Devnet Key authority and payment request.");
     try {
-      const programConfig = paymentProgramConfigFromEnv();
-      const instruction =
-        await buildExecutePaymentWithinMandateInstruction({
-          config: programConfig,
-          beneficiary: address(account.address.toString()),
-          mint: address(intent.mint),
-          recipient: address(intent.recipient),
-          amountBaseUnits: BigInt(
-            decimalToBaseUnits(intent.amountUi, config.tokenDecimals),
-          ),
-          expectedNonce: liveMandateNonce,
-        });
+      const decimals = await readLiveMintDecimals(intent.mint);
+      const amountBaseUnits = BigInt(decimalToBaseUnits(intent.amountUi, decimals));
+      const standingKey = await readYoungStandingKey();
+      setYoungKeyInspection(standingKey);
+      if (standingKey.state !== "READY") {
+        setPreflightBlocked(standingKey.reason);
+        setStatus(`STANDING KEY ${standingKey.state} · ${standingKey.reason}`);
+        return;
+      }
 
+      const policy = assessStandingIntent(
+        standingKey.key,
+        amountBaseUnits,
+        BigInt(Math.floor(Date.now() / 1000)),
+      );
+      if (policy.state === "BLOCKED") {
+        setPreflightBlocked(policy.reason);
+        setStatus(`KEY POLICY BLOCKED · ${policy.reason}`);
+        return;
+      }
+      if (policy.state === "BOUNDARY") {
+        // A parent can receive an exact request without requiring Solflare
+        // to sign a transaction the policy would necessarily reject.
+        setStatus(`Live policy boundary: ${policy.code}. Preparing exact guardian request; no payment sent.`);
+        await createBoundaryForObservedPolicy({
+          key: standingKey.key,
+          amountBaseUnits,
+          evidence: `${policy.code}: request ${amountBaseUnits}, limit ${standingKey.key.maxActionAmount}, spent ${policy.effectiveSpent}, period cap ${standingKey.key.maxPeriodAmount}, nonce ${standingKey.key.nonce}`,
+          source: "READ_ONLY_LIVE_POLICY",
+        });
+        return;
+      }
+
+      // Policy preview is only guidance, not final permission. Real program
+      // validation and a fresh wallet signature remain load-bearing.
+      const readiness = await inspectLivePaymentReadiness(amountBaseUnits);
+      if (readiness.state !== "READY_FOR_WALLET_ATTEMPT") {
+        const reason = readiness.state === "BLOCKED"
+          ? readiness.reasons.join(", ")
+          : readiness.reason;
+        setPreflightBlocked(reason);
+        setStatus(`LIVE ACCOUNT ${readiness.state} · ${reason}`);
+        return;
+      }
+
+      const instruction = await buildExecutePaymentWithinMandateInstruction({
+        config: paymentProgramConfigFromEnv(),
+        beneficiary: address(account.address.toString()),
+        mint: address(intent.mint),
+        recipient: address(intent.recipient),
+        amountBaseUnits,
+        expectedNonce: standingKey.key.nonce,
+      });
+
+      setStatus(`Wallet approval required for real payment under Devnet Key nonce ${standingKey.key.nonce}.`);
       let outcome: TransactionOutcome;
       try {
         const signature = await sendTransactions([instruction]);
@@ -685,19 +682,27 @@ export function BoundaryWorkspace() {
         outcome = classifyProgramSubmissionError(submissionError);
       }
 
-      setStatus(outcomeLabel(outcome));
-      setStandingOutcome(outcome.state);
+      setStandingOutcome(outcome.state === "REFUSE" && !outcome.signature
+        ? "UNKNOWN" : outcome.state);
       recordReceipt("STANDING_PAYMENT", {
         outcome: outcomeReceipt(outcome),
-        verifiedBeforeSubmissionMandateNonce: liveMandateNonce.toString(),
+        liveMandateNonceBeforeAttempt: standingKey.key.nonce.toString(),
+        amountBaseUnits: amountBaseUnits.toString(),
+        decimalsSource: "LIVE_DEVNET_TOKEN_MINT",
       });
-
-      if (outcome.state === "REFUSE") {
-        await createBoundaryFromVerifiedRefusal(outcome, liveMandateNonce);
+      setStatus(outcomeLabel(outcome));
+      if (outcome.state === "REFUSE" && outcome.signature) {
+        await createBoundaryForObservedPolicy({
+          key: standingKey.key,
+          amountBaseUnits,
+          evidence: outcome.evidence,
+          signature: outcome.signature,
+          source: "CONFIRMED_CHAIN_REFUSAL",
+        });
       }
     } catch (error) {
       setStandingOutcome("UNKNOWN");
-      setStatus(error instanceof Error ? error.message : "PAYMENT_ATTEMPT_FAILED");
+      setStatus(error instanceof Error ? error.message : "PAYMENT_ACTION_UNKNOWN");
     } finally {
       setBusy(false);
     }
