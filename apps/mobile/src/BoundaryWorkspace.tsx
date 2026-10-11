@@ -15,6 +15,11 @@ import {
 
 import { PaymentScanner } from "./payment/PaymentScanner";
 import {
+  deriveEnrollmentAccounts,
+  parseDistinctGuardianWallet,
+  type EnrollmentInspection,
+} from "./solana/enrollment";
+import {
   checkPaymentReadiness,
   type PaymentReadiness,
   type ReadinessRpc,
@@ -71,6 +76,7 @@ type G1ReceiptScenario =
   | "WALLET_PROOF"
   | "STANDING_PAYMENT"
   | "PRECHECK_BLOCKED"
+  | "KEY_SETUP_PREFLIGHT"
   | "BOUNDARY_REQUEST"
   | "GUARDIAN_ALLOW_ONCE"
   | "GUARDIAN_REFUSE"
@@ -245,6 +251,8 @@ export function BoundaryWorkspace() {
     useState<ExactExecutionState>("IDLE");
   const [standingOutcome, setStandingOutcome] = useState<ExactExecutionState>("IDLE");
   const [preflightBlocked, setPreflightBlocked] = useState<string | null>(null);
+  const [guardianSetupAddress, setGuardianSetupAddress] = useState("");
+  const [enrollmentInspection, setEnrollmentInspection] = useState<EnrollmentInspection | null>(null);
   const [paymentReadiness, setPaymentReadiness] = useState<PaymentReadiness | null>(null);
   const [guardianKeyInspection, setGuardianKeyInspection] = useState<KeyInspection | null>(null);
   const [youngKeyInspection, setYoungKeyInspection] = useState<KeyInspection | null>(null);
@@ -358,6 +366,108 @@ export function BoundaryWorkspace() {
     };
 
     setLatestReceiptJson(JSON.stringify(receiptValue(receipt), null, 2));
+  };
+
+  // Read the actual connected beneficiary's Devnet accounts, never just the
+  // historical build-time demo beneficiary. No authority or funds are changed.
+  const inspectMyKeySetup = async () => {
+    if (!account || busy) return;
+    if (chain !== "solana:devnet") {
+      setEnrollmentInspection(null);
+      setStatus("KEY SETUP BLOCKED · Switch the connected wallet to Solana Devnet.");
+      return;
+    }
+    setBusy(true);
+    setEnrollmentInspection(null);
+    try {
+      const program = paymentProgramConfigFromEnv();
+      const derived = await deriveEnrollmentAccounts(program.programId, account.address);
+      const [charterState, mandateState, balance] = await Promise.all([
+        client.rpc.getAccountInfo(derived.charter, { encoding: "base64" }).send(),
+        client.rpc.getAccountInfo(derived.mandate, { encoding: "base64" }).send(),
+        client.rpc.getBalance(account.address).send(),
+      ]);
+      if (
+        (charterState.value && charterState.value.owner !== program.programId) ||
+        (mandateState.value && mandateState.value.owner !== program.programId)
+      ) {
+        throw new Error("ACCOUNT_OWNER_MISMATCH_NO_SETUP_AUTHORITY");
+      }
+      const charterExists = charterState.value !== null;
+      const mandateExists = mandateState.value !== null;
+      const state: EnrollmentInspection = {
+        beneficiary: account.address.toString(),
+        charter: derived.charter.toString(),
+        mandate: derived.mandate.toString(),
+        charterExists,
+        mandateExists,
+        walletBalanceLamports: balance.value.toString(),
+        inspectedAt: new Date().toISOString(),
+        status: !charterExists && !mandateExists
+          ? "NOT_PROVISIONED"
+          : charterExists && mandateExists
+            ? "ACCOUNTS_PRESENT_UNVERIFIED"
+            : "PARTIAL_SETUP",
+      };
+      setEnrollmentInspection(state);
+      recordReceipt("KEY_SETUP_PREFLIGHT", {
+        state: state.status,
+        source: "LIVE_SOLANA_DEVNET_RPC",
+        beneficiary: state.beneficiary,
+        charter: state.charter,
+        mandate: state.mandate,
+        charterExists,
+        mandateExists,
+        walletBalanceLamports: state.walletBalanceLamports,
+        publicDataOnly: true,
+        signedEnrollmentTransaction: false,
+      });
+      setStatus(state.status === "NOT_PROVISIONED"
+        ? "No live Charter or Mandate found for this wallet. Two distinct signers are required to enroll."
+        : "Accounts discovered on Devnet. Presence alone does not verify a valid Guardian or spending authority.");
+    } catch (error) {
+      const reason = error instanceof Error ? error.message : "DEVNET_SETUP_RPC_UNKNOWN";
+      setEnrollmentInspection(null);
+      recordReceipt("KEY_SETUP_PREFLIGHT", {
+        state: "UNKNOWN",
+        reason,
+        signedEnrollmentTransaction: false,
+      });
+      setStatus("KEY SETUP UNKNOWN · " + reason);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const shareEnrollmentRequest = async () => {
+    if (!account || !enrollmentInspection || busy ||
+      enrollmentInspection.beneficiary !== account.address.toString() ||
+      chain !== "solana:devnet") return;
+    try {
+      const guardian = parseDistinctGuardianWallet(guardianSetupAddress, account.address);
+      const request = {
+        schema: "cresco-key.public-enrollment-request.v1",
+        type: "NONCUSTODIAL_SETUP_REQUEST_NOT_AN_AUTHORIZATION",
+        network: "solana:devnet",
+        programId: paymentProgramConfigFromEnv().programId.toString(),
+        beneficiary: account.address.toString(),
+        intendedGuardian: guardian.toString(),
+        guardianVerifiedOnchain: false,
+        charter: enrollmentInspection.charter,
+        mandate: enrollmentInspection.mandate,
+        currentAccountStatus: enrollmentInspection.status,
+        inspectedAt: enrollmentInspection.inspectedAt,
+        signedEnrollmentTransaction: false,
+        nextStep: "Guardian and Beneficiary must both independently approve a genuine initialize_charter transaction. Sharing this public request grants no authority.",
+      };
+      await Share.share({
+        title: "CRESCO Key public Devnet enrollment request",
+        message: JSON.stringify(request, null, 2),
+      });
+    } catch (error) {
+      setStatus("SETUP REQUEST NOT SHARED · " +
+        (error instanceof Error ? error.message : "INVALID_GUARDIAN"));
+    }
   };
 
   const loadGuardianLink = async (url: string) => {
@@ -1441,6 +1551,36 @@ export function BoundaryWorkspace() {
         compact={Boolean(intent)}
         showKey={!intent}
       />
+      <MuseumPlate exhibit="START HERE / REAL DEVNET KEY SETUP" title="Does this wallet have its own Key?">
+        <Text style={styles.body}>Inspect the connected Solflare wallet on Devnet. A build-time demo Key cannot authorize another person's wallet.</Text>
+        <MuseumButton label="Check my actual Devnet Charter and balance"
+          disabled={busy || !account} variant="secondary" onPress={inspectMyKeySetup} />
+        {enrollmentInspection && account?.address.toString() === enrollmentInspection.beneficiary ? (
+          <View style={styles.scenarios}>
+            <MuseumFact label="ONCHAIN SETUP" value={enrollmentInspection.status} />
+            <MuseumFact label="BENEFICIARY" value={enrollmentInspection.beneficiary} />
+            <MuseumFact label="CHARTER PDA" value={enrollmentInspection.charter} />
+            <MuseumFact label="MANDATE PDA" value={enrollmentInspection.mandate} />
+            <MuseumFact label="DEVNET SOL / LAMPORTS" value={enrollmentInspection.walletBalanceLamports} />
+            <Text style={styles.body}>This is a read-only account check. Even when both accounts exist, Guardian identity and financial rules still require independent verification. No Key has been created by this screen.</Text>
+            <Text style={styles.scenarioLabel}>INTENDED GUARDIAN PUBLIC ADDRESS</Text>
+            <TextInput
+              accessibilityLabel="Guardian Solana public wallet address"
+              style={styles.limitInput}
+              value={guardianSetupAddress}
+              onChangeText={setGuardianSetupAddress}
+              autoCapitalize="none"
+              autoCorrect={false}
+              placeholder="Paste distinct Guardian public key"
+              placeholderTextColor={color.unknown}
+            />
+            <MuseumButton label="Share public Key setup request (no transaction)"
+              disabled={busy || !guardianSetupAddress.trim()}
+              variant="secondary" onPress={shareEnrollmentRequest} />
+            <Text style={styles.body}>Creating a new Charter requires a single valid Solana transaction signed by both the Guardian and this beneficiary. Sharing a request is not consent, wallet signing, a completed Charter, or a payment.</Text>
+          </View>
+        ) : null}
+      </MuseumPlate>
       <MuseumPlate exhibit="EXHIBIT A / PAYMENT INTENT" title={intent ? "Your requested action" : "Start with an action"}
         tone={standingOutcome === "REFUSE" ? "boundary" : standingOutcome === "ALLOW" ? "verified" : "neutral"}>
         {intent ? (
