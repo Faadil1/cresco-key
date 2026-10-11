@@ -48,7 +48,7 @@ The official CLOCK IN listing describes **one extra $10,000 SKR integration priz
 
 **Judge positioning:** SKR gives opted-in token holders a community policy-review space, linked to live family Key facts rather than artificial screenshots; this is useful optional product depth but does not substitute for the unproven mobile payment/Guardian core loop.
 
-**Time-critical submission:** Solana Mobile's September 8 blog states submissions closed October 8; Radiants' public calendar presently displays October 12 at 11:59 UTC (07:59 EDT on Oct 12). Both cannot be assumed authoritative at once. Check the signed-in portal immediately, submit the functional artifact(s) before its live deadline, and preserve the actual confirmation. Never treat project registration as submission.
+**Time-critical submission — corrected from user-provided Radiants calendar photo (Oct 11):** the calendar's October 12, 2026 cell explicitly displays **7:59 p.m. EDT — Submissions close** and **8:00 p.m. EDT — Judging opens**. Treat the visible local schedule as **2026-10-12 19:59 EDT**, not the previously mistaken 07:59 EDT conversion. An older Solana Mobile article gave a different date, so the final signed-in submission form remains the authoritative place to confirm access. Submit the strongest truthful available artifact before the form actually closes, preserve its submission receipt, and do not confuse registration or draft status with a submitted entry.
 
 ## Evidence classification — avoid claims inflation
 
