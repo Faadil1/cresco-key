@@ -1115,7 +1115,7 @@ export function BoundaryWorkspace() {
     return (
       <ScrollView contentContainerStyle={styles.section}>
         <MuseumHero exhibit="EXHIBIT C / THE DECISION" title="One action. Your call."
-          subtitle="Review exactly what was requested. Your choice does not rewrite the standing Key." compact />
+          subtitle="Choose consciously: refuse, allow exactly once, or change the standing Key. Only the last choice changes ongoing authority." compact />
         {relayRequest ? (
           <MuseumPlate exhibit="REQUEST / EXACT BOUNDARY" title={relayRequest.display?.label ?? "Guardian review"}
             tone={relayRequest.status === "REFUSED" ? "boundary" : "pending"}>
@@ -1138,6 +1138,54 @@ export function BoundaryWorkspace() {
           <>
             <MuseumButton label="Allow this exact payment once" disabled={busy} onPress={grantExactAllowanceOnce} />
             <MuseumButton label="Not this time" variant="boundary" disabled={busy} onPress={refuseBoundaryRequest} />
+            <MuseumPlate exhibit="THIRD CHOICE / PERMANENT AUTHORITY" title="Widen the standing Key" tone="neutral">
+              <Text style={styles.body}>This is NOT Allow Once. Widen changes the permanent amount limits of the actual onchain asset rule. It advances the mandate nonce and invalidates pending exact authorizations tied to the old version.</Text>
+              <MuseumButton label="Read current standing Key from Devnet" variant="secondary"
+                disabled={busy} onPress={inspectGuardianStandingKey} />
+              {guardianKeyInspection?.state === "READY" ? (
+                <View style={styles.scenarios}>
+                  <MuseumFact label="LIVE ACTION LIMIT / TOKEN UNITS" value={displayTokenUnits(guardianKeyInspection.key.maxActionAmount, config.tokenDecimals)} />
+                  <MuseumFact label="LIVE PERIOD LIMIT / TOKEN UNITS" value={displayTokenUnits(guardianKeyInspection.key.maxPeriodAmount, config.tokenDecimals)} />
+                  <MuseumFact label="MANDATE NONCE" value={guardianKeyInspection.key.nonce.toString()} />
+                  <Text style={styles.scenarioLabel}>NEW PER-ACTION LIMIT / TOKEN UNITS</Text>
+                  <TextInput
+                    accessibilityLabel="New standing Key per-action limit in token units"
+                    style={styles.limitInput}
+                    keyboardType="decimal-pad"
+                    value={nextActionLimit}
+                    onChangeText={(value) => { setNextActionLimit(value); setWidenAcknowledged(false); }}
+                    autoCorrect={false}
+                    placeholder="Enter a higher amount"
+                    placeholderTextColor={color.unknown}
+                  />
+                  <Text style={styles.scenarioLabel}>NEW PER-PERIOD LIMIT / TOKEN UNITS</Text>
+                  <TextInput
+                    accessibilityLabel="New standing Key per-period limit in token units"
+                    style={styles.limitInput}
+                    keyboardType="decimal-pad"
+                    value={nextPeriodLimit}
+                    onChangeText={(value) => { setNextPeriodLimit(value); setWidenAcknowledged(false); }}
+                    autoCorrect={false}
+                    placeholder="Must be at least the action limit"
+                    placeholderTextColor={color.unknown}
+                  />
+                  <Pressable
+                    accessibilityRole="checkbox"
+                    accessibilityState={{ checked: widenAcknowledged }}
+                    accessibilityLabel="I understand this permanently widens the onchain standing Key"
+                    onPress={() => setWidenAcknowledged((current) => !current)}
+                    style={styles.acknowledgement}>
+                    <Text style={styles.body}>{widenAcknowledged ? "☑" : "☐"} I understand: this permanently changes the Key, not just this payment. My wallet must approve the onchain update.</Text>
+                  </Pressable>
+                  <MuseumButton label="Request guardian wallet signature to WIDEN KEY"
+                    disabled={busy || !widenAcknowledged} onPress={widenStandingKey} />
+                </View>
+              ) : guardianKeyInspection ? (
+                <Text style={styles.status} accessibilityLiveRegion="polite">
+                  {guardianKeyInspection.state}: {guardianKeyInspection.reason}. No authority has changed.
+                </Text>
+              ) : null}
+            </MuseumPlate>
           </>
         ) : null}
         <MuseumPlate exhibit="AUTHORITY / IMPORTANT">
@@ -1374,6 +1422,12 @@ const styles = StyleSheet.create({
     flexGrow: 1,
   },
   scenarios: { gap: 10, borderTopWidth: 1, borderTopColor: color.border, paddingTop: 12 },
+  limitInput: {
+    minHeight: 48, borderColor: color.border, borderWidth: 1, borderRadius: 8,
+    paddingHorizontal: 12, color: color.ink, backgroundColor: color.paper,
+    fontSize: 17,
+  },
+  acknowledgement: { minHeight: 48, paddingVertical: 12, justifyContent: "center" },
   scenarioLabel: { color: color.deepBrass, fontSize: 10, fontWeight: "700", letterSpacing: 1.1 },
   eyebrow: {
     fontSize: 11,
