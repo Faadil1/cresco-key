@@ -123,7 +123,7 @@ A blank, omitted, or forgotten gate is never a PASS.
 |---|---|---:|---|
 | Seed Vault direct dApp integration | Direct secret/key access | **N/A** | CRESCO uses MWA; compatible wallets may use Seed Vault internally. |
 | SGT | Device/token identity | **N/A** | Not required by locked P0 and does not prove age/guardianship/consent. |
-| SKR | Token/ecosystem integration | **N/A** | Add only if it creates material product value. |
+| SKR | Optional Solana Mobile token-based guardian learning access | **ACTIVE** | PR #59 adds user-opt-in, read-only mainnet official SKR mint presence check and interactive family charter prompts. Build-level only until APK/Android/real wallet check; no transfers, rewards, staking, authority change or bounty eligibility proof. CRESCO core stays usable without SKR. |
 | Gateway / Nanopayments | Separate settlement rail | **N/A** | P0 does not depend on a separate nanopayment rail. |
 | x402 | Machine-paid unlock | **N/A** | Not used by locked P0. If activated, full requirements/payment → verify → settle → unlock evidence becomes mandatory. |
 | Cards / fiat off-ramp | Production payment rail | **N/A** | Out of P0 scope. |

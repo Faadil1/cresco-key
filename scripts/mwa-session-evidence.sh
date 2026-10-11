@@ -44,6 +44,11 @@ PY
       adb shell input tap "$x" "$y"
       return 0
     fi
+    # Museum Ledger intentionally uses a scrollable editorial layout.
+    # Scroll only for first-party buttons; never swipe the wallet approval UI.
+    if [ "$needle" = "Sign TRC-01 proof message" ] || [ "$needle" = "Connect wallet" ]; then
+      adb shell input swipe 550 1700 550 560 320 || true
+    fi
     sleep 1
     elapsed=$((elapsed+1))
   done
@@ -144,9 +149,14 @@ unlock_emulator() {
 echo "== Configure and unlock emulator credential =="
 adb shell locksettings set-pin "$PIN" > "$EVIDENCE/locksettings.txt" 2>&1
 unlock_emulator
+# MWA build compiles two Android apps and can take long enough for the test
+# emulator to auto-lock; keep the screen awake throughout this local CI test.
+adb shell settings put system screen_off_timeout 1800000
+adb shell svc power stayon true
 
 echo "== Build CRESCO standalone test APK =="
 cd "$MOBILE"
+node ../../tools/devnet/write-mobile-env-from-demo-state.cjs ../../evidence/devnet-distinct-program/cresco-key-demo-state-37182728261.json .env
 npx expo prebuild --platform android --no-install --non-interactive
 cd android
 NODE_ENV=production ./gradlew assembleRelease
@@ -167,9 +177,27 @@ adb shell pm list packages | grep -q 'package:com.faadil.crescokey'
 adb shell pm list packages | grep -q 'package:com.solana.mwallet'
 
 echo "== Launch CRESCO =="
+# Device can lock again after the long Gradle prebuild even if it was already
+# unlocked once. Revalidate and unlock immediately before UI automation.
+adb shell input keyevent 224 || true
+unlock_emulator
+adb shell settings put system screen_off_timeout 1800000
+adb shell svc power stayon true
 adb logcat -c
+# Actual live emulator recording; no production wallet or onchain payment implied.
+VIDEO_PATH="/sdcard/cresco-emulator-live.mp4"
+adb shell rm -f "$VIDEO_PATH" || true
+adb shell screenrecord --bit-rate 3000000 --time-limit 175 "$VIDEO_PATH" > "$EVIDENCE/screenrecord.log" 2>&1 &
+stop_capture() {
+  adb shell pkill -2 screenrecord >/dev/null 2>&1 || true
+  sleep 3
+  adb pull "$VIDEO_PATH" "$EVIDENCE/cresco-emulator-live.mp4" >/dev/null 2>&1 || true
+  test -s "$EVIDENCE/cresco-emulator-live.mp4" || echo "SCREENRECORD_UNAVAILABLE" >> "$EVIDENCE/screenrecord.log"
+}
+trap stop_capture EXIT
+sleep 2
 adb shell monkey -p com.faadil.crescokey -c android.intent.category.LAUNCHER 1 >/dev/null
-wait_text "Connect wallet" 20
+wait_text "Connect wallet" 30
 dump_ui "01-cresco-disconnected"
 
 echo "== Negative path: decline authorize =="
@@ -192,7 +220,7 @@ while [ "$elapsed" -lt 30 ]; do
   adb shell uiautomator dump /sdcard/auth.xml >/dev/null 2>&1 || true
   adb pull /sdcard/auth.xml "$EVIDENCE/auth-prompt.xml" >/dev/null 2>&1 || true
 
-  if grep -Fq "P0 mobile workspace" "$EVIDENCE/auth-prompt.xml"; then
+  if grep -Fq "CHOOSE YOUR ROLE" "$EVIDENCE/auth-prompt.xml"; then
     break
   fi
 
@@ -215,7 +243,7 @@ while [ "$elapsed" -lt 30 ]; do
   elapsed=$((elapsed+1))
 done
 
-wait_text "P0 mobile workspace" 15
+wait_text "CHOOSE YOUR ROLE" 15
 dump_ui "05-cresco-connected"
 
 echo "== signMessage path =="
@@ -226,6 +254,16 @@ tap_text "Approve" 10
 wait_text "SIGNED" 30
 dump_ui "07-cresco-signed"
 
+echo "== Capture Young intent without signing =="
+if tap_text "Young person flow" 10; then
+  sleep 2
+  dump_ui "09-cresco-young-flow"
+  if tap_text "Load 5-unit in-bounds demo intent" 15; then
+    sleep 3
+    dump_ui "10-cresco-demo-intent"
+  fi
+fi
+
 echo "== Kill/relaunch truthfulness =="
 adb shell am force-stop com.faadil.crescokey
 sleep 2
@@ -234,7 +272,7 @@ sleep 8
 dump_ui "08-cresco-relaunch"
 
 RELAUNCH_STATE="UNKNOWN"
-if grep -Fq "P0 mobile workspace" "$EVIDENCE/08-cresco-relaunch.xml"; then
+if grep -Fq "CHOOSE YOUR ROLE" "$EVIDENCE/08-cresco-relaunch.xml"; then
   RELAUNCH_STATE="CONNECTED_RESTORED"
 elif grep -Fq "Connect wallet" "$EVIDENCE/08-cresco-relaunch.xml"; then
   RELAUNCH_STATE="DISCONNECTED_TRUTHFUL"
@@ -244,6 +282,8 @@ if [ "$RELAUNCH_STATE" = "UNKNOWN" ]; then
   exit 1
 fi
 
+stop_capture
+trap - EXIT
 adb logcat -d > "$EVIDENCE/logcat.txt" || true
 APK_SHA="$(sha256sum "$CRESCO_APK" | awk '{print $1}')"
 MOCK_SHA="$(sha256sum "$MOCK_APK" | awk '{print $1}')"

@@ -521,3 +521,50 @@ Before terminal promotion:
 Not currently applicable.
 
 If the project is later submitted/frozen, no silent retrofit is allowed. Any further build requires explicit reopen/delta and preservation of the prior submission snapshot.
+
+## Museum Ledger native product UX + optional SKR access — PR #59 (2026-10-07)
+
+Owner selected the **Museum Ledger** artistic direction. PR #59 adds genuine native React Native screens and a typed design system; this is NOT just reference imagery.
+
+Product changes at code/build scope:
+- Museum Ledger wallet entry, young action/Key overview, refusal/boundary, guardian exact decision, conditional success and live latest-receipt card;
+- links remain on pre-existing real wallet/relay/Solana instruction handlers; no fabricated payments or receipt history;
+- opt-in Guardian SKR Charter Atelier: official SKR mint read-only presence check on Solana **mainnet**, and an interactive shareable family learning prompt gated by nonzero SKR; no Solana mainnet signing or transfers and no influence on CRESCO spending rules;
+- conditional SKR gateway classification changed from N/A to ACTIVE / NOT YET RUNTIME PROVEN, separate from G1.
+
+Scope and truth:
+- current_primary_workstream: PRODUCT_EXPLOITATION
+- material_user_capability_delta_since_previous_milestone: MUSEUM_LEDGER_NATIVE_UI_AND_READ_ONLY_SKR_ACCESS_AT_CODE_SCOPE; physical or external-run delta UNKNOWN
+- first_live_slice_proven: false
+- workstream_drift_status: NO_PROOF_ONLY_PROMOTION; code-bearing product enhancement, but Android/runtime validation still required
+- latest_project_canonical_baseline: non-material delta from 0.1.56 to central 0.1.59 as previously recorded; no retroactive rewriting
+- blocked_transition: LIVE_CORE_G1 / LIVE / BUILD_CANDIDATE_READY / SUBMISSION_READY pending live relay, physical wallet transaction, negative/recovery evidence, release QA
+- exact_next_gate: CI_TYPECHECK_AND_APK_EMULATOR_MWA_ON_PR59, followed by physical LIVE_CORE_G1 and optional SKR mainnet read-only access test
+- exact_next_owner: code/CI automation until merge; protected wallet/device proof and final submission stay human
+- exact_next_action: require successful Mobile CI + configured preflight + APK Evidence + Emulator Smoke + MWA Session on final PR head, merge after review, and download the newly built APK (not an earlier #56 artifact)
+- valid_stop_condition: no live proof when physical operator/device or protected deployment not available; do not silently upgrade
+- demo_packaging_permission: SUPPORT_ONLY / NO_NEW_LIVE_CLAIM
+
+Claims: SKR bonus integration is **a candidate at code scope**, not a proven prize-eligible live integration, payout, reward distribution or custody rail. No image-generated mockup is used as a runtime screenshot.
+
+## Physical Samsung G1 wallet mismatch and fail-closed repair — 2026-10-07
+
+**Observed**: standalone Museum Ledger opened on physical Android; Solflare MWA session connected on Solana Devnet; in-app TRC-01 receipt reported SIGNED (64 bytes, independent crypto verification not yet done). A 5-unit configured demo payment reached Solflare, where app-domain trust was unknown and simulation failed. User cancelled. The captured `STANDING_PAYMENT` runtime receipt is `UNKNOWN`, `signature=null`, `relay=null`, cancellation error; this is not confirmed financial action nor on-chain spending-limit refusal.
+
+**Product reality**: bootstrap state beneficiary `DD1T86…DRSZ` does not match connected wallet `BW5dW…ySkT`. PR #59 now adds a public expected-beneficiary configuration and stops mismatched demo payments before wallet signing, with a distinct `PRECHECK_BLOCKED` informational receipt. UI now differentiates UNKNOWN / PENDING / BLOCKED / REFUSED. This code repair is subject to CI and new standalone APK; it is not installed on the Samsung yet.
+
+**Remaining**: authorized new-charter + mandate + funded Devnet token/vault provisioning for this real wallet; guardian role signer; verified app identity; confirm fee payer test SOL; observed in-bounds transaction; actual guardian/boundary/mutation/replay; live relay. No protected transaction/deploy or secret handling is authorized by this observation.
+
+- canonical baseline: continue the current project central pin and NON_MATERIAL_DELTA classification; this observation adds runtime truth, not a cross-system retrofit.
+- first_live_slice_proven: false
+- material_user_capability_delta_since_previous_milestone: PHYSICAL_ANDROID_APP_LAUNCH_MWA_CONNECT_TRCO1_MESSAGE_SIGNATURE_OBSERVED; LIVE_PAYMENT_NONE
+- remaining_material_depth_gaps: physical in-bounds payment, guardian exact once, negative/replay, relay live, new charter, domain verification.
+- current_primary_workstream: PRODUCT_EXPLOITATION
+- workstream_drift_status: CLEAR_FOR_RUNTIME_REPAIR
+- blocked_transition: LIVE_CORE_G1 / BUILD_CANDIDATE_READY / SUBMISSION_READY
+- valid_stop_condition: real beneficiary/guardian signer provisioning and verified app origin require operator action.
+- demo_packaging_permission: support-only with explicit UNKNOWN payment; no live claim.
+- exact_next_gate: G1_ACCOUNT_BINDING_AND_IDENTITY_PREFLIGHT
+- exact_next_owner: engineering for fail-closed UI/CI; authorized human wallet operators for real new-charter signatures
+- exact_next_action: finish PR #59 CI, build/install corrected standalone APK, prepare authorized Devnet charter/mandate and verified identity, then perform a single consented live product transaction with saved RPC evidence.
+- evidence: `docs/G1-PHYSICAL-SAMSUNG-OBSERVATION-2026-10-07.md`; user-provided public receipt, timestamp `2026-10-08T03:00:13.443Z`, recorded UNKNOWN `CancellationException`.

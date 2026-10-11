@@ -13,6 +13,8 @@ import {
 } from "react-native";
 
 import { PaymentScanner } from "./payment/PaymentScanner";
+import { MuseumHero, MuseumPlate, MuseumButton, MuseumFact, ProofStrip, museumColors as color } from "./design/MuseumLedgerUI";
+import { SkrCharterAtelier } from "./skr/SkrCharterAtelier";
 import {
   decimalToBaseUnits,
   parseSolanaPayTransferRequest,
@@ -49,6 +51,7 @@ type ExactExecutionState = "IDLE" | "ALLOW" | "REFUSE" | "UNKNOWN";
 type G1ReceiptScenario =
   | "WALLET_PROOF"
   | "STANDING_PAYMENT"
+  | "PRECHECK_BLOCKED"
   | "BOUNDARY_REQUEST"
   | "GUARDIAN_ALLOW_ONCE"
   | "GUARDIAN_REFUSE"
@@ -65,6 +68,7 @@ function demoConfig() {
   return {
     mandateNonce: process.env.EXPO_PUBLIC_DEMO_MANDATE_NONCE?.trim() ?? "",
     guardianWallet: process.env.EXPO_PUBLIC_DEMO_GUARDIAN_WALLET?.trim() ?? "",
+    beneficiaryWallet: process.env.EXPO_PUBLIC_DEMO_BENEFICIARY_WALLET?.trim() ?? "",
     mutatedRecipient:
       process.env.EXPO_PUBLIC_DEMO_MUTATED_RECIPIENT?.trim() ?? "",
     demoSolanaPay: {
@@ -215,6 +219,8 @@ export function BoundaryWorkspace() {
   );
   const [exactExecutionState, setExactExecutionState] =
     useState<ExactExecutionState>("IDLE");
+  const [standingOutcome, setStandingOutcome] = useState<ExactExecutionState>("IDLE");
+  const [preflightBlocked, setPreflightBlocked] = useState<string | null>(null);
 
   const config = useMemo(() => demoConfig(), []);
   const capitalConfigMissing = useMemo(
@@ -229,6 +235,14 @@ export function BoundaryWorkspace() {
     () => demoIntentOptions(config),
     [config],
   );
+  // The deployed sample mandate belongs to one beneficiary. A newly created
+  // Solflare account must not be sent a transaction for somebody else's charter.
+  // This is a public build-config check, not proof of on-chain account existence.
+  const demoBeneficiaryBlocker = !config.beneficiaryWallet
+    ? "Configured Devnet beneficiary is missing from this APK. Payment not attempted."
+    : account?.address.toString() !== config.beneficiaryWallet
+      ? "This wallet is not the beneficiary of the configured Devnet charter. Provision a new charter and mandate with authorized signatures before payment."
+      : null;
 
   const rpcForOutcome: Parameters<typeof waitForTransactionOutcome>[0] = {
     getSignatureStatuses: (signatures) =>
@@ -362,6 +376,8 @@ export function BoundaryWorkspace() {
       setYoungCapability(null);
       setShareLink(null);
       setExactExecutionState("IDLE");
+      setStandingOutcome("IDLE");
+      setPreflightBlocked(null);
       setStatus(
         "Deterministic Devnet payment intent loaded. No authority decision has been made yet.",
       );
@@ -447,6 +463,22 @@ export function BoundaryWorkspace() {
   const attemptStandingPayment = async () => {
     if (!intent || !account) return;
 
+    if (demoBeneficiaryBlocker) {
+      // Configuration mismatch is not an on-chain REFUSE and not a submission.
+      setPreflightBlocked(demoBeneficiaryBlocker);
+      setStatus("PRECHECK BLOCKED · " + demoBeneficiaryBlocker);
+      recordReceipt("PRECHECK_BLOCKED", {
+        state: "BLOCKED",
+        reason: "DEMO_BENEFICIARY_NOT_PROVISIONED_FOR_CONNECTED_WALLET",
+        configuredBeneficiary: config.beneficiaryWallet || null,
+        connectedWallet: account.address.toString(),
+        transactionSubmitted: false,
+        signature: null,
+        proofScope: "PUBLIC_BUILD_CONFIGURATION_ONLY",
+      });
+      return;
+    }
+
     if (capitalConfigMissing.length > 0) {
       setStatus(
         `Capital path is not configured: ${capitalConfigMissing.join(", ")}`,
@@ -480,6 +512,7 @@ export function BoundaryWorkspace() {
       }
 
       setStatus(outcomeLabel(outcome));
+      setStandingOutcome(outcome.state);
       recordReceipt("STANDING_PAYMENT", {
         outcome: outcomeReceipt(outcome),
       });
@@ -488,6 +521,7 @@ export function BoundaryWorkspace() {
         await createBoundaryFromVerifiedRefusal(outcome);
       }
     } catch (error) {
+      setStandingOutcome("UNKNOWN");
       setStatus(error instanceof Error ? error.message : "PAYMENT_ATTEMPT_FAILED");
     } finally {
       setBusy(false);
@@ -729,6 +763,7 @@ export function BoundaryWorkspace() {
             setYoungCapability(null);
             setShareLink(null);
             setExactExecutionState("IDLE");
+            setStandingOutcome("IDLE");
             setScanning(false);
             setStatus(
               "Payment request parsed. No authority decision has been made yet.",
@@ -742,36 +777,24 @@ export function BoundaryWorkspace() {
   if (!mode) {
     return (
       <ScrollView contentContainerStyle={styles.section}>
-        <Text style={styles.sectionTitle}>P0 mobile workspace</Text>
-        <Text style={styles.body}>
-          Choose the human role on this device. Each role still uses its own
-          local wallet session.
-        </Text>
-        <JudgePathCard />
-        <View style={styles.truthCard}>
-          <Text style={styles.truthTitle}>Local wallet proof</Text>
-          <Text style={styles.body}>{walletProof}</Text>
-          <Pressable
-            disabled={busy}
-            style={styles.button}
-            onPress={signWalletProof}
-          >
-            <Text style={styles.buttonText}>Sign TRC-01 proof message</Text>
-          </Pressable>
-        </View>
-        <LatestReceiptCard receiptJson={latestReceiptJson} busy={busy} />
-        <Pressable style={styles.button} onPress={() => setMode("YOUNG")}>
-          <Text style={styles.buttonText}>Young person flow</Text>
-        </Pressable>
-        <Pressable style={styles.button} onPress={() => setMode("GUARDIAN")}>
-          <Text style={styles.buttonText}>Guardian flow</Text>
-        </Pressable>
-        <CoreLoopCard
-          intentLoaded={Boolean(intent)}
-          relayDecision={relayDecisionLabel(relayRequest)}
-          exactUse={exactUseLabel(exactExecutionState)}
-          receiptReady={Boolean(latestReceiptJson)}
+        <Text style={styles.eyebrow}>CHOOSE YOUR ROLE</Text>
+        <MuseumHero
+          exhibit="CATALOGUE 001 / THE FAMILY KEY"
+          title="Freedom with Boundaries."
+          subtitle="The next generation deserves room to act. The standing Key sets the limits; a guardian appears only when needed."
+          showKey
         />
+        <MuseumPlate exhibit="EXHIBIT A / YOUR KEY" title="Choose your role">
+          <Text style={styles.body}>Each person signs with their own wallet. No shared custody or silent approval.</Text>
+          <MuseumButton label="Young person flow" onPress={() => setMode("YOUNG")} />
+          <MuseumButton label="Guardian flow" variant="secondary" onPress={() => setMode("GUARDIAN")} />
+        </MuseumPlate>
+        <ProofStrip />
+        <MuseumPlate exhibit="VERIFICATION / LOCAL WALLET" title="Inspect your session">
+          <Text style={styles.body}>{walletProof}</Text>
+          <MuseumButton label="Sign TRC-01 proof message" disabled={busy} variant="secondary" onPress={signWalletProof} />
+        </MuseumPlate>
+        <LatestReceiptCard receiptJson={latestReceiptJson} busy={busy} />
       </ScrollView>
     );
   }
@@ -779,209 +802,128 @@ export function BoundaryWorkspace() {
   if (mode === "GUARDIAN") {
     return (
       <ScrollView contentContainerStyle={styles.section}>
-        <Text style={styles.eyebrow}>GUARDIAN DEVICE</Text>
-        <Text style={styles.sectionTitle}>Review the exact request</Text>
-
-        <CoreLoopCard
-          intentLoaded={Boolean(relayRequest)}
-          relayDecision={relayDecisionLabel(relayRequest)}
-          exactUse={exactUseLabel(exactExecutionState)}
-          receiptReady={Boolean(latestReceiptJson)}
-        />
-
+        <MuseumHero exhibit="EXHIBIT C / THE DECISION" title="One action. Your call."
+          subtitle="Review exactly what was requested. Your choice does not rewrite the standing Key." compact />
         {relayRequest ? (
-          <View style={styles.card}>
-            <Row label="Status" value={relayRequest.status} />
-            <Row label="Amount (base units)" value={relayRequest.amountBaseUnits} />
-            <Row label="Mint" value={relayRequest.mint} />
-            <Row label="Recipient" value={relayRequest.recipient} />
-            <Row label="Mandate nonce" value={relayRequest.mandateNonce} />
-            {relayRequest.display?.label ? (
-              <Row label="Display label" value={relayRequest.display.label} />
-            ) : null}
-          </View>
+          <MuseumPlate exhibit="REQUEST / EXACT BOUNDARY" title={relayRequest.display?.label ?? "Guardian review"}
+            tone={relayRequest.status === "REFUSED" ? "boundary" : "pending"}>
+            <MuseumFact label="STATUS" value={relayRequest.status} />
+            <MuseumFact label="AMOUNT / TOKEN BASE UNITS" value={relayRequest.amountBaseUnits} />
+            <MuseumFact label="TOKEN MINT" value={relayRequest.mint} />
+            <MuseumFact label="RECIPIENT" value={relayRequest.recipient} />
+            <MuseumFact label="MANDATE NONCE" value={relayRequest.mandateNonce} />
+            <Text style={styles.body}>Approval would cover only these exact terms once. It is not payment execution.</Text>
+          </MuseumPlate>
         ) : (
-          <Text style={styles.body}>
-            Open a `crescokey://boundary` link from the young-person device to
-            load a private request.
-          </Text>
+          <MuseumPlate exhibit="REQUEST / NONE YET" title="Awaiting a boundary">
+            <Text style={styles.body}>Open a private boundary link from the young person's device to load a real request.</Text>
+          </MuseumPlate>
         )}
-
-        <View style={styles.truthCard}>
-          <Text style={styles.truthTitle}>Authority boundary</Text>
-          <Text style={styles.body}>
-            The relay can coordinate this request, but only the Solana program
-            can create the exact one-time allowance. Confirmation of the grant
-            still does not execute the payment.
-          </Text>
-        </View>
-
         {guardianCapability ? (
-          <Pressable
-            disabled={busy}
-            style={styles.button}
-            onPress={refreshGuardianRequest}
-          >
-            <Text style={styles.buttonText}>Refresh request</Text>
-          </Pressable>
+          <MuseumButton label="Refresh request" variant="secondary" disabled={busy} onPress={refreshGuardianRequest} />
         ) : null}
-
         {guardianCapability && relayRequest?.status === "PENDING" ? (
-          <Pressable
-            disabled={busy}
-            style={styles.button}
-            onPress={refuseBoundaryRequest}
-          >
-            <Text style={styles.buttonText}>Not this time</Text>
-          </Pressable>
+          <>
+            <MuseumButton label="Allow this exact payment once" disabled={busy} onPress={grantExactAllowanceOnce} />
+            <MuseumButton label="Not this time" variant="boundary" disabled={busy} onPress={refuseBoundaryRequest} />
+          </>
         ) : null}
-
-        {guardianCapability && relayRequest?.status === "PENDING" ? (
-          <Pressable
-            disabled={busy}
-            style={styles.button}
-            onPress={grantExactAllowanceOnce}
-          >
-            <Text style={styles.buttonText}>Allow this exact payment once</Text>
-          </Pressable>
-        ) : null}
-
-        <Pressable style={styles.textButton} onPress={() => setMode(null)}>
-          <Text>Change role</Text>
-        </Pressable>
-        <Text style={styles.status}>{status}</Text>
+        <MuseumPlate exhibit="AUTHORITY / IMPORTANT">
+          <Text style={styles.body}>The relay coordinates the request. Only the CRESCO Solana program can grant a one-time allowance. A confirmed allowance is not a completed payment.</Text>
+          <Text style={styles.status} accessibilityLiveRegion="polite">{status}</Text>
+        </MuseumPlate>
         <LatestReceiptCard receiptJson={latestReceiptJson} busy={busy} />
+        <SkrCharterAtelier walletAddress={account?.address?.toString() ?? ""} />
+        <MuseumButton label="Change role" variant="secondary" onPress={() => setMode(null)} />
       </ScrollView>
     );
   }
 
   return (
     <ScrollView contentContainerStyle={styles.section}>
-      <Text style={styles.eyebrow}>YOUNG PERSON DEVICE</Text>
-      <Text style={styles.sectionTitle}>Start with the payment intent</Text>
-      <Text style={styles.body}>
-        Scan the exact action first. CRESCO sends that action through the
-        standing Key before a guardian request is even possible.
-      </Text>
-
-      <CoreLoopCard
-        intentLoaded={Boolean(intent)}
-        relayDecision={relayDecisionLabel(relayRequest)}
-        exactUse={exactUseLabel(exactExecutionState)}
-        receiptReady={Boolean(latestReceiptJson)}
+      <MuseumHero
+        exhibit={standingOutcome === "REFUSE" ? "EXHIBIT B / BOUNDARY REACHED" : standingOutcome === "ALLOW" ? "EXHIBIT E / WITHIN THE KEY" : "EXHIBIT A / YOUR KEY"}
+        title={standingOutcome === "REFUSE" ? "This action needs a guardian." : standingOutcome === "ALLOW" ? "Within your Key." : "Freedom with Boundaries."}
+        subtitle={standingOutcome === "REFUSE"
+          ? "This attempt was refused. A narrow guardian request may be created without changing your standing rules."
+          : standingOutcome === "ALLOW" ? "Your standing Key permitted this exact action on Devnet." : "Act independently inside your rules. Start by scanning an exact payment intent."}
+        tone={standingOutcome === "REFUSE" ? "boundary" : "neutral"}
+        compact={Boolean(intent)}
+        showKey={!intent}
       />
-
-      <Pressable style={styles.button} onPress={() => setScanning(true)}>
-        <Text style={styles.buttonText}>Scan Solana Pay QR</Text>
-      </Pressable>
-
-      {configuredDemoIntents.length > 0 ? (
-        <View style={styles.truthCard}>
-          <Text style={styles.truthTitle}>Deterministic Devnet intents</Text>
-          <Text style={styles.body}>
-            These public G1 helpers load the same Solana Pay actions emitted by
-            the distinct Devnet bootstrap receipt. They do not approve,
-            execute, or simulate authority.
-          </Text>
-          {configuredDemoIntents.map((option) => (
-            <Pressable
-              key={option.label}
-              disabled={busy}
-              style={styles.button}
-              onPress={() => loadDemoIntent(option.value)}
-            >
-              <Text style={styles.buttonText}>{option.label}</Text>
-            </Pressable>
-          ))}
-        </View>
+      <MuseumPlate exhibit="EXHIBIT A / PAYMENT INTENT" title={intent ? "Your requested action" : "Start with an action"}
+        tone={standingOutcome === "REFUSE" ? "boundary" : standingOutcome === "ALLOW" ? "verified" : "neutral"}>
+        {intent ? (
+          <>
+            <MuseumFact label="AMOUNT" value={intent.amountUi} />
+            <MuseumFact label="TOKEN MINT" value={intent.mint} />
+            <MuseumFact label="RECIPIENT" value={intent.recipient} />
+            {intent.label ? <MuseumFact label="REQUEST LABEL" value={intent.label} /> : null}
+          </>
+        ) : (
+          <Text style={styles.body}>No spending rule or merchant is invented here. Scan an actual Solana Pay request, or choose a configured Devnet test intent.</Text>
+        )}
+        <MuseumButton label="Scan Solana Pay QR" onPress={() => setScanning(true)} />
+        {configuredDemoIntents.length > 0 ? (
+          <View style={styles.scenarios}>
+            <Text style={styles.scenarioLabel}>CONFIGURED DEVNET TEST INTENTS / NOT TRANSACTIONS</Text>
+            {configuredDemoIntents.map((option) => (
+              <MuseumButton key={option.label} label={option.label} onPress={() => loadDemoIntent(option.value)} disabled={busy} variant="secondary" />
+            ))}
+          </View>
+        ) : null}
+        {intent && !relayRequest && demoBeneficiaryBlocker ? (
+          <MuseumPlate exhibit="G1 / DEVNET PROVISIONING REQUIRED" title="This Key is not yet provisioned" tone="blocked">
+            <Text style={styles.body}>{demoBeneficiaryBlocker}</Text>
+            <MuseumFact label="CONNECTED WALLET" value={account?.address.toString() ?? "Not connected"} />
+            <MuseumFact label="CONFIGURED BENEFICIARY" value={config.beneficiaryWallet || "Missing in APK"} />
+            <Text style={styles.body}>No transaction has been submitted. This is a setup blocker, not a spending-limit refusal.</Text>
+            <MuseumButton label="Record setup blocker (no transaction)" variant="secondary" onPress={attemptStandingPayment} />
+          </MuseumPlate>
+        ) : null}
+        {intent && !relayRequest && !demoBeneficiaryBlocker ? <MuseumButton label="Try payment inside my Key" disabled={busy} onPress={attemptStandingPayment} /> : null}
+      </MuseumPlate>
+      {preflightBlocked ? <MuseumPlate exhibit="OPERATOR / CONFIGURATION BLOCKED" title="Preflight stopped safely" tone="blocked">
+        <Text style={styles.body}>{preflightBlocked}</Text>
+      </MuseumPlate> : null}
+      {standingOutcome !== "IDLE" ? (
+        <MuseumPlate exhibit="VERIFIED RUNTIME OUTCOME / LAST ATTEMPT"
+          title={standingOutcome === "ALLOW" ? "Allowed by your Key" : standingOutcome === "REFUSE" ? "Boundary upheld" : "Outcome not confirmed"}
+          tone={standingOutcome === "REFUSE" ? "boundary" : standingOutcome === "ALLOW" ? "verified" : "unknown"}>
+          <Text style={styles.body} accessibilityLiveRegion="polite">{status}</Text>
+          {standingOutcome === "UNKNOWN" ? <Text style={styles.body}>Unknown is not success or refusal. Check chain state before retrying.</Text> : null}
+        </MuseumPlate>
       ) : null}
-
-      {intent ? (
-        <View style={styles.card}>
-          <Row label="Amount" value={intent.amountUi} />
-          <Row label="Mint" value={intent.mint} />
-          <Row label="Recipient" value={intent.recipient} />
-          {intent.label ? <Row label="Label" value={intent.label} /> : null}
-        </View>
-      ) : null}
-
-      {intent && !relayRequest ? (
-        <Pressable
-          disabled={busy}
-          style={styles.button}
-          onPress={attemptStandingPayment}
-        >
-          <Text style={styles.buttonText}>Try payment inside my Key</Text>
-        </Pressable>
-      ) : null}
-
       {relayRequest ? (
-        <View style={styles.truthCard}>
-          <Text style={styles.truthTitle}>Boundary request</Text>
-          <Text style={styles.body}>
-            Relay: {relayRequest.status}. This coordination state cannot move
-            capital or widen the standing Key.
-          </Text>
-        </View>
+        <MuseumPlate exhibit="EXHIBIT B / EXACT EXCEPTION" title="The boundary did not move."
+          tone={relayRequest.status === "REFUSED" ? "boundary" : "pending"}>
+          <MuseumFact label="RELAY COORDINATION STATUS" value={relayRequest.status} />
+          <Text style={styles.body}>A relay response alone never moves capital or grants new standing authority.</Text>
+          {shareLink ? <MuseumButton label="Share to guardian device" onPress={() => {
+            void Share.share({ message: shareLink, title: "CRESCO Key boundary request" });
+          }} /> : null}
+          {youngCapability ? <MuseumButton label="Refresh guardian decision" variant="secondary" disabled={busy} onPress={refreshYoungRequest} /> : null}
+          {relayRequest.status === "ALLOWANCE_SUBMITTED" && config.mutatedRecipient ? (
+            <MuseumButton label="Try changed recipient — must refuse" variant="secondary" disabled={busy} onPress={() => executeExactAllowance(config.mutatedRecipient)} />
+          ) : null}
+          {relayRequest.status === "ALLOWANCE_SUBMITTED" ? (
+            <MuseumButton label={exactExecutionState === "ALLOW" ? "Replay exact payment — must refuse" : "Retry exact approved payment"} disabled={busy} onPress={() => executeExactAllowance()} />
+          ) : null}
+        </MuseumPlate>
       ) : null}
-
+      {exactExecutionState !== "IDLE" ? (
+        <MuseumPlate exhibit="EXHIBIT E / ONE-TIME OUTCOME"
+          title={exactExecutionState === "ALLOW" ? "This approval was used once." : exactExecutionState === "REFUSE" ? "The Key refused this attempt." : "Confirmation unavailable"}
+          tone={exactExecutionState === "ALLOW" ? "verified" : exactExecutionState === "REFUSE" ? "boundary" : "unknown"}>
+          <Text style={styles.body}>{status}</Text>
+        </MuseumPlate>
+      ) : null}
       <LatestReceiptCard receiptJson={latestReceiptJson} busy={busy} />
-
-      {shareLink ? (
-        <Pressable
-          style={styles.button}
-          onPress={() =>
-            Share.share({
-              message: shareLink,
-              title: "CRESCO Key boundary request",
-            })
-          }
-        >
-          <Text style={styles.buttonText}>Share to guardian device</Text>
-        </Pressable>
-      ) : null}
-
-      {youngCapability ? (
-        <Pressable
-          disabled={busy}
-          style={styles.button}
-          onPress={refreshYoungRequest}
-        >
-          <Text style={styles.buttonText}>Refresh guardian decision</Text>
-        </Pressable>
-      ) : null}
-
-      {relayRequest?.status === "ALLOWANCE_SUBMITTED" &&
-      config.mutatedRecipient ? (
-        <Pressable
-          disabled={busy}
-          style={styles.button}
-          onPress={() => executeExactAllowance(config.mutatedRecipient)}
-        >
-          <Text style={styles.buttonText}>
-            Try changed recipient — must refuse
-          </Text>
-        </Pressable>
-      ) : null}
-
-      {relayRequest?.status === "ALLOWANCE_SUBMITTED" ? (
-        <Pressable
-          disabled={busy}
-          style={styles.button}
-          onPress={() => executeExactAllowance()}
-        >
-          <Text style={styles.buttonText}>
-            {exactExecutionState === "ALLOW"
-              ? "Replay exact payment — must refuse"
-              : "Retry exact approved payment"}
-          </Text>
-        </Pressable>
-      ) : null}
-
-      <Pressable style={styles.textButton} onPress={() => setMode(null)}>
-        <Text>Change role</Text>
-      </Pressable>
-      <Text style={styles.status}>{status}</Text>
+      <ProofStrip />
+      <MuseumPlate exhibit="OPERATOR DETAIL / CURRENT STATUS">
+        <Text style={styles.status} accessibilityLiveRegion="polite">{status}</Text>
+      </MuseumPlate>
+      <MuseumButton label="Change role" variant="secondary" onPress={() => setMode(null)} />
     </ScrollView>
   );
 }
@@ -1055,27 +997,17 @@ function LatestReceiptCard({
   receiptJson: string | null;
   busy: boolean;
 }) {
-  if (!receiptJson) return null;
-
   return (
-    <View style={styles.receiptCard}>
-      <Text style={styles.truthTitle}>Latest public runtime receipt</Text>
-      <Text style={styles.receiptText} numberOfLines={8}>
-        {receiptJson}
-      </Text>
-      <Pressable
-        disabled={busy}
-        style={styles.button}
-        onPress={() =>
-          Share.share({
-            message: receiptJson,
-            title: "CRESCO Key public runtime receipt",
-          })
-        }
-      >
-        <Text style={styles.buttonText}>Share latest receipt JSON</Text>
-      </Pressable>
-    </View>
+    <MuseumPlate exhibit="EXHIBIT D / THE LEDGER" title="Every decision leaves a record.">
+      {receiptJson ? (
+        <>
+          <Text style={styles.receiptText} numberOfLines={8}>{receiptJson}</Text>
+          <MuseumButton label="Share latest receipt JSON" disabled={busy} onPress={() => {
+            void Share.share({ message: receiptJson, title: "CRESCO Key public runtime receipt" });
+          }} />
+        </>
+      ) : <Text style={styles.body}>No runtime receipt captured on this session yet. CRESCO does not invent transaction history.</Text>}
+    </MuseumPlate>
   );
 }
 
@@ -1093,10 +1025,15 @@ function Row({ label, value }: { label: string; value: string }) {
 const styles = StyleSheet.create({
   full: { flex: 1 },
   section: {
-    paddingHorizontal: 24,
-    paddingVertical: 24,
-    gap: 14,
+    paddingHorizontal: 22,
+    paddingVertical: 16,
+    paddingBottom: 48,
+    gap: 15,
+    backgroundColor: color.ivory,
+    flexGrow: 1,
   },
+  scenarios: { gap: 10, borderTopWidth: 1, borderTopColor: color.border, paddingTop: 12 },
+  scenarioLabel: { color: color.deepBrass, fontSize: 10, fontWeight: "700", letterSpacing: 1.1 },
   eyebrow: {
     fontSize: 11,
     fontWeight: "700",
@@ -1109,8 +1046,9 @@ const styles = StyleSheet.create({
     fontWeight: "700",
   },
   body: {
-    fontSize: 15,
-    lineHeight: 22,
+    fontSize: 14,
+    lineHeight: 21,
+    color: color.ink,
   },
   card: {
     borderWidth: 1,
@@ -1219,6 +1157,6 @@ const styles = StyleSheet.create({
   status: {
     fontSize: 12,
     lineHeight: 18,
-    opacity: 0.7,
+    color: color.secondaryInk,
   },
 });
