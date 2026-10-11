@@ -1,0 +1,79 @@
+name: Deploy Cresco Key Cloudflare Identity
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: services/identity
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22.13.0"
+      - name: Require stable Android APK certificate fingerprint and Cloudflare credentials
+        env:
+          FINGERPRINT: ${{ vars.CRESCO_ANDROID_SIGNING_SHA256 }}
+          CF_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CF_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          test -n "$CF_API_TOKEN"
+          test -n "$CF_ACCOUNT_ID"
+          node - <<'NODE'
+          const raw = (process.env.FINGERPRINT || "").replace(/:/g, "");
+          if (!/^[0-9a-fA-F]{64}$/.test(raw)) {
+            throw Error("SET_GITHUB_VARIABLE_CRESCO_ANDROID_SIGNING_SHA256_FROM_STABLE_APK_CERT");
+          }
+          NODE
+      - name: Install and test
+        run: npm install && npm test
+      - name: Deploy the identity Worker
+        id: deployment
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: services/identity
+          command: deploy --var "ANDROID_SIGNING_CERT_SHA256:${{ vars.CRESCO_ANDROID_SIGNING_SHA256 }}"
+      - name: Verify live identity and association
+        env:
+          DEPLOYMENT_URL: ${{ steps.deployment.outputs.deployment-url }}
+          FINGERPRINT: ${{ vars.CRESCO_ANDROID_SIGNING_SHA256 }}
+        run: |
+          node - <<'NODE'
+          const url = (process.env.DEPLOYMENT_URL || "").replace(/\/$/, "");
+          if (!url.startsWith("https://")) throw Error("NO_HTTPS_DEPLOYMENT_URL");
+          const get = async path => {
+            const res = await fetch(url + path, { redirect: "manual" });
+            if (res.status !== 200) throw Error("NOT_READY_" + path + "_" + res.status);
+            if (res.redirected) throw Error("REDIRECT_FORBIDDEN_" + path);
+            return res;
+          };
+          (async () => {
+            const ready = await (await get("/ready")).json();
+            const assetResponse = await get("/.well-known/assetlinks.json");
+            if (!(assetResponse.headers.get("content-type") || "").includes("application/json")) {
+              throw Error("ASSETLINKS_MIME_INVALID");
+            }
+            const asset = await assetResponse.json();
+            const expected = process.env.FINGERPRINT.replace(/:/g, "").toUpperCase();
+            const linked = asset.some(x => x.target?.namespace === "android_app" &&
+              x.target?.package_name === "com.faadil.crescokey" &&
+              x.target?.sha256_cert_fingerprints?.some(f => f.replace(/:/g, "").toUpperCase() === expected) &&
+              x.relation?.includes("delegate_permission/common.handle_all_urls"));
+            if (ready.ok !== true || !linked) throw Error("IDENTITY_CERT_NOT_ASSOCIATED");
+            console.log(JSON.stringify({
+              identityOrigin: url,
+              assetlinksUrl: url + "/.well-known/assetlinks.json",
+              packageName: "com.faadil.crescokey",
+              configuredAssociation: true,
+              androidWalletRuntimeVerified: false,
+            }, null, 2));
+          })().catch(error => { console.error(error); process.exitCode = 1; });
+          NODE

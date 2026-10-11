@@ -1,0 +1,35 @@
+name: Cloudflare Cresco Identity CI
+
+on:
+  pull_request:
+    paths:
+      - "services/identity/**"
+      - ".github/workflows/identity-ci.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "services/identity/**"
+      - ".github/workflows/identity-ci.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: services/identity
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22.13.0"
+      - name: Install dependencies
+        run: npm install
+      - name: Test identity and fail-closed DAL behavior
+        run: npm test
+      - name: Cloudflare Worker build dry run (no deployment)
+        run: npx wrangler deploy --dry-run --outdir dist

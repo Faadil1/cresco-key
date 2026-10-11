@@ -2,6 +2,7 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "cresco-key-boundary-relay",
   "main": "src/worker.mjs",
+  "workers_dev": true,
   "compatibility_date": "2026-09-26",
   "durable_objects": {
     "bindings": [
