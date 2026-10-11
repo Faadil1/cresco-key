@@ -1,133 +1,156 @@
 # CRESCO Key
+### Freedom with Boundaries.
 
-**Freedom with Boundaries.** An Android-first Solana Mobile product for progressive financial independence.
+**Give a young person room to act. Keep the family's spending boundary intact.**
 
-A young person should be able to make ordinary purchases without asking permission every time. CRESCO Key gives them a *standing Key* with explicit limits. If a payment crosses a limit, the action must be refused first; a guardian may separately authorize **only that exact payment once**, without changing the standing rule.
+CRESCO Key is an **Android-first Solana Mobile prototype** that explores a better alternative to two extremes: asking a guardian about every payment, or giving unrestricted wallet access. A family sets a **standing Key** with explicit onchain limits. An ordinary action can proceed within those limits. When an action crosses the boundary, the guardian may choose to refuse it or authorize **that exact payment once** — without silently widening the standing rule.
 
 > **The exception moves. The boundary does not.**
 
-**Solana Mobile CLOCK IN 2026** · React Native / Android · Mobile Wallet Adapter (MWA) · Solana Devnet · Optional SKR Charter Atelier
+**Built for [Solana Mobile CLOCK IN 2026](https://solanamobile.com/) · React Native / Android · Mobile Wallet Adapter · Solana Pay-style intents · Anchor / Solana Devnet · Optional SKR**
 
-## See CRESCO in 60 seconds
+**Project maturity (October 11, 2026):** physical Android + Solflare interaction **observed**; distinct onchain Devnet program **deployed**; Cloudflare coordination Worker **live**; the **complete two-wallet payment/Guardian flow is not yet verified**. This repository documents both product behavior and the limits of its evidence.
 
-1. **The artifact:** the Museum Ledger Android interface is a real standalone APK, tested on a physical Samsung with Solflare.
-2. **The Key:** connect a compatible wallet and sign a `TRC-01` proof message, with explicit wallet approval.
-3. **The intent:** select the young-person flow, scan an exact Solana Pay request or load a configured **5-unit** / **12-unit** Devnet intent.
-4. **The boundary:** CRESCO constructs payment instructions against its own Devnet program. A denied or unknown wallet/program outcome **must not** silently create guardian authority.
-5. **The exception:** the guardian-side code constructs an exact one-time allowance. An altered recipient, expired/stale authorization, or replay must not inherit consent. This entire two-device execution flow is **not yet physically proven**.
+---
 
-### Current proof — what works and what remains open
+## The product, in two minutes
 
-| Surface | Evidence class | Current observed status |
-| --- | --- | --- |
-| Museum Ledger Android APK | **PHYSICAL CLIENT** | Standalone APK launched on a physical Samsung without Expo Metro. |
-| Solflare / MWA | **PHYSICAL CLIENT** | Devnet wallet connected; in-app `TRC-01` proof receipt returned `SIGNED`, 64 signature bytes. Independent signature verification remains open. |
-| Young payment intent | **PHYSICAL CLIENT** | 5-unit payment intent loaded; amount, mint, and recipient visible; Solflare displayed an approval screen. |
-| Young payment execution | **UNKNOWN / NOT PROVEN** | Wallet warned of an unverified app identity and failed simulation. Operator canceled. App receipt: `STANDING_PAYMENT`, `signature: null`, `CancellationException`, **no confirmed on-chain payment**. |
-| Distinct CRESCO program | **LIVE_INTEGRATION / DEVNET** | Deployed with deterministic demo bootstrap; **not** evidence of a complete mobile transaction. |
-| Emulator + official Mock MWA Wallet | **LOCAL / PARTIAL** | Actual emulator launches and wallet actions recorded; **not** footage of a physical Solflare transaction. |
-| Beneficiary provision check | **SOURCE + CI** | PR #59 adds a fail-closed block for wallets that do not own the configured Devnet demo charter. Newly built APK must be validated before treating this as physical proof. |
-| Guardian live exception / changed recipient / replay | **NOT PROVEN ON PHYSICAL G1** | Program/client implementation and tests exist; no end-to-end mobile payment-and-guardian receipt bundle is claimed. |
-| Optional SKR Charter Atelier | **SOURCE INTEGRATION** | Voluntary read-only public Mainnet SKR-token check and interactive prompts; physical-wallet SKR verification and prize eligibility remain unproven. |
+**01 — Independent by default.** The young person opens the Museum Ledger Android interface, connects a compatible wallet and sees an exact payment request: **asset, recipient and amount**.
 
-The real Samsung test exposed a genuine beneficiary mismatch: the newly connected wallet differs from the beneficiary who owns the original Devnet charter. CRESCO's preflight blocks use of the other beneficiary's configured mandate **before opening a signing request**. New authority still requires legitimately authorized Guardian and Beneficiary signatures, plus Devnet provisioning.
+**02 — A real standing boundary.** CRESCO's Solana program models a Guardian–Beneficiary Charter, Mandate, asset-specific limits, nonce and period accounting. The user cannot gain another family's authority just by connecting a wallet.
 
-**G1 status: PARTIAL / BLOCKED**. Neither a client's `SIGNED` message nor an `UNKNOWN` payment is proof of an executed transfer or a verified on-chain refusal.
+**03 — Consent for one exception, not a blank cheque.** At the boundary, a Guardian can choose an exact allowance tied to the request's mint, recipient, amount, nonce and request ID. Changed recipients, expired approvals and replays must not inherit the original permission.
 
-## Demo footage and receipts
+**04 — Consequences, not screenshots.** The target product finishes by verifying the payment transaction and changed token state on Solana. **That entire physical mobile sequence has not yet passed its acceptance gate.** UI previews, deterministic fixtures, CI tests and a wallet-message signature are not substitutes for a confirmed transfer.
 
-- **Real Android Emulator + Mock MWA:** [recording provenance and evidence limitations](docs/CLOCK-IN-2026-EMULATOR-VIDEO-PROVENANCE.md); [GitHub Actions recorded session](https://github.com/Faadil1/cresco-key/actions/runs/37723102919), artifact `cresco-key-mwa-session-evidence`. Video is an actual emulator screen recording, not a fabricated animation.
-- **Physical Samsung + Solflare:** [observed test and public receipt classification](docs/G1-PHYSICAL-SAMSUNG-OBSERVATION-2026-10-07.md).
-- **Distinct program deployment:** [Devnet bootstrap run](https://github.com/Faadil1/cresco-key/actions/runs/37182728261) and [program state](evidence/devnet-distinct-program/cresco-key-demo-state-37182728261.json).
-- **Narrated submission video:** 142-second edited film combines a real emulator excerpt with separately labeled Samsung photographs. Public permanent viewing URL **pending upload**; don't mistake the film for a continuous G1 on-chain run.
-- **Submission copy and pitch outline:** [submission packet](docs/SUBMISSION-PACKET-DRAFT-2026-10-07.md), updated runtime caveats above. Actual competition submission receipt is a separate human-operated step.
+### What a judge can inspect today
 
-**Deployed Devnet program:** [`6SoGabSLX2YHMjFx1ynbz5nLFtd8Z7hURmszddU6DeJP`](https://explorer.solana.com/address/6SoGabSLX2YHMjFx1ynbz5nLFtd8Z7hURmszddU6DeJP?cluster=devnet)
+| Capability | Evidence and honest status |
+| --- | --- |
+| Standalone Android interface | **PHYSICAL / OBSERVED** — APK installed and launched on a Samsung, without Metro; Museum Ledger and Young flow displayed |
+| Solflare through Mobile Wallet Adapter | **PHYSICAL / OBSERVED** — Devnet wallet connected, TRC-01 message signing returned `SIGNED` and 64 signature bytes; independent verification of the signed bytes is still open |
+| Payment intent and wallet mismatch | **PHYSICAL / OBSERVED** — 5-unit request displayed; a newly connected wallet did **not** match the configured demo Beneficiary; app stopped safely before a payment |
+| Distinct CRESCO authority program | **LIVE DEVNET / VERIFIED DEPLOYMENT** — Charter, Mandate, asset-rule and exact one-time payment instructions; independently provisioned sample family, not the Samsung wallet |
+| Guardian coordination Worker | **LIVE INFRASTRUCTURE / VERIFIED** — deployed public Cloudflare Worker; `/health` and `/ready` passed the published GitHub deployment check; **coordination only**, never financial authority |
+| Wallet-specific Key onboarding inspection | **SOURCE / MOBILE CI** — read-only Charter, Mandate and SOL balance lookup; can share a *public* Guardian setup request; does **not** create a Charter or collect signatures |
+| SKR Charter Atelier | **SOURCE CANDIDATE / PHYSICAL TEST PENDING** — optional Mainnet SKR holder check, family prompts, and read-only review of real Devnet Key limits; eligibility for the bonus prize not proven |
+| Payment → Guardian Allow Once → exact execution → replay refusal | **BLOCKED / NOT END-TO-END VERIFIED** — program and mobile code exist; no complete physical receipt set demonstrating the sequence |
+| Android app identity / production signing | **PARTIAL** — identity Worker source is in the repository, but verified `assetlinks.json` and production wallet identity have not been established |
+| CLOCK IN final submission | **NOT CONFIRMED** — a draft packet exists; registration or a GitHub repository is not a submission receipt |
 
-### APK for judges / testers
+**Important negative observation:** the phone's setup refusal was a **client-side beneficiary mismatch**, not proof of an **onchain** spending-limit rejection. Neither a message-signing receipt nor 10 Devnet SOL in a user's wallet is evidence of money transferred through CRESCO.
 
-- [Previously installed standalone Devnet APK artifact](https://github.com/Faadil1/cresco-key/actions/runs/37714261722/artifacts/11524177478) (ZIP contains `app-release.apk`). This is the **physical-tested, earlier build**, without the new beneficiary-mismatch preflight.
-- [PR #59 — Museum Ledger, preflight and recording updates](https://github.com/Faadil1/cresco-key/pull/59). Use its **successful** `Mobile APK Evidence` run's `cresco-key-standalone-devnet-apk` artifact for the newer code only after the run completes and the APK is inspected. An Android *debug* APK from CI can require a Metro server and is **not** a standalone judge build.
-- This APK is a **release-mode standalone test APK**, not a Play Store certified or production-signed mainnet application.
+## Install and try the Android APK
 
-**Safety:** only Devnet for payment tests. Do not import demo keypairs into a friend's wallet, expose seed phrases, or approve a wallet transaction when the origin is unverified or simulation fails.
+- **Last independently successful standalone build currently available:** [Download the `cresco-key-standalone-devnet-apk` artifact from GitHub Actions](https://github.com/Faadil1/cresco-key/actions/runs/38173474144/artifacts/11715682262). The ZIP contains `app-release.apk`. **Source commit: `0d210847`; this is an earlier candidate and does *not* contain the latest SKR/live-relay changes below.**
+- **Newest integrated candidate:** [PR #62 — Android, Key setup, SKR and relay integration](https://github.com/Faadil1/cresco-key/pull/62) · [latest Mobile APK Evidence workflow](https://github.com/Faadil1/cresco-key/actions/workflows/mobile-apk-evidence.yml). Wait for a successful APK artifact tied to the *exact desired commit* before treating it as the current release.
+- Install only on a consenting Android test device with a compatible wallet. Use **Solana Devnet for all CRESCO payment experiments**. The core Devnet family's fixed demo intents **cannot** be exercised by an unrelated Solflare wallet.
 
-## Product mechanism
+The downloadable `app-release.apk` is a **standalone release-mode test build**, not a production-approved app, a verified Solana Mobile dApp Store listing or an Android package with independently verified ownership. Do not use real funds, import another person's recovery phrase or approve a transaction if the wallet warns that its origin/simulation cannot be trusted. A debug APK may require an Expo Metro development server.
 
-1. A **charter** binds the beneficiary and guardian to a controlled spending relationship.
-2. A **mandate** grants bounded standing authority.
-3. An **asset rule** constrains permitted token and amount behavior.
-4. The young user presents an **exact intent** with the amount, mint, and recipient visible.
-5. An in-bounds action requires the beneficiary wallet's signature and the on-chain rule to permit execution.
-6. An out-of-bounds action must be **verifiably refused** before generating a private guardian request.
-7. The guardian may explicitly refuse or authorize the **identical payment once**; that exception is not a broader allowance.
-8. Mutation, stale use, and replay must fail closed. Unverifiable results remain **UNKNOWN**, not an invented success or on-chain refusal.
+### Suggested judge walkthrough
 
-The Cloudflare boundary relay, where deployed, is for coordination only. Financial authority is determined by the Solana program and valid wallet signatures, **never by the relay or presentation layer**.
+1. Install the **standalone** APK, open **Young person flow**, and inspect the configured Devnet Solana Pay-style request.
+2. Connect a consented Devnet wallet using Solflare/MWA, observe the wallet consent surface, and try the **TRC-01 proof message**. This is *only* message signing.
+3. View the wallet's **Key setup / live account preflight** in a candidate containing PR #62. For a wallet without its own Charter, expect `NOT_PROVISIONED` or an explicit setup blocker — **not a spending-limit refusal**.
+4. Review the Guardian flow and its distinctions: **Refuse**, **Allow Once** and **change standing limits** are intentionally different actions. **Do not infer a successful grant or payment from the UI alone.**
+5. Read the [physical phone evidence](docs/G1-PHYSICAL-SAMSUNG-OBSERVATION-2026-10-07.md), [runtime reality ledger](evidence/REALITY-LEDGER.md) and [submission packet](docs/SUBMISSION-PACKET-DRAFT-2026-10-07.md) for the exact verified vs pending claims.
 
-## Optional SKR bounty — Charter Atelier
+**Video:** a labeled 142-second draft combines emulator footage and separate physical Samsung photographs. **No stable public final-video link has yet been confirmed**; do not mistake it for one continuous live two-device payment.
 
-The official CLOCK IN bonus is **$10,000 paid in SKR for a creative and meaningful SKR integration**. This is **separate from the USDC main prize pool**, not a guarantee of prize qualification.
+## Why the architecture matters
 
-`apps/mobile/src/skr/SkrCharterAtelier.tsx` is now available in **both Young and Guardian roles**. It makes a voluntary, read-only Solana Mainnet query for the **official SKR mint** `SKRbvo6Gf7GondiT3BbTfuRDPqLWei4j2Qy2NPGZhW3` in the connected public wallet. This is unrelated to the app's Devnet payment token. Holding 10 Devnet SOL is not holding SKR.
+```text
+Beneficiary Android + Solflare
+    │ exact payment intent / user signature
+    ▼
+CRESCO Key program · Solana Devnet
+    ├── Charter: distinct guardian + beneficiary
+    ├── Mandate: stage, status, nonce, expiry
+    ├── Asset rule: eligible mint, caps, period spending
+    └── Exact payment allowance: request, recipient, amount, nonce, one use
+                  ▲
+                  │ Guardian onchain authorization (still needs full G1 proof)
+Guardian wallet ──┘
+      ▲
+      │ private request routing; no transfer/authority
+Cloudflare Boundary Relay
+```
 
-**Actual product capability on this PR**: A wallet with observed Mainnet SKR token-account balance above zero may enter the Charter Atelier. It can share guided family policy discussion prompts. If the same connected wallet is a verified party to a **live Devnet Charter inspected by CRESCO** and a validated standing-Key snapshot is present, the Atelier can prepare a **read-only boundary review** showing the actual guardian/beneficiary identities, asset, nonce, per-action cap, period cap, used amount and remaining nominal period cap in token base units. The record is shareable and explicitly declares **no financial authority**. There is no simulated balance or bypass for unverified SKR holdings.
+**The authority lives in the Solana program**, not in an API, replayable receipt, cloud coordination status, or token holder badge. The deployed public [Boundary Relay](https://cresco-key-boundary-relay.faadil-casecraft.workers.dev/ready) only routes and tracks requests. [Deployment #38174012603](https://github.com/Faadil1/cresco-key/actions/runs/38174012603) verified the Worker and Durable Object readiness; it did **not** grant an onchain allowance.
 
-**Security/claim boundary**: no SKR or Mainnet financial transaction, no staking/rewards, no paid access to the core Key, no SKR-based Guardian privileges. The summary can be stale and is *not* payment-readiness, proof of available funds or a signed Guardian decision. Tests are in `apps/mobile/scripts/test-skr-live-key-review.cjs`, executed in Mobile CI. Until the new APK is compiled and actually tested with a Mainnet SKR-holder wallet and a legitimate Devnet family Key, classify this as **SOURCE / CI CANDIDATE** only. Do not call the bonus integration complete or prize-qualified.
+[Inspect the distinct CRESCO Devnet program on Solana Explorer](https://explorer.solana.com/address/6SoGabSLX2YHMjFx1ynbz5nLFtd8Z7hURmszddU6DeJP?cluster=devnet). Its deployment and the public demo family are recorded in [the original Devnet bootstrap run](https://github.com/Faadil1/cresco-key/actions/runs/37182728261) and [the saved program state](evidence/devnet-distinct-program/cresco-key-demo-state-37182728261.json).
 
-## Build and development
+### Noncustodial enrollment: still being integrated
+
+The program's `initialize_charter` operation requires **both the Guardian and Beneficiary to sign**, with Guardian paying the initial account cost. A public setup request is not a transaction or a proxy for either signature. The current tooling can bootstrap a **separate, developer-controlled test family**, but does **not** provision a friend's independently owned Solflare wallet automatically.
+
+The mobile work-in-progress adds a real read-only lookup for the *connected* wallet's Charter and Mandate, checks its SOL balance and creates a shareable request with a **distinct Guardian public address**. A secure two-signature onboarding path, funded asset vault, real payment execution and negative/replay proofs remain the next integrated work.
+
+## Optional bonus: SKR Charter Atelier
+
+The optional SKR feature is designed to make family policy review more useful, **not to buy financial permission**.
+
+On the [PR #62 Android candidate](https://github.com/Faadil1/cresco-key/pull/62), a connected wallet can voluntarily check the official SKR mint on **Solana Mainnet** using public token accounts. A holder can access family discussion prompts. If that same wallet has an independently inspected, valid CRESCO Devnet standing Key as Guardian or Beneficiary, the Atelier can build a **public read-only review** of its real per-action cap, period cap, recorded spending and nonce. It cannot sign, transfer, stake, distribute rewards or widen any Key. Core CRESCO remains available without SKR.
+
+This is a **bonus-bounty candidate**, not proof of real-holder adoption, bonus eligibility or a complete on-device SKR test. A wallet displaying **10 SOL Devnet does not thereby hold any Mainnet SKR**. See [SKR source](apps/mobile/src/skr/SkrCharterAtelier.tsx) and [Key-review logic](apps/mobile/src/skr/liveKeyCharterReview.ts).
+
+## Evidence links
+
+- [Physical Samsung + Solflare observation and public receipt classification](docs/G1-PHYSICAL-SAMSUNG-OBSERVATION-2026-10-07.md) — actual device behavior, wallet mismatch and explicit unverified claims
+- [Cloudflare Boundary Relay deployment success](https://github.com/Faadil1/cresco-key/actions/runs/38174012603) — real public `/health` and `/ready` probes, not a payment
+- [Devnet demo state](evidence/devnet-distinct-program/cresco-key-demo-state-37182728261.json) and [Solana Explorer](https://explorer.solana.com/address/6SoGabSLX2YHMjFx1ynbz5nLFtd8Z7hURmszddU6DeJP?cluster=devnet)
+- [CI-backed MWA session and emulator recording provenance](docs/CLOCK-IN-2026-EMULATOR-VIDEO-PROVENANCE.md) — an emulator is **not** physical Solflare proof
+- [Mobile CI](https://github.com/Faadil1/cresco-key/actions/workflows/mobile-ci.yml) · [APK builds](https://github.com/Faadil1/cresco-key/actions/workflows/mobile-apk-evidence.yml) · [G1 readiness preflight](https://github.com/Faadil1/cresco-key/actions/workflows/mobile-g1-configured-preflight.yml)
+- [Reality ledger](evidence/REALITY-LEDGER.md) · [G1 physical acceptance/runbook](docs/MOBILE-G1-RUNTIME-RUNBOOK.md)
+- [Submission copy and short video narrative](docs/SUBMISSION-PACKET-DRAFT-2026-10-07.md) — **draft**, not a portal submission confirmation
+
+### What must be proved next
+
+**First:** build and open the latest standalone APK, validate its UI and wallet session, then deliver a verified artifact. **Second:** independently authorize the Guardian + Beneficiary onboarding and verify its actual Devnet accounts. **Third:** observe a genuine in-bounds transfer with RPC token consequences. **Fourth:** demonstrate an out-of-bounds decision, an exact Guardian allowance, one approved execution and rejection of recipient mutation/replay. **Fifth:** validate independent judge setup, submit a permanent video URL and retain the actual portal confirmation.
+
+The October 12 Radiants calendar screenshot shown by the operator lists **7:59 p.m. EDT** for submission close and **8:00 p.m. EDT** for judging. **The signed-in portal remains the last authority on whether a submission can be filed; the final entry has not been confirmed.**
+
+## Build locally
+
+Requires Node 22+, JDK 17, Android SDK and a compatible Android wallet for real MWA.
 
 ```bash
 cd apps/mobile
 npm install
-# From apps/mobile — uses only already-public Devnet bootstrap parameters:
+# Generates only public test configuration; this binds the original demo beneficiary
+# and DOES NOT create a Key for an arbitrary external wallet.
 node ../../tools/devnet/write-mobile-env-from-demo-state.cjs \
   ../../evidence/devnet-distinct-program/cresco-key-demo-state-37182728261.json .env
 npm run typecheck
+npm run test:financial-boundaries
+npm run test:enrollment
+npm run test:skr-live-review
 npx expo prebuild --platform android --no-install --non-interactive
 cd android
 NODE_ENV=production ./gradlew assembleRelease
 ```
 
-The APK is at `apps/mobile/android/app/build/outputs/apk/release/app-release.apk`. A real MWA-compatible Android wallet is needed for connection; Expo Go cannot execute this native MWA path. The generated `.env` references the *original* demo Beneficiary, and is **not** a provisioner for a new wallet.
+APK output: `apps/mobile/android/app/build/outputs/apk/release/app-release.apk`. Current committed demos default to a *specific* original Devnet Charter family. The [mobile runtime runbook](docs/MOBILE-G1-RUNTIME-RUNBOOK.md) explains how to inspect real accounts and refuse mismatched setups. Do not use the sample account's identity to authorize another person's wallet.
 
-Relevant verification workflows: `Mobile CI`, `Devnet Tooling CI`, `Mobile G1 Configured Preflight`, `Mobile APK Evidence`, `Android Emulator Smoke Evidence`, and `MWA Session Evidence`. A green workflow proves only what that particular runner actually tested.
+## Repository guide
 
-For the end-to-end operator procedure see [Mobile G1 runtime runbook](docs/MOBILE-G1-RUNTIME-RUNBOOK.md). Do not promote a live claim until matching wallet identities, provisioned accounts, transaction signatures, RPC state consequences, guardian path, and negative/replay receipts are independently checked.
-
-## Repository map
-
-| Folder | Purpose |
+| Path | Responsibility |
 | --- | --- |
-| [`apps/mobile/`](apps/mobile/) | React Native Android client, MWA, Solana Pay, Museum Ledger UX, SKR optional module |
-| [`programs/keys/`](programs/keys/) | Distinct Anchor authority program, charter/mandate rules and exact one-time allowances |
-| [`services/relay/`](services/relay/) | Private coordination; not a financial authority source |
-| [`tools/devnet/`](tools/devnet/) | Public Devnet bootstrap/configuration and runtime receipt validation |
-| [`evidence/`](evidence/) | Evidence graph, Devnet proof and reality ledger |
-| [`docs/`](docs/) | Architecture, runtime runbooks, live observations, submission and video provenance |
-| [`state/`](state/) | Canonical CURRENT/HANDOVER project continuity |
-| [`governance/`](governance/) | Lifecycle completeness, gateway registry and claim/proof boundaries |
+| [`apps/mobile/`](apps/mobile/) | Android client, MWA, Solana Pay parsing, Museum Ledger UI, optional SKR review |
+| [`programs/keys/`](programs/keys/) | Anchor charter, mandate, asset-rule, guardian exact allowance and payment instructions |
+| [`services/relay/`](services/relay/) | Cloudflare private boundary coordination, not the source of financial authority |
+| [`services/identity/`](services/identity/) | Android app-origin identity Worker; availability is **not** verified identity without certificate binding |
+| [`tools/devnet/`](tools/devnet/) | Public Devnet configuration, demo family and receipt tooling |
+| [`evidence/`](evidence/) | Reality ledger, Devnet receipts and claim-to-evidence traceability |
+| [`docs/`](docs/) | Reproduction, device observations, video provenance and draft submission |
+| [`state/`](state/) | Current state and handover for collaborators |
+| [`governance/`](governance/) | Conditional gateway and claim verification policy |
 
-## Canonical project continuity
+For contributors: [Start here](docs/COLLABORATOR-START-HERE.md) → [CURRENT](state/CURRENT.md) → [HANDOVER](state/HANDOVER.md) → [living PRD](product/PRD.md) → [gateway registry](governance/CONDITIONAL-GATEWAY-REGISTRY.md).
 
-Read in this order:
+## What CRESCO does **not** claim
 
-1. [Collaborator start](docs/COLLABORATOR-START-HERE.md)
-2. [Current state](state/CURRENT.md)
-3. [Handover](state/HANDOVER.md)
-4. [Living PRD](product/PRD.md)
-5. [Project control plane](governance/PROJECT-CONTROL-PLANE.yaml)
-6. [Lifecycle coverage](governance/BUILD-LIFECYCLE-COVERAGE.yaml)
-7. [Conditional gateway registry](governance/CONDITIONAL-GATEWAY-REGISTRY.md)
-8. [Claim-to-evidence graph](evidence/CLAIM-RUNTIME-EVIDENCE-GRAPH.yaml)
-9. [Reality ledger](evidence/REALITY-LEDGER.md)
+CRESCO Key is a **Devnet prototype**, not a custodial youth banking product. No production KYC/age/guardian-relationship verification, no brokerage license, no mainnet financial readiness, no universal interception of wallet payments and **no proven continuous mobile Guardian payment loop**. Unknown chain outcomes are **UNKNOWN**, not success. Offchain approval markers are **not** onchain financial authority. **The UI is not the guard. The capital path is.**
 
-The living PRD owns the scope. GitHub + CURRENT/HANDOVER remain the project's source of truth; central cross-project governance remains `Faadil1/faadil-agent-system@main`. The submission narrative does not override the Product Reality or Evidence Integrity gates.
-
-## Explicit non-goals and truth boundary
-
-CRESCO does **not** claim production custody, KYC/age verification, parental-relationship validation, licensed brokerage, real securities execution for minors, mainnet financial-readiness, universal interception of payments from other apps, or a completed live two-device payment loop. **The UI is not the guard. The capital path is.**
-
-## Original authority-engine baseline
-
-The original CRESCO engine predates this Android-first product: [`Faadil1/cresco`](https://github.com/Faadil1/cresco).
+**Original authority-engine research:** [Faadil1/cresco](https://github.com/Faadil1/cresco).
