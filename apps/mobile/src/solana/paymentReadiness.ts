@@ -46,7 +46,7 @@ export type ReadinessRpc = {
 export type ReadinessInputs = {
   chain: string | null | undefined;
   connectedWallet: string;
-  expectedBeneficiary: string;
+  expectedBeneficiary?: string;
   config: PaymentProgramConfig;
   mint: string;
   recipient: string;
@@ -67,7 +67,10 @@ export async function checkPaymentReadiness(
   if (input.chain !== "solana:devnet") {
     return { state: "BLOCKED", reasons: ["CONNECTED_WALLET_NOT_DEVNET"], evidence };
   }
-  if (!input.expectedBeneficiary ||
+  // An old APK's configured sample beneficiary is only a DEMO hint.
+  // Real payments are bound to the connected wallet's derived onchain
+  // charter/mandate, which inspectStandingKey validates before signing.
+  if (input.expectedBeneficiary &&
       input.connectedWallet !== input.expectedBeneficiary) {
     return {
       state: "BLOCKED",
