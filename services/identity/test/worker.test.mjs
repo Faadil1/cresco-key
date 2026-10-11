@@ -38,7 +38,7 @@ test("public site describes prototype only and does not claim completed payments
   assert.equal(response.status, 200);
   const html = await response.text();
   assert.match(html, /Freedom with/);
-  assert.match(html, /does not, by itself, prove/);
+  assert.match(html, /do not, by themselves, prove/);
   assert.equal((await invoke("/favicon.png")).headers.get("content-type"), "image/png");
   assert.equal((await invoke("/missing")).status, 404);
   assert.equal((await invoke("/ready", undefined, "POST")).status, 405);
