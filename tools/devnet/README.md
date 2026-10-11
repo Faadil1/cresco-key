@@ -134,3 +134,25 @@ For a repeatable phone test, arrange two consenting participants with separate *
 The generated APK environment is bound to the public state of that specific authorized provisioned family. Regenerate the environment and APK only after that state exists; `READY_FOR_MOBILE_RUNTIME` remains **setup**, not wallet, transaction or full product evidence. The environment generator now rejects any state whose `network` is not exactly `devnet` and rejects the original legacy program ID. Custom RPC URLs still require independent cluster verification.
 
 For the required physical runtime and evidence/stop criteria, see [the Samsung G1 runbook](../../docs/G1-PHYSICAL-SAMSUNG-OBSERVATION-2026-10-07.md).
+
+
+## Build a new family-bound integrated APK candidate
+
+The default Mobile APK Evidence workflow compiles a **historical demo-family test build**. Its green status does not prove live relay, verified Android identity, or compatibility with a newly connected wallet.
+
+Once the user has legitimately provisioned the **actual Guardian and Beneficiary** on Devnet (using their authorized signatures, never their personal seed phrases), store only the resulting **public** state JSON under `evidence/devnet-distinct-program/` on the intended build branch. Confirm that the state contains the actual beneficiary and the expected program, mint, nonce, and Solana Pay intents.
+
+The [Mobile APK Evidence GitHub Actions workflow](../../.github/workflows/mobile-apk-evidence.yml) supports manual **Run workflow** inputs:
+
+- `integrated_candidate: true` (requires both public HTTPS origins, fail-closed)
+- `devnet_state_path`: the checked-in public receipt for **this** newly authorized family
+- `app_identity_uri`: the project's controlled HTTPS origin with independently confirmed Android Digital Asset Links
+- `boundary_relay_url`: the actually deployed and operator-verified Cloudflare relay HTTPS origin
+
+Only public origins and public state are bundled. **Never place any API token, wallet private key, recovery phrase, relay bearer capability, or secret into these inputs.** This build does not initiate any wallet signing or deploy a program.
+
+The environment generator validates syntax, rejects known placeholder/non-HTTPS origins, and refuses an integrated build when either origin is missing. It **cannot itself prove ownership or assetlinks association, confirm the relay is running, or establish the cluster behind a custom RPC URL**. Independently check those facts first.
+
+The standalone artifact includes a receipt identifying the built public beneficiary and state source, as well as whether both origins were configured; `integrationRuntimeVerified=false` intentionally remains until the subsequent real device/wallet/relay/onchain scenario succeeds.
+
+**Stop criteria:** if no authorized new family state, no truly verified identity, or no deployed relay, use the historical artifact only as `BUILD_CONFIGURATION/LOCAL_PARTIAL` evidence. Do not describe it as an integrated/ready-to-use new-family APK. For a phone test, compare the connected wallet's public address to the receipt beneficiary **before sending anything**.
