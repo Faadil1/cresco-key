@@ -12,6 +12,25 @@ on:
       - "apps/mobile/**"
       - ".github/workflows/mobile-apk-evidence.yml"
   workflow_dispatch:
+    inputs:
+      integrated_candidate:
+        description: "Require configured identity and relay HTTPS origins; does not prove runtime"
+        type: boolean
+        required: false
+        default: false
+      devnet_state_path:
+        description: "Committed public state of the legitimately provisioned Devnet family"
+        type: string
+        required: false
+        default: "evidence/devnet-distinct-program/cresco-key-demo-state-37182728261.json"
+      app_identity_uri:
+        description: "Project-controlled HTTPS identity origin, independently verify assetlinks"
+        type: string
+        required: false
+      boundary_relay_url:
+        description: "Deployed HTTPS Cloudflare relay origin"
+        type: string
+        required: false
 
 jobs:
   build-debug-apk:
@@ -39,10 +58,19 @@ jobs:
         run: npm install
 
       - name: Generate public CRESCO Devnet configuration
+        env:
+          CRESCO_REQUIRE_INTEGRATION_CONFIG: ${{ inputs.integrated_candidate && '1' || '0' }}
+          CRESCO_MOBILE_IDENTITY_URI: ${{ inputs.app_identity_uri }}
+          CRESCO_MOBILE_RELAY_URL: ${{ inputs.boundary_relay_url }}
+          CRESCO_STATE_PATH: ${{ inputs.devnet_state_path }}
         run: |
-          node ../../tools/devnet/write-mobile-env-from-demo-state.cjs \
-            ../../evidence/devnet-distinct-program/cresco-key-demo-state-37182728261.json \
-            .env
+          STATE_PATH="${CRESCO_STATE_PATH:-evidence/devnet-distinct-program/cresco-key-demo-state-37182728261.json}"
+          if [[ "$STATE_PATH" = /* || "$STATE_PATH" = *".."* || "$STATE_PATH" != evidence/devnet-distinct-program/*.json ]]; then
+            echo "State path must be a committed public Devnet receipt under evidence/devnet-distinct-program" >&2
+            exit 1
+          fi
+          test -f "../../$STATE_PATH"
+          node ../../tools/devnet/write-mobile-env-from-demo-state.cjs "../../$STATE_PATH" .env
 
       - name: Typecheck
         run: npm run typecheck
@@ -61,6 +89,7 @@ jobs:
       - name: Write standalone APK evidence receipt
         env:
           COMMIT_SHA: ${{ github.sha }}
+          CRESCO_STATE_PATH: ${{ inputs.devnet_state_path }}
         run: |
           mkdir -p ../../evidence/apk
           APK="android/app/build/outputs/apk/release/app-release.apk"
@@ -69,10 +98,12 @@ jobs:
           export SIZE_BYTES="$(stat -c%s "$APK")"
           node - <<'NODE' > ../../evidence/apk/standalone-devnet-apk-receipt.json
           const fs = require("node:fs");
-          const state = JSON.parse(fs.readFileSync(
-            "../../evidence/devnet-distinct-program/cresco-key-demo-state-37182728261.json",
-            "utf8",
-          ));
+          const statePath = process.env.CRESCO_STATE_PATH ||
+            "evidence/devnet-distinct-program/cresco-key-demo-state-37182728261.json";
+          const state = JSON.parse(fs.readFileSync("../../" + statePath, "utf8"));
+          const mobileEnv = fs.readFileSync(".env", "utf8");
+          const identityOriginConfigured = mobileEnv.includes("EXPO_PUBLIC_APP_IDENTITY_URI=https://");
+          const relayOriginConfigured = mobileEnv.includes("EXPO_PUBLIC_BOUNDARY_RELAY_URL=https://");
           if (state.status !== "READY_FOR_MOBILE_RUNTIME" || state.network !== "devnet")
             throw new Error("UNEXPECTED_DEVNET_DEMO_STATE");
           console.log(JSON.stringify({
@@ -83,7 +114,11 @@ jobs:
             requiresMetro: false,
             artifactName: "cresco-key-standalone-devnet-apk",
             programId: state.programId,
+            beneficiary: state.beneficiary,
             network: state.network,
+            publicStatePath: statePath,
+            integrationOriginsConfigured: { identity: identityOriginConfigured, relay: relayOriginConfigured },
+            integrationRuntimeVerified: false,
             configurationSourceRun: state.source?.githubActionsRun ?? null,
             apkSha256: process.env.SHA256,
             sizeBytes: Number(process.env.SIZE_BYTES),
