@@ -249,6 +249,10 @@ export function BoundaryWorkspace() {
   const [widenAcknowledged, setWidenAcknowledged] = useState(false);
 
   const config = useMemo(() => demoConfig(), []);
+  const youngDisplayDecimals = verifiedMintInfo?.mint === intent?.mint
+    ? verifiedMintInfo.decimals : null;
+  const guardianDisplayDecimals = verifiedMintInfo?.mint === relayRequest?.mint
+    ? verifiedMintInfo.decimals : null;
   const capitalConfigMissing = useMemo(
     () => missingCapitalConfig(config),
     [config],
@@ -772,10 +776,11 @@ export function BoundaryWorkspace() {
     if (!account || !intent || busy) return;
     setBusy(true);
     try {
+      const decimals = await readLiveMintDecimals(intent.mint);
       const result = await readYoungStandingKey();
       setYoungKeyInspection(result);
       setStatus(result.state === "READY"
-        ? `Live Key read: action limit ${displayTokenUnits(result.key.maxActionAmount, config.tokenDecimals)}, period limit ${displayTokenUnits(result.key.maxPeriodAmount, config.tokenDecimals)}, nonce ${result.key.nonce}.`
+        ? `Live Key read: action limit ${displayTokenUnits(result.key.maxActionAmount, decimals)}, period limit ${displayTokenUnits(result.key.maxPeriodAmount, decimals)}, nonce ${result.key.nonce}.`
         : `Live Key ${result.state}: ${result.reason}`);
     } finally {
       setBusy(false);
@@ -853,12 +858,13 @@ export function BoundaryWorkspace() {
     setBusy(true);
     setStatus("Reading the guardian's real standing Key from Devnet.");
     try {
+      const decimals = await readLiveMintDecimals(relayRequest.mint);
       const result = await readGuardianKey(false);
       setGuardianKeyInspection(result);
       setWidenAcknowledged(false);
       if (result.state === "READY") {
-        setNextActionLimit(displayTokenUnits(result.key.maxActionAmount, config.tokenDecimals));
-        setNextPeriodLimit(displayTokenUnits(result.key.maxPeriodAmount, config.tokenDecimals));
+        setNextActionLimit(displayTokenUnits(result.key.maxActionAmount, decimals));
+        setNextPeriodLimit(displayTokenUnits(result.key.maxPeriodAmount, decimals));
         setStatus(result.key.nonce.toString() === relayRequest?.mandateNonce
           ? "Onchain Key loaded. No rule has been changed."
           : "Onchain Key read: this boundary request has a stale nonce. Do not re-submit the old request; use current Key authority.");
@@ -881,8 +887,9 @@ export function BoundaryWorkspace() {
     setBusy(true);
     setStatus("Re-checking real Devnet authority and limits before guardian signature.");
     try {
-      const nextAction = BigInt(decimalToBaseUnits(nextActionLimit, config.tokenDecimals));
-      const nextPeriod = BigInt(decimalToBaseUnits(nextPeriodLimit, config.tokenDecimals));
+      const decimals = await readLiveMintDecimals(relayRequest.mint);
+      const nextAction = BigInt(decimalToBaseUnits(nextActionLimit, decimals));
+      const nextPeriod = BigInt(decimalToBaseUnits(nextPeriodLimit, decimals));
 
       // Never trust a preview that may have become stale while the user decides.
       const fresh = await readGuardianKey();
@@ -1257,11 +1264,11 @@ export function BoundaryWorkspace() {
               <Text style={styles.body}>This is NOT Allow Once. Widen changes the permanent amount limits of the actual onchain asset rule. It advances the mandate nonce and invalidates pending exact authorizations tied to the old version.</Text>
               <MuseumButton label="Read current standing Key from Devnet" variant="secondary"
                 disabled={busy} onPress={inspectGuardianStandingKey} />
-              {guardianKeyInspection?.state === "READY" ? (
+              {guardianKeyInspection?.state === "READY" && guardianDisplayDecimals !== null ? (
                 <View style={styles.scenarios}>
-                  <MuseumFact label="LIVE ACTION LIMIT / TOKEN UNITS" value={displayTokenUnits(guardianKeyInspection.key.maxActionAmount, config.tokenDecimals)} />
-                  <MuseumFact label="LIVE PERIOD LIMIT / TOKEN UNITS" value={displayTokenUnits(guardianKeyInspection.key.maxPeriodAmount, config.tokenDecimals)} />
-                  <MuseumFact label="SPENT IN CURRENT PERIOD / TOKEN UNITS" value={displayTokenUnits(guardianKeyInspection.key.spentThisPeriod, config.tokenDecimals)} />
+                  <MuseumFact label="LIVE ACTION LIMIT / TOKEN UNITS" value={displayTokenUnits(guardianKeyInspection.key.maxActionAmount, guardianDisplayDecimals!)} />
+                  <MuseumFact label="LIVE PERIOD LIMIT / TOKEN UNITS" value={displayTokenUnits(guardianKeyInspection.key.maxPeriodAmount, guardianDisplayDecimals!)} />
+                  <MuseumFact label="SPENT IN CURRENT PERIOD / TOKEN UNITS" value={displayTokenUnits(guardianKeyInspection.key.spentThisPeriod, guardianDisplayDecimals!)} />
                   <MuseumFact label="MANDATE NONCE" value={guardianKeyInspection.key.nonce.toString()} />
                   <Text style={styles.scenarioLabel}>NEW PER-ACTION LIMIT / TOKEN UNITS</Text>
                   <TextInput
@@ -1367,10 +1374,10 @@ export function BoundaryWorkspace() {
           <View style={styles.scenarios}>
             <MuseumButton label="View my live standing Key limits" disabled={busy}
               variant="secondary" onPress={inspectYoungCurrentKey} />
-            {youngKeyInspection?.state === "READY" ? (
+            {youngKeyInspection?.state === "READY" && youngDisplayDecimals !== null ? (
               <MuseumPlate exhibit="YOUR REAL KEY / DEVNET" title="Standing authority right now" tone="neutral">
-                <MuseumFact label="PER-ACTION LIMIT" value={displayTokenUnits(youngKeyInspection.key.maxActionAmount, config.tokenDecimals)} />
-                <MuseumFact label="PER-PERIOD LIMIT" value={displayTokenUnits(youngKeyInspection.key.maxPeriodAmount, config.tokenDecimals)} />
+                <MuseumFact label="PER-ACTION LIMIT" value={displayTokenUnits(youngKeyInspection.key.maxActionAmount, youngDisplayDecimals!)} />
+                <MuseumFact label="PER-PERIOD LIMIT" value={displayTokenUnits(youngKeyInspection.key.maxPeriodAmount, youngDisplayDecimals!)} />
                 <MuseumFact label="MANDATE NONCE" value={youngKeyInspection.key.nonce.toString()} />
                 <MuseumFact label="AUTHORITY STAGE" value={youngKeyInspection.key.mandateStage.toString()} />
                 <Text style={styles.body}>These limits are read from the CRESCO program. A payment still needs its own wallet approval and onchain enforcement.</Text>
