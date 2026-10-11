@@ -40,7 +40,9 @@ export type StandingKeySnapshot = {
   guardian: Address;
   version: bigint;
   nonce: bigint;
+  mandateStage: number;
   mandateStatus: number;
+  mandateExpiryUnixSeconds: bigint;
   actionMask: number;
   ruleEnabled: boolean;
   maxActionAmount: bigint;
@@ -185,7 +187,9 @@ export async function inspectStandingKey(
         programId: input.config.programId,
         version: uint64(mandate, 42),
         nonce: uint64(mandate, 50),
+        mandateStage: mandate[40],
         mandateStatus: status,
+        mandateExpiryUnixSeconds: int64(mandate, 74),
         actionMask: mask,
         ruleEnabled: enabled,
         maxActionAmount: uint64(rule, 74),
