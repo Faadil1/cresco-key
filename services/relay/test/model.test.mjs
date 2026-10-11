@@ -97,3 +97,19 @@ test("guardian submitted event requires a tx signature", () => {
     /INVALID_TXSIGNATURE/,
   );
 });
+
+test("guardian Key change report is separate from an exact allowance and needs a signature", () => {
+  assert.throws(
+    () => validateRelayEvent({ type: "KEY_CHANGE_REPORTED" }),
+    /INVALID_TXSIGNATURE/,
+  );
+  const event = validateRelayEvent({ type: "KEY_CHANGE_REPORTED", txSignature: "devnetSig" });
+  assert.equal(event.type, "KEY_CHANGE_REPORTED");
+  assert.equal(event.txSignature, "devnetSig");
+  assert.equal(statusAfterEvent("PENDING", event.type), "KEY_CHANGE_REPORTED");
+  assert.equal(statusAfterEvent("KEY_CHANGE_REPORTED", "ALLOWANCE_SUBMITTED"), "KEY_CHANGE_REPORTED");
+  assert.equal(statusAfterEvent("REFUSED", "KEY_CHANGE_REPORTED"), "REFUSED");
+  assert.equal(statusAfterEvent("EXPIRED", "KEY_CHANGE_REPORTED"), "EXPIRED");
+  // The relay marker never grants financial authority or transitions to ALLOW.
+  assert.notEqual(statusAfterEvent("PENDING", event.type), "ALLOWANCE_SUBMITTED");
+});
