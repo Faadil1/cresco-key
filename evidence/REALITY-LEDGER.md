@@ -94,3 +94,15 @@ Reminder: the existing release-mode standalone Devnet APK is an old-family confi
 
 
 | 2026-10-11 Samsung + Solflare WALLET_PROOF message signing | PHYSICAL_CLIENT / MWA_MESSAGE_SIGNING_REPORTED | OBSERVED at UI and public receipt level, NOT CRYPTOGRAPHICALLY INDEPENDENTLY VERIFIED | Operator-provided public receipt `cresco-key.mobile-g1-runtime-receipt.v1` at `2026-10-11T20:07:28.896Z` and ~65s operator video (chat-supplied, not yet stable repo artifact); wallet `BW5dWcUfrmKNGuwuccWYAKArPseBM23qwV8PiZ96ySkT`, chain `solana:devnet`, `SIGNED`, 64 signature bytes | No actual signature bytes for independent verification; mandate nonce = BUILD_CONFIG_NOT_LIVE_AT_RECEIPT_TIME; beneficiary mismatch vs original demo charter; `relay=null`; no real Devnet payment/guardian G1 or on-chain account consequence. See `docs/G1-PHYSICAL-SAMSUNG-OBSERVATION-2026-10-07.md` |
+
+## 2026-10-11 — Cloudflare Boundary Relay public deployment
+
+**LIVE_RELAY_INFRASTRUCTURE_VERIFIED** (only the coordination service; NOT a G1 financial claim).
+
+- Successful human-triggered Deploy Boundary Relay run: 38174012603; `main@d4ed1d80af23cd58834f7efee49c96889e6a1c2c`.
+- Deployed URL: https://cresco-key-boundary-relay.faadil-casecraft.workers.dev
+- After publication, GitHub Actions verified live public GET /health and GET /ready: HTTP JSON responses identified the coordination-only service and a configured Durable Object binding.
+- Public deployment receipt artifact: https://github.com/Faadil1/cresco-key/actions/runs/38174012603/artifacts/11714828715
+- Failed older run 38173719658 uploaded Worker but received HTML from public smoke; was not accepted.
+- Evidence classification: LIVE_RELAY_INFRASTRUCTURE_VERIFIED. Relay cannot grant onchain financial authority or move funds. Full two-device flow, mobile relay integration, Guardian signature, exact allowance, payment, replay, and LIVE_CORE_G1 remain unverified.
+- A newly compiled APK must explicitly configure the deployed relay HTTPS origin; old physical Samsung APK did not use this newly verified route.
