@@ -47,19 +47,19 @@ jobs:
           fi
           echo "Boundary relay: $DEPLOYMENT_URL"
 
-      - name: Smoke health endpoint
+      - name: Smoke live Durable Object readiness endpoint
         env:
           DEPLOYMENT_URL: ${{ steps.deploy.outputs.deployment-url }}
         run: |
           node - <<'NODE'
           const base = process.env.DEPLOYMENT_URL.replace(/\/$/, "");
-          const response = await fetch(base + "/health");
+          const response = await fetch(base + "/ready");
           const body = await response.json();
-          if (!response.ok || body?.ok !== true || body?.authority !== "coordination-only") {
+          if (!response.ok || body?.ok !== true || body?.authority !== "coordination-only" || body?.checks?.boundaryRequestsDurableObject !== "configured") {
             console.error(body);
             process.exit(1);
           }
-          console.log(JSON.stringify({ url: base, health: body }, null, 2));
+          console.log(JSON.stringify({ url: base, readiness: body }, null, 2));
           NODE
 
       - name: Write deployment receipt
@@ -75,6 +75,8 @@ jobs:
             commit: process.env.COMMIT_SHA,
             deploymentUrl: base,
             healthUrl: base + "/health",
+            readyUrl: base + "/ready",
+            durableObjectReadyVerified: true,
             authority: "coordination-only",
             generatedAt: new Date().toISOString()
           }, null, 2));
