@@ -9,7 +9,19 @@ CRESCO Key is an **Android-first Solana Mobile prototype** that explores a bette
 
 **Built for [Solana Mobile CLOCK IN 2026](https://solanamobile.com/) · React Native / Android · Mobile Wallet Adapter · Solana Pay-style intents · Anchor / Solana Devnet · Optional SKR**
 
-**Project maturity (October 11, 2026):** physical Android + Solflare interaction **observed**; distinct onchain Devnet program **deployed**; Cloudflare coordination Worker **live**; the **complete two-wallet payment/Guardian flow is not yet verified**. This repository documents both product behavior and the limits of its evidence.
+## See CRESCO Key in 90 seconds
+
+**A real mobile product, a real Devnet program, one exact question: should this payment go through?**
+
+**[Get the latest verified standalone Android APK](https://github.com/Faadil1/cresco-key/actions/runs/38173474144/artifacts/11715682262)** · **[Explore the deployed Cresco Key program](https://explorer.solana.com/address/6SoGabSLX2YHMjFx1ynbz5nLFtd8Z7hURmszddU6DeJP?cluster=devnet)** · **[See the real Samsung test](docs/G1-PHYSICAL-SAMSUNG-OBSERVATION-2026-10-07.md)** · **[Read the short judge walkthrough](docs/CLOCK-IN-2026-JUDGE-DEMO-90S.md)**
+
+The APK download above is the **last successful standalone build from commit `0d210847`**, not the newest code. The newer self-serve judge mode and SKR improvements remain in [PR #62](https://github.com/Faadil1/cresco-key/pull/62) and require a newly verified APK.
+
+**The decisive action:** Within the standing Key, the intended mobile action needs no repeated Guardian approval. Outside its limits, **Allow Once** must bind exactly one request and must never expand the standing rule. The mobile end-to-end transaction + Guardian loop is **still in integration**; a 64-byte MWA message-sign result on Samsung is not a payment signature.
+
+**Origin proof, separately labeled:** the [original CRESCO authority engine](https://github.com/Faadil1/cresco) demonstrated exact Allow Once and replay refusal on Devnet, with public grant/execution signatures in its [canonical proof](https://github.com/Faadil1/cresco/blob/main/evidence/solana/ALLOW-ONCE-EXACT-ACTION-CANONICAL-PROOF-2026-09-25.md). Its program is `ABjE6V5…`, **not** the newer Cresco Key program `6SoGab…`. This is proven *mechanism lineage*, not proof that the newer APK has performed those transactions.
+
+**Judge-visible status:** Samsung + Solflare connect and message signing **observed** · new CRESCO program **deployed** · public relay **verified** · Guardian-to-payment-to-replay on the new mobile program **not yet proven**. View [complete acceptance evidence](evidence/REALITY-LEDGER.md).
 
 ---
 
