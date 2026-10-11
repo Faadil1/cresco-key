@@ -7,7 +7,8 @@
     "start": "expo start --dev-client",
     "android": "expo run:android",
     "typecheck": "tsc --noEmit",
-    "test:financial-boundaries": "node scripts/test-financial-boundaries.cjs"
+    "test:financial-boundaries": "node scripts/test-financial-boundaries.cjs",
+    "test:skr-charter": "node scripts/test-skr-charter.cjs"
   },
   "dependencies": {
     "@solana/kit": "^7.0.0",
