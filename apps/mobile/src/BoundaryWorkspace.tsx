@@ -108,7 +108,6 @@ function missingCapitalConfig(
   if (!process.env.EXPO_PUBLIC_DEMO_TOKEN_PROGRAM_ID?.trim()) {
     missing.push("DEMO_TOKEN_PROGRAM_ID");
   }
-  if (!config.mandateNonce) missing.push("DEMO_MANDATE_NONCE");
   if (!Number.isInteger(config.tokenDecimals) || config.tokenDecimals < 0) {
     missing.push("DEMO_TOKEN_DECIMALS");
   }
@@ -120,7 +119,6 @@ function missingRelayConfig(config: ReturnType<typeof demoConfig>): string[] {
   if (!process.env.EXPO_PUBLIC_BOUNDARY_RELAY_URL?.trim()) {
     missing.push("BOUNDARY_RELAY_URL");
   }
-  if (!config.guardianWallet) missing.push("DEMO_GUARDIAN_WALLET");
   return missing;
 }
 
@@ -215,6 +213,11 @@ export function BoundaryWorkspace() {
   const [mode, setMode] = useState<Mode>(null);
   const [scanning, setScanning] = useState(false);
   const [intent, setIntent] = useState<SolanaPayTransferIntent | null>(null);
+  // The configured scenario is a test convenience, never an eligibility rule
+  // for an independently provisioned beneficiary's scanned Solana Pay request.
+  const [usingConfiguredTestIntent, setUsingConfiguredTestIntent] = useState(false);
+  const [verifiedMintInfo, setVerifiedMintInfo] =
+    useState<{ mint: string; decimals: number } | null>(null);
   const [relayRequest, setRelayRequest] =
     useState<BoundaryRelayRequest | null>(null);
   const [guardianCapability, setGuardianCapability] =
@@ -259,11 +262,25 @@ export function BoundaryWorkspace() {
   // The deployed sample mandate belongs to one beneficiary. A newly created
   // Solflare account must not be sent a transaction for somebody else's charter.
   // This is a public build-config check, not proof of on-chain account existence.
-  const demoBeneficiaryBlocker = !config.beneficiaryWallet
-    ? "Configured Devnet beneficiary is missing from this APK. Payment not attempted."
-    : account?.address.toString() !== config.beneficiaryWallet
-      ? "This wallet is not the beneficiary of the configured Devnet charter. Provision a new charter and mandate with authorized signatures before payment."
-      : null;
+  const demoBeneficiaryBlocker = usingConfiguredTestIntent && (
+    !config.beneficiaryWallet
+      ? "Configured Devnet beneficiary is missing from this APK. This fixed test scenario cannot run."
+      : account?.address.toString() !== config.beneficiaryWallet
+        ? "This test scenario belongs to another beneficiary. Scan your own request for your independently provisioned Key."
+        : null
+  );
+
+  // Read token decimals from the actual mint, not from the demo build.
+  // A wrong decimal exponent silently changes the money amount.
+  const readLiveMintDecimals = async (mint: string): Promise<number> => {
+    const response = await client.rpc.getTokenSupply(address(mint)).send();
+    const decimals = response.value.decimals;
+    if (!Number.isInteger(decimals) || decimals < 0 || decimals > 18) {
+      throw new Error("TOKEN_MINT_DECIMALS_UNSUPPORTED");
+    }
+    setVerifiedMintInfo({ mint, decimals });
+    return decimals;
+  };
 
   const makeStandingKeyRpc = (): StandingKeyRpc => ({
     getAccountInfo: (key, options) => ({
@@ -409,6 +426,8 @@ export function BoundaryWorkspace() {
     try {
       const nextIntent = parseSolanaPayTransferRequest(raw);
       setIntent(nextIntent);
+      setUsingConfiguredTestIntent(true);
+      setVerifiedMintInfo(null);
       setRelayRequest(null);
       setYoungCapability(null);
       setShareLink(null);
@@ -541,7 +560,7 @@ export function BoundaryWorkspace() {
       const result = await checkPaymentReadiness(readinessRpc, {
         chain,
         connectedWallet: account.address.toString(),
-        expectedBeneficiary: config.beneficiaryWallet,
+        expectedBeneficiary: usingConfiguredTestIntent ? config.beneficiaryWallet : undefined,
         config: paymentProgramConfigFromEnv(),
         mint: intent.mint,
         recipient: intent.recipient,
@@ -1158,6 +1177,10 @@ export function BoundaryWorkspace() {
           onCancel={() => setScanning(false)}
           onIntent={(nextIntent) => {
             setIntent(nextIntent);
+            setUsingConfiguredTestIntent(false);
+            setVerifiedMintInfo(null);
+            setPaymentReadiness(null);
+            setYoungKeyInspection(null);
             setRelayRequest(null);
             setYoungCapability(null);
             setShareLink(null);
