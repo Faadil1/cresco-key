@@ -1006,7 +1006,7 @@ export function BoundaryWorkspace() {
                       : paymentReadiness.caveat}
                 </Text>
                 <Text style={styles.body}>
-                  {paymentReadiness.evidence.join("\\n") || "No verified account details."}
+                  {paymentReadiness.evidence.join("\n") || "No verified account details."}
                 </Text>
               </MuseumPlate>
             ) : null}
