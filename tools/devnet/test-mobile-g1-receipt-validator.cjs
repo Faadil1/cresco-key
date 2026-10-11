@@ -153,7 +153,45 @@ try {
     "details.seedPhrase",
   ]);
 
-  console.log("Mobile G1 receipt validator self-test passed.");
+  // Integrated APK configuration must fail closed without both public origins.
+  const envBuilder = path.join(root, "write-mobile-env-from-demo-state.cjs");
+  const demoState = path.resolve(root, "../../evidence/devnet-distinct-program/cresco-key-demo-state-37182728261.json");
+  const noOrigins = spawnSync(process.execPath, [envBuilder, demoState], {
+    encoding: "utf8",
+    env: { ...process.env, CRESCO_REQUIRE_INTEGRATION_CONFIG: "1",
+      CRESCO_MOBILE_IDENTITY_URI: "", CRESCO_MOBILE_RELAY_URL: "" },
+  });
+  assert.equal(noOrigins.status, 1);
+  assert.match(noOrigins.stderr, /INTEGRATED_MOBILE_BUILD_REQUIRES_IDENTITY_AND_RELAY_ORIGINS/);
+
+  const withOrigins = spawnSync(process.execPath, [envBuilder, demoState], {
+    encoding: "utf8",
+    env: { ...process.env, CRESCO_REQUIRE_INTEGRATION_CONFIG: "1",
+      CRESCO_MOBILE_IDENTITY_URI: "https://cresco-key.testdomain.net/",
+      CRESCO_MOBILE_RELAY_URL: "https://relay.cresco-key.testdomain.net/" },
+  });
+  assert.equal(withOrigins.status, 0, withOrigins.stderr);
+  assert.match(withOrigins.stdout, /EXPO_PUBLIC_APP_IDENTITY_URI=https:\/\/cresco-key\.testdomain\.net/);
+  assert.match(withOrigins.stdout, /EXPO_PUBLIC_BOUNDARY_RELAY_URL=https:\/\/relay\.cresco-key\.testdomain\.net/);
+
+  const fakeOrigin = spawnSync(process.execPath, [envBuilder, demoState], {
+    encoding: "utf8",
+    env: { ...process.env, CRESCO_REQUIRE_INTEGRATION_CONFIG: "1",
+      CRESCO_MOBILE_IDENTITY_URI: "https://REPLACE_WITH_VERIFIED_APP_DOMAIN",
+      CRESCO_MOBILE_RELAY_URL: "https://relay.cresco-key.testdomain.net/" },
+  });
+  assert.equal(fakeOrigin.status, 1);
+  assert.match(fakeOrigin.stderr, /UNVERIFIED_APP_IDENTITY_ORIGIN/);
+
+  const alteredState = JSON.parse(fs.readFileSync(demoState, "utf8"));
+  alteredState.network = "mainnet";
+  const unsafeFixture = path.join(tmp, "mainnet-demo-state.json");
+  fs.writeFileSync(unsafeFixture, JSON.stringify(alteredState));
+  const wrongNetwork = spawnSync(process.execPath, [envBuilder, unsafeFixture], { encoding: "utf8" });
+  assert.equal(wrongNetwork.status, 1);
+  assert.match(wrongNetwork.stderr, /DEMO_STATE_NETWORK_NOT_DEVNET/);
+
+  console.log("Mobile G1 receipt validator and integrated APK configuration self-tests passed.");
 } finally {
   fs.rmSync(tmp, { recursive: true, force: true });
 }
