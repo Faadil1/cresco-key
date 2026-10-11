@@ -17,12 +17,12 @@ const js = ts.transpileModule(input, {
     target: ts.ScriptTarget.ES2022,
   },
 });
-const module = { exports: {} };
+const transpiledModule = { exports: {} };
 vm.runInNewContext(
   `(function(module,exports) {\n${js.outputText}\n})`,
   { BigInt },
-)(module, module.exports);
-const { tokenUnits, createFamilyCharterReview } = module.exports;
+)(transpiledModule, transpiledModule.exports);
+const { tokenUnits, createFamilyCharterReview } = transpiledModule.exports;
 assert.equal(tokenUnits(1500000n, 6), "1.5");
 assert.equal(tokenUnits(1n, 0), "1");
 assert.equal(tokenUnits(0n, 6), "0");
