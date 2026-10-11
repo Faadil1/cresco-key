@@ -619,6 +619,17 @@ export function BoundaryWorkspace() {
   const attemptStandingPayment = async () => {
     if (!intent || !account || busy) return;
     if (demoBeneficiaryBlocker) {
+      // Local setup mismatch is not a Solana program refusal. Capture it as
+      // PRECHECK_BLOCKED without any wallet prompt, transaction or relay event.
+      recordReceipt("PRECHECK_BLOCKED", {
+        state: "BLOCKED",
+        source: "BUILD_CONFIG_BENEFICIARY_MISMATCH",
+        reason: demoBeneficiaryBlocker,
+        expectedBeneficiary: config.beneficiaryWallet || null,
+        connectedWallet: account.address.toString(),
+        transactionSubmitted: false,
+        financialAuthorityDecision: false,
+      });
       setPreflightBlocked(demoBeneficiaryBlocker);
       setStatus("TEST CONFIG BLOCKED · " + demoBeneficiaryBlocker);
       return;
