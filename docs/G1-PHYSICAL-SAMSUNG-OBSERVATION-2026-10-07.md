@@ -77,3 +77,23 @@ Truth classes: **OBSERVED / PHYSICAL_CLIENT**, **NOT LIVE_PAYMENT**.
 ### Post-session
 
 Link evidence back to the exact commit and APK artifact; update `evidence/REALITY-LEDGER.md`, the claim/evidence graph, canonical `state/CURRENT.md` and `state/HANDOVER.md` only after checking the observed receipts. Keep SKR PR #63 optional and dependent on #62; **do not let its CI green status upgrade the finance loop's live evidence**. Submit the CLOCK IN entry using only verified claims, even if G1 remains blocked.
+
+
+## New physical Samsung / Solflare wallet proof — 2026-10-11
+
+**Source:** operator-provided `WALLET_PROOF` public JSON runtime receipt and a ~65-second Samsung screen recording shared in chat; the video has **not** been uploaded to a stable repository artifact. The recording shows the Cresco Key `SIGNED · 64 signature bytes` session status, screen sharing the public JSON receipt, and Solflare screens (including a wallet recovery-backup prompt). No recovery phrase or private key was supplied.
+
+- Receipt schema: `cresco-key.mobile-g1-runtime-receipt.v1`
+- Captured at: `2026-10-11T20:07:28.896Z`
+- Scenario: `WALLET_PROOF`
+- Beneficiary wallet observed: `BW5dWcUfrmKNGuwuccWYAKArPseBM23qwV8PiZ96ySkT`
+- Reported chain: `solana:devnet`
+- Program config: `6SoGabSLX2YHMjFx1ynbz5nLFtd8Z7hURmszddU6DeJP`
+- Mandate nonce: `2` with explicit source `BUILD_CONFIG_NOT_LIVE_AT_RECEIPT_TIME`
+- Configured payment intent: 5 demo tokens, mint `B5G9WPQrgrvoFuJm53ZmT5gyJb5k1g9VdqLLeh4eK9V5`. **Intent presence is not payment execution.**
+- Result: `details.state=SIGNED`, `signatureByteLength=64`; signature bytes, original signed message, and independent cryptographic verification were **not** captured in this receipt.
+- Relay: `null`; **no actual payment transaction signature, account-state change, live guardian approval or allowance consequence** recorded.
+
+**Evidence classification:** `OBSERVED / PHYSICAL_CLIENT / MWA_MESSAGE_SIGNING_REPORTED`; not `LIVE_PAYMENT`, not cryptographically independently verified `WALLET_PROOF`, and not `LIVE_CORE_G1`. The connected wallet still differs from the historically provisioned beneficiary `DD1T86b6vSJd7avUVn23f8TaZxdKEzjRF14XzgffDRSZ`. No legitimate new charter + mandate + funded mint/vault or exact-guardian signer authority is proven for the connected `BW5dW...` account.
+
+**Next safe action while device is present:** capture `PRECHECK_BLOCKED` using the explicit `Record setup blocker (no transaction)` UI; verify the message identifies the beneficiary mismatch; optionally inspect read-only Key status. Do not issue any financial transaction until the connected beneficiary's own authorized onchain charter/mandate and guardian have been provisioned and inspected. Never expose Solflare recovery words or interpret the backup prompt as an authorization.
