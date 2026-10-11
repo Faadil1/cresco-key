@@ -57,7 +57,7 @@ export type KeyInspection =
 
 const addressEncoder = getAddressEncoder();
 
-function equalBytes(left: Uint8Array, right: Uint8Array): boolean {
+function equalBytes(left: Uint8Array, right: ArrayLike<number>): boolean {
   if (left.length !== right.length) return false;
   return left.every((v, i) => v === right[i]);
 }
