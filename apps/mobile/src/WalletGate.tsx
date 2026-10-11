@@ -2,6 +2,7 @@ import { useMobileWallet } from "@wallet-ui/react-native-kit";
 import { useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { MuseumHero, MuseumPlate, MuseumButton, ProofStrip, museumColors as color } from "./design/MuseumLedgerUI";
+import { JudgeReadOnlyTour } from "./JudgeReadOnlyTour";
 
 type WalletProofState =
   | "IDLE"
@@ -15,6 +16,7 @@ type WalletProofState =
 export function WalletGate() {
   const { account, chain, connect, disconnect, signMessage } = useMobileWallet();
   const [proofState, setProofState] = useState<WalletProofState>("IDLE");
+  const [showJudgeTour, setShowJudgeTour] = useState(false);
   const [detail, setDetail] = useState("No wallet proof attempted yet.");
 
   const handleConnect = async () => {
@@ -56,6 +58,8 @@ export function WalletGate() {
     }
   };
 
+  if (showJudgeTour) return <JudgeReadOnlyTour onExit={() => setShowJudgeTour(false)} />;
+
   return (
     <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
       <View style={styles.brandRow}>
@@ -68,6 +72,10 @@ export function WalletGate() {
         subtitle="Your money, within rules that grow with you. Ask only when you reach a real boundary."
         showKey
       />
+      <MuseumPlate exhibit="SELF-SERVE JUDGE ENTRY" title="See a real Key before connecting">
+        <Text style={styles.explanation}>No wallet? Inspect the published sample family\u2019s actual Solana Devnet limits in read-only mode. It cannot sign, pay, or authorize anything.</Text>
+        <MuseumButton label="Explore live Devnet Key (no wallet required)" variant="secondary" onPress={() => setShowJudgeTour(true)} />
+      </MuseumPlate>
       <MuseumButton
         disabled={proofState === "CONNECTING"}
         onPress={account ? handleDisconnect : handleConnect}
