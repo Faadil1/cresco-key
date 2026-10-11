@@ -13,6 +13,11 @@ import {
 } from "react-native";
 
 import { PaymentScanner } from "./payment/PaymentScanner";
+import {
+  checkPaymentReadiness,
+  type PaymentReadiness,
+  type ReadinessRpc,
+} from "./solana/paymentReadiness";
 import { MuseumHero, MuseumPlate, MuseumButton, MuseumFact, ProofStrip, museumColors as color } from "./design/MuseumLedgerUI";
 import { SkrCharterAtelier } from "./skr/SkrCharterAtelier";
 import {
@@ -221,6 +226,7 @@ export function BoundaryWorkspace() {
     useState<ExactExecutionState>("IDLE");
   const [standingOutcome, setStandingOutcome] = useState<ExactExecutionState>("IDLE");
   const [preflightBlocked, setPreflightBlocked] = useState<string | null>(null);
+  const [paymentReadiness, setPaymentReadiness] = useState<PaymentReadiness | null>(null);
 
   const config = useMemo(() => demoConfig(), []);
   const capitalConfigMissing = useMemo(
@@ -378,6 +384,7 @@ export function BoundaryWorkspace() {
       setExactExecutionState("IDLE");
       setStandingOutcome("IDLE");
       setPreflightBlocked(null);
+      setPaymentReadiness(null);
       setStatus(
         "Deterministic Devnet payment intent loaded. No authority decision has been made yet.",
       );
@@ -460,6 +467,86 @@ export function BoundaryWorkspace() {
     );
   };
 
+  // Actual Devnet account inspection, not a generated setup checklist or demo
+  // proof. Every payment rechecks before requesting a wallet signature.
+  const inspectLivePaymentReadiness = async (): Promise<PaymentReadiness> => {
+    if (!account || !intent) {
+      const result: PaymentReadiness = {
+        state: "BLOCKED", reasons: ["WALLET_OR_PAYMENT_INTENT_MISSING"], evidence: [],
+      };
+      setPaymentReadiness(result);
+      return result;
+    }
+    if (capitalConfigMissing.length > 0) {
+      const result: PaymentReadiness = {
+        state: "BLOCKED", reasons: capitalConfigMissing.map((name) => `CONFIG_MISSING_${name}`),
+        evidence: [],
+      };
+      setPaymentReadiness(result);
+      return result;
+    }
+    try {
+      const readinessRpc: ReadinessRpc = {
+        getAccountInfo: (key, options) => ({
+          send: async () => {
+            const response = await client.rpc.getAccountInfo(key, options).send();
+            return {
+              value: response.value
+                ? { owner: response.value.owner, executable: response.value.executable }
+                : null,
+            };
+          },
+        }),
+        getBalance: (key) => ({ send: () => client.rpc.getBalance(key).send() }),
+        getTokenAccountBalance: (key) => ({
+          send: async () => {
+            const response = await client.rpc.getTokenAccountBalance(key).send();
+            return { value: { amount: response.value.amount } };
+          },
+        }),
+      };
+      const result = await checkPaymentReadiness(readinessRpc, {
+        chain,
+        connectedWallet: account.address.toString(),
+        expectedBeneficiary: config.beneficiaryWallet,
+        config: paymentProgramConfigFromEnv(),
+        mint: intent.mint,
+        recipient: intent.recipient,
+        requestedAmountBaseUnits: BigInt(
+          decimalToBaseUnits(intent.amountUi, config.tokenDecimals),
+        ),
+      });
+      setPaymentReadiness(result);
+      return result;
+    } catch (error) {
+      const result: PaymentReadiness = {
+        state: "UNKNOWN",
+        reason: error instanceof Error ? error.message : "DEVNET_ACCOUNT_READ_FAILED",
+        evidence: [],
+      };
+      setPaymentReadiness(result);
+      return result;
+    }
+  };
+
+  const checkReadinessOnDemand = async () => {
+    if (busy || !account || !intent) return;
+    setBusy(true);
+    setStatus("Inspecting actual Devnet payment accounts and balances. No transaction.");
+    try {
+      const result = await inspectLivePaymentReadiness();
+      setStatus(
+        result.state === "READY_FOR_WALLET_ATTEMPT"
+          ? "Live Devnet account preflight passed. No payment has been signed or sent."
+          : result.state === "BLOCKED"
+            ? `PRECHECK BLOCKED · ${result.reasons.join(", ")}`
+            : `PRECHECK UNKNOWN · ${result.reason}`,
+      );
+    } finally {
+      setBusy(false);
+    }
+  };
+
   const attemptStandingPayment = async () => {
     if (!intent || !account) return;
 
@@ -487,7 +574,23 @@ export function BoundaryWorkspace() {
     }
 
     setBusy(true);
-    setStatus("Submitting the standing-Key payment instruction on Devnet.");
+    setStatus("Checking live Devnet account readiness before wallet approval.");
+
+    const readiness = await inspectLivePaymentReadiness();
+    if (readiness.state !== "READY_FOR_WALLET_ATTEMPT") {
+      setPreflightBlocked(
+        readiness.state === "BLOCKED" ? readiness.reasons.join(", ") : readiness.reason,
+      );
+      setStatus(
+        readiness.state === "BLOCKED"
+          ? `PRECHECK BLOCKED · ${readiness.reasons.join(", ")}`
+          : `PRECHECK UNKNOWN · ${readiness.reason}`,
+      );
+      setBusy(false);
+      return;
+    }
+    setPreflightBlocked(null);
+    setStatus("Live Devnet accounts checked; requesting the actual CRESCO payment via wallet.");
 
     try {
       const programConfig = paymentProgramConfigFromEnv();
@@ -881,7 +984,36 @@ export function BoundaryWorkspace() {
             <MuseumButton label="Record setup blocker (no transaction)" variant="secondary" onPress={attemptStandingPayment} />
           </MuseumPlate>
         ) : null}
-        {intent && !relayRequest && !demoBeneficiaryBlocker ? <MuseumButton label="Try payment inside my Key" disabled={busy} onPress={attemptStandingPayment} /> : null}
+        {intent && !relayRequest && !demoBeneficiaryBlocker ? (
+          <View style={styles.scenarios}>
+            <MuseumButton label="Check live Devnet payment readiness" disabled={busy}
+              variant="secondary" onPress={checkReadinessOnDemand} />
+            {paymentReadiness ? (
+              <MuseumPlate
+                exhibit="LIVE DEVNET / ACCOUNT INSPECTION"
+                title={paymentReadiness.state === "READY_FOR_WALLET_ATTEMPT"
+                  ? "Accounts appear ready for a wallet attempt"
+                  : paymentReadiness.state === "BLOCKED"
+                    ? "Payment cannot proceed yet"
+                    : "Account status is unknown"}
+                tone={paymentReadiness.state === "READY_FOR_WALLET_ATTEMPT"
+                  ? "verified" : "blocked"}>
+                <Text style={styles.body}>
+                  {paymentReadiness.state === "BLOCKED"
+                    ? paymentReadiness.reasons.join(" · ")
+                    : paymentReadiness.state === "UNKNOWN"
+                      ? paymentReadiness.reason
+                      : paymentReadiness.caveat}
+                </Text>
+                <Text style={styles.body}>
+                  {paymentReadiness.evidence.join("\\n") || "No verified account details."}
+                </Text>
+              </MuseumPlate>
+            ) : null}
+            <MuseumButton label="Try payment inside my Key" disabled={busy}
+              onPress={attemptStandingPayment} />
+          </View>
+        ) : null}
       </MuseumPlate>
       {preflightBlocked ? <MuseumPlate exhibit="OPERATOR / CONFIGURATION BLOCKED" title="Preflight stopped safely" tone="blocked">
         <Text style={styles.body}>{preflightBlocked}</Text>
