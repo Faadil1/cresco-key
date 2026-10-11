@@ -940,6 +940,9 @@ export function BoundaryWorkspace() {
         afterActionCap: verified.key.maxActionAmount.toString(),
         beforePeriodCap: original.maxPeriodAmount.toString(),
         afterPeriodCap: verified.key.maxPeriodAmount.toString(),
+        previousPeriodSpent: original.spentThisPeriod.toString(),
+        currentPeriodSpent: verified.key.spentThisPeriod.toString(),
+        counterResetIsCurrentDeployedProgramBehavior: true,
         relayState,
       });
       setStatus(`Standing Key widened onchain; nonce moved ${original.nonce} → ${verified.key.nonce}. Existing exact request is stale. Relay: ${relayState}. A new payment must read the new limits.`);
@@ -1221,6 +1224,7 @@ export function BoundaryWorkspace() {
                 <View style={styles.scenarios}>
                   <MuseumFact label="LIVE ACTION LIMIT / TOKEN UNITS" value={displayTokenUnits(guardianKeyInspection.key.maxActionAmount, config.tokenDecimals)} />
                   <MuseumFact label="LIVE PERIOD LIMIT / TOKEN UNITS" value={displayTokenUnits(guardianKeyInspection.key.maxPeriodAmount, config.tokenDecimals)} />
+                  <MuseumFact label="SPENT IN CURRENT PERIOD / TOKEN UNITS" value={displayTokenUnits(guardianKeyInspection.key.spentThisPeriod, config.tokenDecimals)} />
                   <MuseumFact label="MANDATE NONCE" value={guardianKeyInspection.key.nonce.toString()} />
                   <Text style={styles.scenarioLabel}>NEW PER-ACTION LIMIT / TOKEN UNITS</Text>
                   <TextInput
@@ -1244,13 +1248,14 @@ export function BoundaryWorkspace() {
                     placeholder="Must be at least the action limit"
                     placeholderTextColor={color.unknown}
                   />
+                  <Text style={styles.body}>IMPORTANT: the deployed CRESCO program resets the period counter and starts a new period whenever a guardian updates its asset rule. That can make more spending immediately available. Review both limits and current spending before signing.</Text>
                   <Pressable
                     accessibilityRole="checkbox"
                     accessibilityState={{ checked: widenAcknowledged }}
-                    accessibilityLabel="I understand this permanently widens the onchain standing Key"
+                    accessibilityLabel="I understand permanent limits change, the current spend counter resets, and this is not Allow Once"
                     onPress={() => setWidenAcknowledged((current) => !current)}
                     style={styles.acknowledgement}>
-                    <Text style={styles.body}>{widenAcknowledged ? "☑" : "☐"} I understand: this permanently changes the Key, not just this payment. My wallet must approve the onchain update.</Text>
+                    <Text style={styles.body}>{widenAcknowledged ? "☑" : "☐"} I understand: the new limits are permanent until another change, and the onchain spending-period counter restarts. My wallet must approve this distinct action.</Text>
                   </Pressable>
                   {guardianKeyInspection.key.nonce.toString() !== relayRequest.mandateNonce ? (
                     <Text style={styles.status}>This request uses an older nonce. The current Key can be inspected, but the old request cannot authorize a new change.</Text>
