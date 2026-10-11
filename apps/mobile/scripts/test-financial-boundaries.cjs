@@ -153,6 +153,19 @@ async function run() {
   assert.equal(unknown.state, "UNKNOWN", "unsigned simulated errors are not chain refusals");
   assert.equal(unknown.signature, null);
   assert.equal(knownRefusalEvidence(["ActionAmountExceeded"].join(" ")), "ActionAmountExceeded");
-  console.log("PASS: 21 financial-boundary, chain-decode and wallet-provenance assertions");
+  // Guard against a misleading UI button that changes status without
+  // emitting the promised PRECHECK_BLOCKED public receipt.
+  const workspace = fs.readFileSync(path.join(root, "../BoundaryWorkspace.tsx"), "utf8");
+  const setupGuard = workspace.match(/if \\(demoBeneficiaryBlocker\\) \\{([\\s\\S]*?)\\n    \\}/)?.[1];
+  assert.ok(setupGuard, "Beneficiary setup mismatch guard must remain present");
+  assert.match(setupGuard, /recordReceipt\\("PRECHECK_BLOCKED"/,
+    "Setup blocker button must produce a new PRECHECK_BLOCKED receipt");
+  assert.match(setupGuard, /transactionSubmitted:\\s*false/,
+    "The public receipt must never imply a real payment was submitted");
+  assert.match(setupGuard, /financialAuthorityDecision:\\s*false/,
+    "A configuration mismatch is not an onchain refusal or guardian decision");
+  assert.doesNotMatch(setupGuard, /sendTransactions\\(/,
+    "Setup mismatch must stop before MWA wallet transaction signing");
+  console.log("PASS: financial-boundary tests + setup blocker receipt regression");
 }
 run().catch(err => { console.error(err); process.exitCode = 1; });
