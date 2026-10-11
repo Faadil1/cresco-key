@@ -38,5 +38,8 @@ jobs:
       - name: Typecheck
         run: npm run typecheck
 
+      - name: Test real-Key financial boundary and Anchor account decoders
+        run: npm run test:financial-boundaries
+
       - name: Expo prebuild Android
         run: npx expo prebuild --platform android --no-install --non-interactive
