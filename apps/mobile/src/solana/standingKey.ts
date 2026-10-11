@@ -2,6 +2,7 @@ import {
   AccountRole,
   address,
   getAddressEncoder,
+  getAddressDecoder,
   type Address,
   type Instruction,
 } from "@solana/kit";
@@ -60,6 +61,7 @@ export type KeyInspection =
   | { state: "UNKNOWN"; reason: string };
 
 const addressEncoder = getAddressEncoder();
+const addressDecoder = getAddressDecoder();
 
 function equalBytes(left: Uint8Array, right: ArrayLike<number>): boolean {
   if (left.length !== right.length) return false;
@@ -127,7 +129,7 @@ export async function inspectStandingKey(
     chain: string | null | undefined;
     config: PaymentProgramConfig;
     beneficiaryWallet: string;
-    guardianWallet: string;
+    guardianWallet?: string;
     mint: string;
   },
 ): Promise<KeyInspection> {
@@ -136,7 +138,7 @@ export async function inspectStandingKey(
   }
   try {
     const beneficiary = address(input.beneficiaryWallet);
-    const guardian = address(input.guardianWallet);
+    const expectedGuardian = input.guardianWallet ? address(input.guardianWallet) : null;
     const mint = address(input.mint);
     // Recipient address does not affect the charter, mandate or asset rule.
     const accounts = await derivePaymentAccounts({
@@ -154,7 +156,10 @@ export async function inspectStandingKey(
       get("ASSET_RULE", accounts.assetRule, ASSET_RULE_DISCRIMINATOR, 135),
     ]);
 
-    if (!equalBytes(charter.subarray(8, 40), addressEncoder.encode(guardian))) {
+    // Always recover the REAL guardian from the beneficiary's onchain charter.
+    // The compiled Devnet demo wallet is never authoritative for a new family.
+    const guardian = addressDecoder.decode(Uint8Array.from(charter.subarray(8, 40)));
+    if (expectedGuardian && guardian !== expectedGuardian) {
       return { state: "BLOCKED", reason: "CONNECTED_WALLET_IS_NOT_CHARTER_GUARDIAN" };
     }
     if (!equalBytes(charter.subarray(40, 72), addressEncoder.encode(beneficiary))) {
@@ -261,4 +266,48 @@ export function displayTokenUnits(amount: bigint, decimals: number): string {
   const whole = amount / divisor;
   const part = (amount % divisor).toString().padStart(decimals, "0").replace(/0+$/, "");
   return part ? `${whole}.${part}` : whole.toString();
+}
+
+/**
+ * Predict whether a *real observed* standing rule permits an exact payment.
+ * A BOUNDARY result is a read-only policy comparison, NOT an onchain refusal,
+ * token transfer, allowance or wallet simulation. The Solana program alone
+ * enforces the rules at execution time.
+ */
+export type StandingIntentDecision =
+  | { state: "WITHIN_STANDING_KEY"; effectiveSpent: bigint }
+  | { state: "BOUNDARY"; code: "ACTION_LIMIT" | "PERIOD_LIMIT"; effectiveSpent: bigint }
+  | { state: "BLOCKED"; reason: string };
+
+export function assessStandingIntent(
+  key: StandingKeySnapshot,
+  amount: bigint,
+  nowUnixSeconds: bigint,
+): StandingIntentDecision {
+  if (amount <= 0n || amount > U64_MAX) {
+    return { state: "BLOCKED", reason: "AMOUNT_OUT_OF_RANGE" };
+  }
+  if (key.mandateStatus !== ACTIVE_MANDATE || key.mandateStage < 3 ||
+      !key.ruleEnabled || (key.actionMask & ACTION_TRANSFER) === 0) {
+    return { state: "BLOCKED", reason: "STANDING_KEY_INACTIVE_OR_STAGE_NOT_BOUNDED" };
+  }
+  if (key.mandateExpiryUnixSeconds !== 0n &&
+      nowUnixSeconds > key.mandateExpiryUnixSeconds) {
+    return { state: "BLOCKED", reason: "MANDATE_EXPIRED" };
+  }
+  if (key.periodSeconds <= 0n) {
+    return { state: "BLOCKED", reason: "INVALID_PERIOD_POLICY" };
+  }
+  // Mirrors reset_period_if_needed in programs/keys/src/lib.rs; the live
+  // program resets the spent counter when it processes a new-period payment.
+  const effectiveSpent =
+    nowUnixSeconds >= key.periodStartedAt + key.periodSeconds
+      ? 0n : key.spentThisPeriod;
+  if (amount > key.maxActionAmount) {
+    return { state: "BOUNDARY", code: "ACTION_LIMIT", effectiveSpent };
+  }
+  if (effectiveSpent + amount > key.maxPeriodAmount) {
+    return { state: "BOUNDARY", code: "PERIOD_LIMIT", effectiveSpent };
+  }
+  return { state: "WITHIN_STANDING_KEY", effectiveSpent };
 }
