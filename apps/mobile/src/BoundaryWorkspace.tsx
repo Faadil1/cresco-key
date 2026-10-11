@@ -1529,7 +1529,7 @@ export function BoundaryWorkspace() {
           <Text style={styles.status} accessibilityLiveRegion="polite">{status}</Text>
         </MuseumPlate>
         <LatestReceiptCard receiptJson={latestReceiptJson} busy={busy} />
-        <SkrCharterAtelier walletAddress={account?.address?.toString() ?? ""} />
+        <SkrCharterAtelier walletAddress={account?.address?.toString() ?? ""} liveKey={guardianKeyInspection?.state === "READY" ? guardianKeyInspection.key : null} />
         <MuseumButton label="Change role" variant="secondary" onPress={() => setMode(null)} />
       </ScrollView>
     );
@@ -1698,6 +1698,7 @@ export function BoundaryWorkspace() {
           <Text style={styles.body}>{status}</Text>
         </MuseumPlate>
       ) : null}
+      <SkrCharterAtelier walletAddress={account?.address?.toString() ?? ""} liveKey={youngKeyInspection?.state === "READY" ? youngKeyInspection.key : null} />
       <LatestReceiptCard receiptJson={latestReceiptJson} busy={busy} />
       <ProofStrip />
       <MuseumPlate exhibit="OPERATOR DETAIL / CURRENT STATUS">
