@@ -23,9 +23,11 @@ import { MuseumHero, MuseumPlate, MuseumButton, MuseumFact, ProofStrip, museumCo
 import { SkrCharterAtelier } from "./skr/SkrCharterAtelier";
 import {
   inspectStandingKey,
+  assessStandingIntent,
   buildWidenStandingKeyInstruction,
   displayTokenUnits,
   type KeyInspection,
+  type StandingKeySnapshot,
   type StandingKeyRpc,
 } from "./solana/standingKey";
 import {
@@ -446,63 +448,58 @@ export function BoundaryWorkspace() {
     }
   };
 
-  const createBoundaryFromVerifiedRefusal = async (
-    refusal: Extract<TransactionOutcome, { state: "REFUSE" }>,
-    liveMandateNonce: bigint,
-  ) => {
+  // Real observed policy boundary can be presented BEFORE MWA submits a
+  // transaction doomed to fail wallet simulation. A read-only comparison is
+  // NOT an onchain refusal, and must never be recorded as such.
+  const createBoundaryForObservedPolicy = async (input: {
+    key: StandingKeySnapshot;
+    amountBaseUnits: bigint;
+    evidence: string;
+    source: "READ_ONLY_LIVE_POLICY" | "CONFIRMED_CHAIN_REFUSAL";
+    signature?: string | null;
+  }) => {
     if (!intent || !account) return;
-
     if (relayConfigMissing.length > 0) {
       setStatus(
-        `REFUSE verified, but relay is not configured: ${relayConfigMissing.join(
-          ", ",
-        )}`,
+        `Guardian decision cannot be requested: relay unavailable (${relayConfigMissing.join(", ")}). Your Key has not changed.`,
       );
       return;
     }
-
-    const programConfig = paymentProgramConfigFromEnv();
-    const beneficiary = address(account.address.toString());
-    const mint = address(intent.mint);
-    const recipient = address(intent.recipient);
     const accounts = await derivePaymentAccounts({
-      config: programConfig,
-      beneficiary,
-      mint,
-      recipient,
+      config: paymentProgramConfigFromEnv(),
+      beneficiary: address(account.address.toString()),
+      mint: address(intent.mint),
+      recipient: address(intent.recipient),
     });
+    if (accounts.mandate.toString() !== input.key.mandate.toString() ||
+        input.key.beneficiary.toString() !== account.address.toString() ||
+        input.key.mint.toString() !== intent.mint) {
+      throw new Error("BOUNDARY_REQUEST_NOT_BOUND_TO_CURRENT_ONCHAIN_KEY");
+    }
 
     const requestId = randomRequestId();
-    const amountBaseUnits = decimalToBaseUnits(
-      intent.amountUi,
-      config.tokenDecimals,
-    );
-
     const created = await createBoundaryRequest({
       requestId,
       mandate: accounts.mandate,
-      mandateNonce: liveMandateNonce.toString(),
+      mandateNonce: input.key.nonce.toString(),
       mint: intent.mint,
       recipient: intent.recipient,
-      amountBaseUnits,
+      amountBaseUnits: input.amountBaseUnits.toString(),
       requesterWallet: account.address.toString(),
-      guardianWallet: config.guardianWallet,
+      // The actual guardian is recovered from the onchain charter.
+      guardianWallet: input.key.guardian.toString(),
       expiresAt: Math.floor(Date.now() / 1000) + 10 * 60,
       display: {
         label: intent.label,
-        reason: `Standing Key refused: ${refusal.evidence}${
-          refusal.signature ? ` · tx ${refusal.signature}` : ""
-        }`,
+        reason: `${input.source === "READ_ONLY_LIVE_POLICY"
+          ? "Live rule comparison (no payment attempted)"
+          : "Confirmed program refusal"}: ${input.evidence}${
+            input.signature ? ` · tx ${input.signature}` : ""
+          }`,
       },
     });
-
-    const capability = {
-      requestId,
-      relayToken: created.relayToken,
-    };
-
+    const capability = { requestId, relayToken: created.relayToken };
     await saveBoundaryCapability(capability);
-
     const link = createBoundaryDeepLink(requestId, created.relayToken);
     setYoungCapability(capability);
     setRelayRequest(created.request);
@@ -511,11 +508,17 @@ export function BoundaryWorkspace() {
     recordReceipt("BOUNDARY_REQUEST", {
       state: "PENDING",
       requestId,
-      refusal: outcomeReceipt(refusal),
+      policyEvidence: input.evidence,
+      evidenceClass: input.source,
+      signature: input.signature ?? null,
       relayStatus: created.request.status,
+      onchainPaymentSubmitted: input.source === "CONFIRMED_CHAIN_REFUSAL",
+      authorityChanged: false,
     });
     setStatus(
-      "REFUSE is verified. A private PENDING request now carries the exact action to the guardian; the standing Key has not moved.",
+      input.source === "READ_ONLY_LIVE_POLICY"
+        ? "Your live Key limits require a guardian. Private request created without a failed wallet transaction; no funds moved."
+        : "A confirmed program refusal was observed. A private guardian request is now pending; no funds moved.",
     );
   };
 
