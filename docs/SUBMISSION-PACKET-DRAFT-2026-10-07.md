@@ -38,6 +38,18 @@ The entire mobile-to-Guardian-to-onchain-payment sequence **remains unproven**. 
 - Latest standalone APK build workflow: https://github.com/Faadil1/cresco-key/actions/workflows/mobile-apk-evidence.yml
 - CI emulator/Mock MWA footage provenance: `docs/CLOCK-IN-2026-EMULATOR-VIDEO-PROVENANCE.md`
 
+## Solana Mobile prize/bounty positioning — optional SKR
+
+The official CLOCK IN listing describes **one extra $10,000 SKR integration prize** and **$125,000 USDC in main prizes**. The SKR bonus is optional; no other unrelated bounty is claimed.
+
+**What's in source for SKR on this PR:** optional Charter Atelier on both Android roles; read-only official SKR Mainnet mint balance check for the connected public wallet; family discussion prompts; an SKR-gated read-only review of an *actually inspected CRESCO Devnet standing Key*. The Key-review receipt identifies guardian/beneficiary, nonce and cap/period usage in base units and can be shared, but **cannot affect financial permissions**. Unverified SKR balances never unlock the review. The Young/Guardian financial core does not require SKR.
+
+**What is not proven:** no current APK artifact containing these latest changes has been physically installed and inspected, no real Mainnet SKR holder has been tested end-to-end, no bonus prize eligibility has been judged, no Mainnet transactions or SKR incentives were executed. Classify as **SOURCE / CI_PENDING**, NOT as a completed bounty.
+
+**Judge positioning:** SKR gives opted-in token holders a community policy-review space, linked to live family Key facts rather than artificial screenshots; this is useful optional product depth but does not substitute for the unproven mobile payment/Guardian core loop.
+
+**Time-critical submission:** Solana Mobile's September 8 blog states submissions closed October 8; Radiants' public calendar presently displays October 12 at 11:59 UTC (07:59 EDT on Oct 12). Both cannot be assumed authoritative at once. Check the signed-in portal immediately, submit the functional artifact(s) before its live deadline, and preserve the actual confirmation. Never treat project registration as submission.
+
 ## Evidence classification — avoid claims inflation
 
 | Feature | Claim boundary |
