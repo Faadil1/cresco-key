@@ -568,3 +568,12 @@ Claims: SKR bonus integration is **a candidate at code scope**, not a proven pri
 - exact_next_owner: engineering for fail-closed UI/CI; authorized human wallet operators for real new-charter signatures
 - exact_next_action: finish PR #59 CI, build/install corrected standalone APK, prepare authorized Devnet charter/mandate and verified identity, then perform a single consented live product transaction with saved RPC evidence.
 - evidence: `docs/G1-PHYSICAL-SAMSUNG-OBSERVATION-2026-10-07.md`; user-provided public receipt, timestamp `2026-10-08T03:00:13.443Z`, recorded UNKNOWN `CancellationException`.
+
+
+## Resumption — 2026-10-11 integrated family APK preparation (PR #62)
+
+Recent code additions: `tools/devnet/write-mobile-env-from-demo-state.cjs` now supports explicitly configured public HTTPS app identity/relay origins and strict failure without both; `.github/workflows/mobile-apk-evidence.yml` accepts a committed authorized family's public state for a manually invoked integrated candidate and verifies APK certificate/Digital Asset Links, live relay readiness, Devnet genesis and executable program in that mode. `.github/workflows/deploy-relay.yml` checks `/ready` Durable Object binding after deployment, not merely `/health`. Relay test includes local HTTP create/read/bearer/terminal state interactions. Tests and documentation updated.
+
+Do NOT claim actual domain verification, live relay, wallet enrollment, full guardian path, real physical Devnet payment, or product completeness. Existing GitHub CI green is evidence at SOURCE/BUILD_CONFIGURATION/LOCAL_TEST scope only; manual integrated-candidate verification and G1 have not been performed.
+
+**Next protected human/operator prerequisites:** controlled HTTPS identity domain with appropriate assetlinks for *this APK signing certificate*; Cloudflare deployment and URL; two separate consenting signers genuinely provisioned for the phone wallet, public Devnet state checked into the appropriate branch; borrowed Samsung Android and compatible wallet. Do not import a friend's seed phrase into a development machine or assume the original public demo Beneficiary is the new wallet. Then execute the strict integrated build, physical signing and RPC-confirmed before/after effects, and only then mark corresponding gates PROVEN. Deadline submission remains a separate protected human action; a fallback packet must report PARTIAL if G1 cannot be completed.

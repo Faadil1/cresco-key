@@ -78,3 +78,16 @@ Purpose: distinguish what is **LIVE / TESTED / LOCAL / MOCKED / PLANNED / NOT PR
 - A failed run remains evidence and must not be rewritten as success.
 - UNKNOWN remains UNKNOWN until observed evidence resolves it.
 - Proof sufficiency is never a reason to stop a materially incomplete product.
+
+
+## 2026-10-11 integration-candidate source / CI delta (PR #62)
+
+| Claim | Evidence class | Truth | Reference | Remaining requirements |
+| --- | --- | --- | --- | --- |
+| Operator may build APK with selected public Devnet family state and HTTPS app/relay origins | SOURCE / BUILD_CONFIGURATION | IMPLEMENTED_IN_SOURCE; CI subject to exact SHA | `.github/workflows/mobile-apk-evidence.yml`; `tools/devnet/write-mobile-env-from-demo-state.cjs` | Authorized new-family public state; manual strict build; installation |
+| Strict integrated APK checks real relay, Devnet genesis, executable program and matching APK Digital Asset Links | SOURCE_ONLY | NOT_RUN | Workflow `integrated_candidate` manual gate | Project-owned domain + stable signing cert/assetlinks; Cloudflare relay online; run and inspect receipt |
+| Cloudflare relay deployment gate requires actual Durable Object readiness | SOURCE / LOCAL_TEST | CODE_VERIFIED; DEPLOYMENT_UNKNOWN | `.github/workflows/deploy-relay.yml`; relay tests | Authorized protected deploy + public /ready and request roundtrip |
+| Relay create/read/capability/terminal state coordination tested through in-memory DO HTTP adapter | LOCAL_TEST | OBSERVED_IN_CI | `services/relay/test/model.test.mjs`; Boundary Relay CI | Live two-device end-to-end, auth/privacy review and actual financial consequence |
+| New family mobile G1 and full two-device payment/guardian loop | LIVE_INTEGRATION_TARGET | BLOCKED / NOT PROVEN | Existing physical Samsung UNKNOWN receipt and `docs/G1-PHYSICAL-SAMSUNG-OBSERVATION-2026-10-07.md` | True authorized account provisioning, new build, physical wallet execution, RPC receipts, negatives and recovery |
+
+Reminder: the existing release-mode standalone Devnet APK is an old-family configured test binary; **CI green does not imply a new user's wallet can transact**. Neither source documentation nor partial relay functionality promotes LIVE_CORE_G1, BUILD_CANDIDATE_READY, PRODUCT_COMPLETE or SUBMITTED.
