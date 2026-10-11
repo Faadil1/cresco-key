@@ -123,3 +123,14 @@ The validator checks for the required receipt coverage:
 It also fails if exported receipts contain key names that look like private key, seed phrase, mnemonic, keypair, recovery, or secret material.
 
 Passing validation means the receipt set is ready for human G1 evidence review. It does not by itself prove physical Android runtime, production wallet compatibility, or Devnet account-state changes.
+
+
+## Borrowed-phone test: signer provenance and hard stop
+
+The bootstrap script above requires **actual local secret-key files for both Guardian and Beneficiary** and signs `initializeCharter` with both roles. A public address copied from Solflare is **not a substitute for either signature**. Do not ask the phone owner to export a recovery phrase, do not use their personal wallet key material, and do not copy CI/legacy demo keypairs into the borrowed device.
+
+For a repeatable phone test, arrange two consenting participants with separate **Devnet-only test wallets**. If their wallets cannot securely sign the Charter initialization using an approved supported workflow, mark `AUTHORIZED_PROVISIONING=BLOCKED` and do not attempt to attach the phone's beneficiary address to the historical charter. The current script is a **local-keypair developer bootstrap**, not a Mobile Wallet Adapter guardian/beneficiary onboarding flow.
+
+The generated APK environment is bound to the public state of that specific authorized provisioned family. Regenerate the environment and APK only after that state exists; `READY_FOR_MOBILE_RUNTIME` remains **setup**, not wallet, transaction or full product evidence. The environment generator now rejects any state whose `network` is not exactly `devnet` and rejects the original legacy program ID. Custom RPC URLs still require independent cluster verification.
+
+For the required physical runtime and evidence/stop criteria, see [the Samsung G1 runbook](../../docs/G1-PHYSICAL-SAMSUNG-OBSERVATION-2026-10-07.md).
