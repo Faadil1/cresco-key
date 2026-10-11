@@ -151,7 +151,7 @@ The [Mobile APK Evidence GitHub Actions workflow](../../.github/workflows/mobile
 
 Only public origins and public state are bundled. **Never place any API token, wallet private key, recovery phrase, relay bearer capability, or secret into these inputs.** This build does not initiate any wallet signing or deploy a program.
 
-The environment generator validates syntax, rejects known placeholder/non-HTTPS origins, and refuses an integrated build when either origin is missing. It **cannot itself prove ownership or assetlinks association, confirm the relay is running, or establish the cluster behind a custom RPC URL**. Independently check those facts first.
+The environment generator validates syntax, rejects known placeholder/non-HTTPS origins, and refuses an integrated build when either origin is missing. The **integrated-candidate APK workflow** then checks the actual release APK signing certificate against the identity domain's `/.well-known/assetlinks.json`, verifies the live relay `/ready` Durable Object binding, compares the selected RPC's genesis hash with public Solana Devnet, and confirms the CRESCO program is executable. These are external infrastructure checks, **not a mobile transaction, authorized family account provisioning, production-grade signing policy, or proof that a wallet trusts the app**. A signing certificate that changes across CI builds must be re-associated; do not substitute a guessed certificate or bypass trust warnings.
 
 The standalone artifact includes a receipt identifying the built public beneficiary and state source, as well as whether both origins were configured; `integrationRuntimeVerified=false` intentionally remains until the subsequent real device/wallet/relay/onchain scenario succeeds.
 
