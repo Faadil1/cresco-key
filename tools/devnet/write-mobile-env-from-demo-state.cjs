@@ -31,6 +31,12 @@ function main() {
   if (state.schema !== "cresco-key/devnet-payment-demo/v1") {
     throw new Error(`UNSUPPORTED_DEMO_STATE_SCHEMA ${state.schema}`);
   }
+  if (state.network !== "devnet") {
+    throw new Error(`DEMO_STATE_NETWORK_NOT_DEVNET ${state.network}`);
+  }
+  if (state.programId === "ABjE6V5q9VbD3CAHDXxvztY5kXQmDXHRcEP1kZ4KSSfk") {
+    throw new Error("LEGACY_PROGRAM_ID_NOT_ALLOWED");
+  }
   if (state.status !== "READY_FOR_MOBILE_RUNTIME") {
     throw new Error(`DEMO_STATE_NOT_READY ${state.status}`);
   }
