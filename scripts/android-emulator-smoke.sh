@@ -46,13 +46,25 @@ fi
 
 echo "$PID" > "$EVIDENCE/cresco-pid.txt"
 adb shell dumpsys activity activities > "$EVIDENCE/activities.txt"
-adb shell uiautomator dump /sdcard/cresco-window.xml >/dev/null
-adb pull /sdcard/cresco-window.xml "$EVIDENCE/cresco-window.xml" >/dev/null
+# React Native JS can take longer than ten seconds on a cold runner.
+# Require an accessible real control: process-alive or a splash screen is NOT proof.
+WALLET_SURFACE_OBSERVED=0
+for attempt in $(seq 1 10); do
+  if adb shell uiautomator dump /sdcard/cresco-window.xml >/dev/null 2>&1 && \
+     adb pull /sdcard/cresco-window.xml "$EVIDENCE/cresco-window.xml" >/dev/null 2>&1 && \
+     grep -Eq 'Connect wallet|Explore live Devnet Key' "$EVIDENCE/cresco-window.xml"; then
+    WALLET_SURFACE_OBSERVED=1
+    echo "Observed CRESCO wallet/judge entry UI on attempt $attempt."
+    break
+  fi
+  sleep 3
+done
 adb exec-out screencap -p > "$EVIDENCE/cresco-launch.png"
 adb logcat -d > "$EVIDENCE/logcat.txt"
 
-if ! grep -q 'Connect wallet' "$EVIDENCE/cresco-window.xml"; then
-  echo "Expected CRESCO Key wallet-connect surface was not found." >&2
+if [ "$WALLET_SURFACE_OBSERVED" != "1" ]; then
+  echo "FAIL: CRESCO wallet or read-only judge entry not found after repeated checks." >&2
+  echo "Preserved emulator XML, screenshot, logcat and process evidence." >&2
   exit 1
 fi
 
