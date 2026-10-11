@@ -17,6 +17,7 @@ import {
   type StandingKeyRpc,
 } from "./solana/standingKey";
 import { paymentProgramConfigFromEnv } from "./solana/programClient";
+import { parseSolanaPayTransferRequest } from "./payment/solanaPay";
 
 // A REAL read-only inspection of the *published developer test family*.
 // No wallet, keys, tx signing, artificial balance, custody or financial claim.
@@ -38,9 +39,8 @@ export function JudgeReadOnlyTour({ onExit }: { onExit: () => void }) {
     setDecimals(null);
     setCheckedAt(null);
     try {
-      const demoUri = new URL(mint);
-      const rawMint = demoUri.searchParams.get("spl-token");
-      if (!rawMint) throw new Error("PUBLISHED_DEMO_MINT_MISSING");
+      if (!mint) throw new Error("PUBLISHED_DEMO_PAYMENT_INTENT_MISSING");
+      const rawMint = parseSolanaPayTransferRequest(mint).mint;
       if (!beneficiary || !guardian) throw new Error("PUBLIC_DEMO_FAMILY_NOT_CONFIGURED");
       const config = paymentProgramConfigFromEnv();
       const rpc: StandingKeyRpc = {
