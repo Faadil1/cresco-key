@@ -12,7 +12,7 @@ export type BoundaryRelayRequest = {
     label: string | null;
     reason: string | null;
   } | null;
-  status: "PENDING" | "REFUSED" | "ALLOWANCE_SUBMITTED" | "EXPIRED";
+  status: "PENDING" | "REFUSED" | "ALLOWANCE_SUBMITTED" | "KEY_CHANGE_REPORTED" | "EXPIRED";
   createdAt: number;
   updatedAt: number;
   events: Array<{
@@ -86,7 +86,7 @@ export async function postBoundaryRelayEvent(
   relayToken: string,
   event:
     | { type: "GUARDIAN_OPENED" | "REFUSED" | "EXPIRED" }
-    | { type: "ALLOWANCE_SUBMITTED"; txSignature: string },
+    | { type: "ALLOWANCE_SUBMITTED" | "KEY_CHANGE_REPORTED"; txSignature: string },
 ): Promise<BoundaryRelayRequest> {
   const response = await fetch(
     `${relayBaseUrl()}/v1/requests/${encodeURIComponent(requestId)}/events`,
