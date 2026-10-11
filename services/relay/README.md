@@ -38,7 +38,7 @@ This protects request metadata from casual enumeration. Production hardening may
 
 Relay coordination state is monotonic:
 
-`PENDING → REFUSED | ALLOWANCE_SUBMITTED | EXPIRED`
+`PENDING → REFUSED | ALLOWANCE_SUBMITTED | KEY_CHANGE_REPORTED | EXPIRED`
 
 Once a request leaves `PENDING`, later bearer-capability events cannot rewrite that terminal coordination state.
 
@@ -103,9 +103,10 @@ Allowed event types:
 - `GUARDIAN_OPENED`
 - `REFUSED`
 - `ALLOWANCE_SUBMITTED`
+- `KEY_CHANGE_REPORTED` — a device reports a guardian Key update (signature required); this is **not on-chain proof**
 - `EXPIRED`
 
-`ALLOWANCE_SUBMITTED` requires the guardian transaction signature.
+`ALLOWANCE_SUBMITTED` and `KEY_CHANGE_REPORTED` require a guardian transaction signature. The relay does not validate signatures against the chain; clients must independently read on-chain limits and nonce.
 
 It deliberately does **not** mean the payment is allowed. The child client must verify the relevant onchain allowance/program state before retrying.
 

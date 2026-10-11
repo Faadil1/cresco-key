@@ -93,10 +93,14 @@ export function classifyProgramSubmissionError(
 ): TransactionOutcome {
   const evidence = knownRefusalEvidence(error);
   if (evidence) {
+    // A string surfaced by a wallet/simulation error (without a submitted
+    // signature and queried chain transaction) is not verified onchain refusal.
+    // Treat it as UNKNOWN; the UI may still inspect the actual live Key policy
+    // and offer the guardian path without inventing a confirmed transaction.
     return {
-      state: "REFUSE",
+      state: "UNKNOWN",
       signature: null,
-      evidence,
+      error: `UNCONFIRMED_WALLET_SIMULATION_REFUSAL_MARKER:${evidence} · ${errorText(error)}`,
     };
   }
 

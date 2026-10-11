@@ -123,3 +123,36 @@ The validator checks for the required receipt coverage:
 It also fails if exported receipts contain key names that look like private key, seed phrase, mnemonic, keypair, recovery, or secret material.
 
 Passing validation means the receipt set is ready for human G1 evidence review. It does not by itself prove physical Android runtime, production wallet compatibility, or Devnet account-state changes.
+
+
+## Borrowed-phone test: signer provenance and hard stop
+
+The bootstrap script above requires **actual local secret-key files for both Guardian and Beneficiary** and signs `initializeCharter` with both roles. A public address copied from Solflare is **not a substitute for either signature**. Do not ask the phone owner to export a recovery phrase, do not use their personal wallet key material, and do not copy CI/legacy demo keypairs into the borrowed device.
+
+For a repeatable phone test, arrange two consenting participants with separate **Devnet-only test wallets**. If their wallets cannot securely sign the Charter initialization using an approved supported workflow, mark `AUTHORIZED_PROVISIONING=BLOCKED` and do not attempt to attach the phone's beneficiary address to the historical charter. The current script is a **local-keypair developer bootstrap**, not a Mobile Wallet Adapter guardian/beneficiary onboarding flow.
+
+The generated APK environment is bound to the public state of that specific authorized provisioned family. Regenerate the environment and APK only after that state exists; `READY_FOR_MOBILE_RUNTIME` remains **setup**, not wallet, transaction or full product evidence. The environment generator now rejects any state whose `network` is not exactly `devnet` and rejects the original legacy program ID. Custom RPC URLs still require independent cluster verification.
+
+For the required physical runtime and evidence/stop criteria, see [the Samsung G1 runbook](../../docs/G1-PHYSICAL-SAMSUNG-OBSERVATION-2026-10-07.md).
+
+
+## Build a new family-bound integrated APK candidate
+
+The default Mobile APK Evidence workflow compiles a **historical demo-family test build**. Its green status does not prove live relay, verified Android identity, or compatibility with a newly connected wallet.
+
+Once the user has legitimately provisioned the **actual Guardian and Beneficiary** on Devnet (using their authorized signatures, never their personal seed phrases), store only the resulting **public** state JSON under `evidence/devnet-distinct-program/` on the intended build branch. Confirm that the state contains the actual beneficiary and the expected program, mint, nonce, and Solana Pay intents.
+
+The [Mobile APK Evidence GitHub Actions workflow](../../.github/workflows/mobile-apk-evidence.yml) supports manual **Run workflow** inputs:
+
+- `integrated_candidate: true` (requires both public HTTPS origins, fail-closed)
+- `devnet_state_path`: the checked-in public receipt for **this** newly authorized family
+- `app_identity_uri`: the project's controlled HTTPS origin with independently confirmed Android Digital Asset Links
+- `boundary_relay_url`: the actually deployed and operator-verified Cloudflare relay HTTPS origin
+
+Only public origins and public state are bundled. **Never place any API token, wallet private key, recovery phrase, relay bearer capability, or secret into these inputs.** This build does not initiate any wallet signing or deploy a program.
+
+The environment generator validates syntax, rejects known placeholder/non-HTTPS origins, and refuses an integrated build when either origin is missing. The **integrated-candidate APK workflow** then checks the actual release APK signing certificate against the identity domain's `/.well-known/assetlinks.json`, verifies the live relay `/ready` Durable Object binding, compares the selected RPC's genesis hash with public Solana Devnet, and confirms the CRESCO program is executable. These are external infrastructure checks, **not a mobile transaction, authorized family account provisioning, production-grade signing policy, or proof that a wallet trusts the app**. A signing certificate that changes across CI builds must be re-associated; do not substitute a guessed certificate or bypass trust warnings.
+
+The standalone artifact includes a receipt identifying the built public beneficiary and state source, as well as whether both origins were configured; `integrationRuntimeVerified=false` intentionally remains until the subsequent real device/wallet/relay/onchain scenario succeeds.
+
+**Stop criteria:** if no authorized new family state, no truly verified identity, or no deployed relay, use the historical artifact only as `BUILD_CONFIGURATION/LOCAL_PARTIAL` evidence. Do not describe it as an integrated/ready-to-use new-family APK. For a phone test, compare the connected wallet's public address to the receipt beneficiary **before sending anything**.

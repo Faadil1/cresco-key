@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { Pressable, Share, StyleSheet, Text, View } from "react-native";
 
 import { MuseumButton, MuseumFact, MuseumPlate, museumColors as c } from "../design/MuseumLedgerUI";
+import type { StandingKeySnapshot } from "../solana/standingKey";
+import { buildLiveSkrKeyReview, type SkrKeyReview } from "./liveKeyCharterReview";
 
 // Official SKR mint on Solana mainnet, verified against solanamobile.com/skr.
 // This is a voluntary READ-ONLY cross-cluster check; the CRESCO payment program remains Devnet.
@@ -26,19 +28,52 @@ const TOPICS: Record<PracticeTopic, { title: string; prompt: string }> = {
   },
 };
 
-export function SkrCharterAtelier({ walletAddress }: { walletAddress: string }) {
+export function SkrCharterAtelier({
+  walletAddress,
+  liveKey,
+}: {
+  walletAddress: string;
+  liveKey?: StandingKeySnapshot | null;
+}) {
   const [state, setState] = useState<BalanceState>("IDLE");
   const [balance, setBalance] = useState<string | null>(null);
   const [topic, setTopic] = useState<PracticeTopic>("independence");
+  const [review, setReview] = useState<SkrKeyReview | null>(null);
   const [message, setMessage] = useState("Optional Seeker ecosystem access. Never spending authority.");
 
   useEffect(() => {
     setState("IDLE");
     setBalance(null);
+    setReview(null);
     setMessage("Optional Seeker ecosystem access. Never spending authority.");
   }, [walletAddress]);
 
+  const createLiveReview = () => {
+    if (state !== "HAS_SKR" || !liveKey || !walletAddress) return;
+    try {
+      const created = buildLiveSkrKeyReview(liveKey, walletAddress, new Date().toISOString());
+      setReview(created);
+      setMessage("Read-only live-Key review prepared. No financial authority or onchain state changed.");
+    } catch (error) {
+      setReview(null);
+      setMessage(error instanceof Error ? error.message : "LIVE_KEY_REVIEW_UNKNOWN");
+    }
+  };
+
+  const shareLiveReview = () => {
+    if (state !== "HAS_SKR" || !review) return;
+    void Share.share({
+      title: "CRESCO Key / SKR Charter review",
+      message: JSON.stringify(review, null, 2),
+    });
+  };
+
   const checkSkr = async () => {
+    if (!walletAddress) {
+      setMessage("Connect a wallet first. No SKR status can be inferred without its public address.");
+      return;
+    }
+    setReview(null);
     setState("LOADING");
     setMessage("Checking public mainnet token accounts. Nothing is signed or transferred.");
     const controller = new AbortController();
@@ -90,7 +125,7 @@ export function SkrCharterAtelier({ walletAddress }: { walletAddress: string }) 
       </Text>
       <MuseumFact label="SKR / NETWORK" value="Solana mainnet · read-only public account check" />
       {state === "IDLE" || state === "UNKNOWN" || state === "NO_SKR" ? (
-        <MuseumButton label={state === "IDLE" ? "Check SKR participation" : "Check again"} onPress={checkSkr} variant="secondary" />
+        <MuseumButton label={state === "IDLE" ? "Check SKR participation" : "Check again"} onPress={checkSkr} variant="secondary" disabled={!walletAddress} />
       ) : null}
       {state === "LOADING" ? <Text style={s.paragraph}>Checking public SKR token accounts…</Text> : null}
       <Text style={s.message} accessibilityLiveRegion="polite">{message}</Text>
@@ -118,6 +153,32 @@ export function SkrCharterAtelier({ walletAddress }: { walletAddress: string }) 
             variant="secondary"
           />
           <Text style={s.message}>Read-only SKR access; no claims, transfers, staking or reward payments.</Text>
+          <Text style={s.kicker}>SKR ATELIER / LIVE FAMILY KEY REVIEW</Text>
+          {liveKey ? (
+            <View style={s.prompts}>
+              <Text style={s.paragraph}>Inspect a real Devnet family Key to obtain a shareable, review-only record of current standing caps, period usage, remaining nominal cap, nonce and guardian. These numbers are base units and are not an available token balance. This is not an allowance.</Text>
+              <MuseumButton
+                label="Prepare read-only live Key boundary review"
+                variant="secondary"
+                onPress={createLiveReview}
+              />
+              {review ? (
+                <View style={s.prompts}>
+                  <MuseumFact label="KEY REVIEW STATUS" value={review.status} />
+                  <MuseumFact label="REVIEWER ROLE" value={review.reviewerRole} />
+                  <MuseumFact label="MANDATE NONCE" value={review.nonce} />
+                  <MuseumFact label="MAX / ACTION (BASE UNITS)" value={review.maxActionBaseUnits} />
+                  <MuseumFact label="MAX / PERIOD (BASE UNITS)" value={review.maxPeriodBaseUnits} />
+                  <MuseumFact label="USED / PERIOD (BASE UNITS)" value={review.spentThisPeriodBaseUnits} />
+                  <MuseumFact label="REMAINING NOMINAL PERIOD CAP" value={review.remainingPeriodBaseUnits} />
+                  <Text style={s.message}>A policy review is not a payment-readiness decision, Guardian signature, fund balance or authority change. Reinspect the chain before acting.</Text>
+                  <MuseumButton label="Share public Key boundary review" variant="secondary" onPress={shareLiveReview} />
+                </View>
+              ) : null}
+            </View>
+          ) : (
+            <Text style={s.message}>To unlock the live-Key review, inspect a valid onchain Key in the Young or Guardian flow first. We never invent Key limits for SKR holders.</Text>
+          )}
         </View>
       ) : null}
       {state === "NO_SKR" ? <Text style={s.message}>The core Key, guardian decisions and receipts remain free and fully independent of SKR ownership.</Text> : null}

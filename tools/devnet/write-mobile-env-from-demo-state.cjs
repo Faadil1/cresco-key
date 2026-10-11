@@ -14,6 +14,20 @@ function requireString(value, name) {
   return value;
 }
 
+// Only public, non-secret deployment addresses may enter an Expo bundle.
+// Format validation does NOT prove domain ownership, assetlinks or relay deployment.
+function optionalHttpsOrigin(raw, name) {
+  if (!raw || !raw.trim()) return null;
+  let value;
+  try { value = new URL(raw.trim()); } catch { throw new Error(`INVALID_${name}_URL`); }
+  if (value.protocol !== "https:" || value.username || value.password ||
+      value.search || value.hash || value.pathname !== "/" ||
+      /replace|example|localhost|127\\.0\\.0\\.1/i.test(value.hostname)) {
+    throw new Error(`UNVERIFIED_${name}_ORIGIN`);
+  }
+  return value.origin;
+}
+
 function shellLine(key, value) {
   return `${key}=${String(value).replace(/\n/g, "")}`;
 }
@@ -31,10 +45,24 @@ function main() {
   if (state.schema !== "cresco-key/devnet-payment-demo/v1") {
     throw new Error(`UNSUPPORTED_DEMO_STATE_SCHEMA ${state.schema}`);
   }
+  if (state.network !== "devnet") {
+    throw new Error(`DEMO_STATE_NETWORK_NOT_DEVNET ${state.network}`);
+  }
+  if (state.programId === "ABjE6V5q9VbD3CAHDXxvztY5kXQmDXHRcEP1kZ4KSSfk") {
+    throw new Error("LEGACY_PROGRAM_ID_NOT_ALLOWED");
+  }
   if (state.status !== "READY_FOR_MOBILE_RUNTIME") {
     throw new Error(`DEMO_STATE_NOT_READY ${state.status}`);
   }
 
+  const identityUri = optionalHttpsOrigin(
+    process.env.CRESCO_MOBILE_IDENTITY_URI, "APP_IDENTITY");
+  const relayUrl = optionalHttpsOrigin(
+    process.env.CRESCO_MOBILE_RELAY_URL, "BOUNDARY_RELAY");
+  if (process.env.CRESCO_REQUIRE_INTEGRATION_CONFIG === "1" &&
+      (!identityUri || !relayUrl)) {
+    throw new Error("INTEGRATED_MOBILE_BUILD_REQUIRES_IDENTITY_AND_RELAY_ORIGINS");
+  }
   const env = {
     EXPO_PUBLIC_SOLANA_RPC_URL: requireString(state.rpcUrl, "RPC_URL"),
     EXPO_PUBLIC_CRESCO_KEY_PROGRAM_ID: requireString(
@@ -74,6 +102,9 @@ function main() {
       "SOLANA_PAY_CHANGED_RECIPIENT_12",
     ),
   };
+
+  if (identityUri) env.EXPO_PUBLIC_APP_IDENTITY_URI = identityUri;
+  if (relayUrl) env.EXPO_PUBLIC_BOUNDARY_RELAY_URL = relayUrl;
 
   const body =
     [

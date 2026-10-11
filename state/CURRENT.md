@@ -598,3 +598,12 @@ Claims: SKR bonus integration is **a candidate at code scope**, not a proven pri
 - exact_next_owner: engineering for fail-closed UI/CI; authorized human wallet operators for real new-charter signatures
 - exact_next_action: finish PR #59 CI, build/install corrected standalone APK, prepare authorized Devnet charter/mandate and verified identity, then perform a single consented live product transaction with saved RPC evidence.
 - evidence: `docs/G1-PHYSICAL-SAMSUNG-OBSERVATION-2026-10-07.md`; user-provided public receipt, timestamp `2026-10-08T03:00:13.443Z`, recorded UNKNOWN `CancellationException`.
+
+
+## P0 integration candidate hardening — 2026-10-11 (PR #62)
+
+Source-level continuation only: the default Mobile APK Evidence build uses the historical Devnet family's public state. A new **manual** `integrated_candidate` build may select a committed, legitimately signer-provisioned Devnet family state and requires public HTTPS app/relay origins. Its gate independently checks the **built APK certificate** against Android Digital Asset Links, relay `/ready` Durable Object readiness, selected RPC Devnet genesis, and program executable account. No secrets are included in Expo variables. The deployed relay workflow now fails if /ready is not healthy; local Durable Object HTTP lifecycle/capability tests were added.
+
+Evidence classification: SOURCE + CI for tooling, Mobile, and Relay; dedicated strict integrated-candidate run **NOT EXECUTED**, external relay **NOT DEPLOYED/VERIFIED HERE**, project-controlled app identity with stable signing cert **UNKNOWN**, physically provisioned matching Guardian/Beneficiary **BLOCKED**, physical G1 payment/guardian/mutation/replay **NOT PROVEN**, Live Core Loop **NOT PROVEN**, SUBMITTED **NOT CLAIMED**. Historical green standalone APK remains a historical-family test artifact, not proof that a new connected Solflare wallet owns its charter.
+
+Keep PR #62 draft until review of latest workflow/artifact; PR #63 optional and based on #62. Exact next action: authorized fresh-family provisioning with separate consenting signers; verify owned domain assetlinks and actual Cloudflare relay deployment; run strict family-bound APK build; install on Samsung with known matching public Beneficiary; capture verified Devnet payment and guardian negative/recovery consequences without unsafe wallet-key transfers. Do not downgrade to replay/evidence-only substitute for live action.

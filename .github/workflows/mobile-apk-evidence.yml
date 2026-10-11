@@ -12,6 +12,25 @@ on:
       - "apps/mobile/**"
       - ".github/workflows/mobile-apk-evidence.yml"
   workflow_dispatch:
+    inputs:
+      integrated_candidate:
+        description: "Require configured identity and relay HTTPS origins; does not prove runtime"
+        type: boolean
+        required: false
+        default: false
+      devnet_state_path:
+        description: "Committed public state of the legitimately provisioned Devnet family"
+        type: string
+        required: false
+        default: "evidence/devnet-distinct-program/cresco-key-demo-state-37182728261.json"
+      app_identity_uri:
+        description: "Project-controlled HTTPS identity origin, independently verify assetlinks"
+        type: string
+        required: false
+      boundary_relay_url:
+        description: "Deployed HTTPS Cloudflare relay origin"
+        type: string
+        required: false
 
 jobs:
   build-debug-apk:
@@ -39,10 +58,19 @@ jobs:
         run: npm install
 
       - name: Generate public CRESCO Devnet configuration
+        env:
+          CRESCO_REQUIRE_INTEGRATION_CONFIG: ${{ inputs.integrated_candidate && '1' || '0' }}
+          CRESCO_MOBILE_IDENTITY_URI: ${{ inputs.app_identity_uri }}
+          CRESCO_MOBILE_RELAY_URL: ${{ inputs.boundary_relay_url || 'https://cresco-key-boundary-relay.faadil-casecraft.workers.dev' }}
+          CRESCO_STATE_PATH: ${{ inputs.devnet_state_path }}
         run: |
-          node ../../tools/devnet/write-mobile-env-from-demo-state.cjs \
-            ../../evidence/devnet-distinct-program/cresco-key-demo-state-37182728261.json \
-            .env
+          STATE_PATH="${CRESCO_STATE_PATH:-evidence/devnet-distinct-program/cresco-key-demo-state-37182728261.json}"
+          if [[ "$STATE_PATH" = /* || "$STATE_PATH" = *".."* || "$STATE_PATH" != evidence/devnet-distinct-program/*.json ]]; then
+            echo "State path must be a committed public Devnet receipt under evidence/devnet-distinct-program" >&2
+            exit 1
+          fi
+          test -f "../../$STATE_PATH"
+          node ../../tools/devnet/write-mobile-env-from-demo-state.cjs "../../$STATE_PATH" .env
 
       - name: Typecheck
         run: npm run typecheck
@@ -58,9 +86,79 @@ jobs:
         run: NODE_ENV=production ./gradlew assembleRelease
         working-directory: apps/mobile/android
 
+      - name: Check LIVE infrastructure and Android identity for integrated candidates
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.integrated_candidate == true }}
+        env:
+          CRESCO_STATE_PATH: ${{ inputs.devnet_state_path }}
+        run: |
+          SDK_ROOT="${ANDROID_HOME:-${ANDROID_SDK_ROOT:-}}"
+          test -n "$SDK_ROOT"
+          APK_SIGNER="$(find "$SDK_ROOT/build-tools" -maxdepth 2 -type f -name apksigner | sort -V | tail -n 1)"
+          test -x "$APK_SIGNER"
+          export APK_SIGNER
+          node - <<'NODE'
+          const fs = require("node:fs");
+          const { execFileSync } = require("node:child_process");
+          const statePath = process.env.CRESCO_STATE_PATH ||
+            "evidence/devnet-distinct-program/cresco-key-demo-state-37182728261.json";
+          const state = JSON.parse(fs.readFileSync("../../" + statePath, "utf8"));
+          const env = Object.fromEntries(fs.readFileSync(".env", "utf8")
+            .split(/\r?\n/).filter(x => x && !x.startsWith("#"))
+            .map(line => [line.slice(0, line.indexOf("=")), line.slice(line.indexOf("=") + 1)]));
+          const identity = env.EXPO_PUBLIC_APP_IDENTITY_URI;
+          const relay = env.EXPO_PUBLIC_BOUNDARY_RELAY_URL;
+          if (!identity || !relay) throw Error("MISSING_INTEGRATION_ORIGINS");
+          const apk = "android/app/build/outputs/apk/release/app-release.apk";
+          const signer = execFileSync(process.env.APK_SIGNER, ["verify", "--print-certs", apk], { encoding: "utf8" });
+          const found = /Signer #1 certificate SHA-256 digest:\s*([0-9a-f:]{64,95})/i.exec(signer);
+          if (!found) throw Error("APK_SIGNING_CERT_UNVERIFIED");
+          const cert = found[1].replace(/:/g, "").toUpperCase();
+          const fingerprint = cert.match(/.{2}/g).join(":");
+          async function getJson(url) {
+            const response = await fetch(url, { redirect: "error", signal: AbortSignal.timeout(15000) });
+            if (!response.ok) throw Error("EXTERNAL_CHECK_HTTP_" + response.status + ":" + url);
+            return response.json();
+          }
+          async function rpc(url, method, params = []) {
+            const response = await fetch(url, { method: "POST",
+              headers: { "content-type": "application/json" },
+              body: JSON.stringify({ jsonrpc: "2.0", id: 1, method, params }),
+              signal: AbortSignal.timeout(15000) });
+            if (!response.ok) throw Error("RPC_HTTP_" + response.status);
+            const body = await response.json();
+            if (body.error || body.result === undefined) throw Error("RPC_CHECK_FAILED_" + method);
+            return body.result;
+          }
+          (async () => {
+            const [links, ready, expectedGenesis, actualGenesis, programInfo] = await Promise.all([
+              getJson(identity + "/.well-known/assetlinks.json"),
+              getJson(relay + "/ready"),
+              rpc("https://api.devnet.solana.com", "getGenesisHash"),
+              rpc(state.rpcUrl, "getGenesisHash"),
+              rpc(state.rpcUrl, "getAccountInfo", [state.programId, { encoding: "base64" }]),
+            ]);
+            const goodLink = Array.isArray(links) && links.some(item =>
+              item?.target?.namespace === "android_app" &&
+              item.target.package_name === "com.faadil.crescokey" &&
+              item.target.sha256_cert_fingerprints?.some(f =>
+                f.replace(/:/g, "").toUpperCase() === cert) &&
+              item.relation?.includes("delegate_permission/common.handle_all_urls"));
+            if (!goodLink) throw Error("DIGITAL_ASSET_LINKS_NOT_BOUND_TO_THIS_APK_SIGNING_CERT");
+            if (ready?.ok !== true || ready?.authority !== "coordination-only" ||
+                ready?.checks?.boundaryRequestsDurableObject !== "configured") {
+              throw Error("RELAY_NOT_READY");
+            }
+            if (actualGenesis !== expectedGenesis) throw Error("RPC_NOT_SOLANA_DEVNET");
+            if (!programInfo?.value?.executable) throw Error("CRESCO_PROGRAM_NOT_EXECUTABLE");
+            console.log("INTEGRATED_CANDIDATE_INFRASTRUCTURE_CHECKS_PASS");
+            console.log("Actual wallet signatures, account provisioning and G1 are NOT proven by these checks.");
+          })().catch(error => { console.error(error); process.exitCode = 1; });
+          NODE
+
       - name: Write standalone APK evidence receipt
         env:
           COMMIT_SHA: ${{ github.sha }}
+          CRESCO_STATE_PATH: ${{ inputs.devnet_state_path }}
         run: |
           mkdir -p ../../evidence/apk
           APK="android/app/build/outputs/apk/release/app-release.apk"
@@ -69,10 +167,12 @@ jobs:
           export SIZE_BYTES="$(stat -c%s "$APK")"
           node - <<'NODE' > ../../evidence/apk/standalone-devnet-apk-receipt.json
           const fs = require("node:fs");
-          const state = JSON.parse(fs.readFileSync(
-            "../../evidence/devnet-distinct-program/cresco-key-demo-state-37182728261.json",
-            "utf8",
-          ));
+          const statePath = process.env.CRESCO_STATE_PATH ||
+            "evidence/devnet-distinct-program/cresco-key-demo-state-37182728261.json";
+          const state = JSON.parse(fs.readFileSync("../../" + statePath, "utf8"));
+          const mobileEnv = fs.readFileSync(".env", "utf8");
+          const identityOriginConfigured = mobileEnv.includes("EXPO_PUBLIC_APP_IDENTITY_URI=https://");
+          const relayOriginConfigured = mobileEnv.includes("EXPO_PUBLIC_BOUNDARY_RELAY_URL=https://");
           if (state.status !== "READY_FOR_MOBILE_RUNTIME" || state.network !== "devnet")
             throw new Error("UNEXPECTED_DEVNET_DEMO_STATE");
           console.log(JSON.stringify({
@@ -83,7 +183,11 @@ jobs:
             requiresMetro: false,
             artifactName: "cresco-key-standalone-devnet-apk",
             programId: state.programId,
+            beneficiary: state.beneficiary,
             network: state.network,
+            publicStatePath: statePath,
+            integrationOriginsConfigured: { identity: identityOriginConfigured, relay: relayOriginConfigured },
+            integrationRuntimeVerified: false,
             configurationSourceRun: state.source?.githubActionsRun ?? null,
             apkSha256: process.env.SHA256,
             sizeBytes: Number(process.env.SIZE_BYTES),

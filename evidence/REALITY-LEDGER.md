@@ -78,3 +78,31 @@ Purpose: distinguish what is **LIVE / TESTED / LOCAL / MOCKED / PLANNED / NOT PR
 - A failed run remains evidence and must not be rewritten as success.
 - UNKNOWN remains UNKNOWN until observed evidence resolves it.
 - Proof sufficiency is never a reason to stop a materially incomplete product.
+
+
+## 2026-10-11 integration-candidate source / CI delta (PR #62)
+
+| Claim | Evidence class | Truth | Reference | Remaining requirements |
+| --- | --- | --- | --- | --- |
+| Operator may build APK with selected public Devnet family state and HTTPS app/relay origins | SOURCE / BUILD_CONFIGURATION | IMPLEMENTED_IN_SOURCE; CI subject to exact SHA | `.github/workflows/mobile-apk-evidence.yml`; `tools/devnet/write-mobile-env-from-demo-state.cjs` | Authorized new-family public state; manual strict build; installation |
+| Strict integrated APK checks real relay, Devnet genesis, executable program and matching APK Digital Asset Links | SOURCE_ONLY | NOT_RUN | Workflow `integrated_candidate` manual gate | Project-owned domain + stable signing cert/assetlinks; Cloudflare relay online; run and inspect receipt |
+| Cloudflare relay deployment gate requires actual Durable Object readiness | SOURCE / LOCAL_TEST | CODE_VERIFIED; DEPLOYMENT_UNKNOWN | `.github/workflows/deploy-relay.yml`; relay tests | Authorized protected deploy + public /ready and request roundtrip |
+| Relay create/read/capability/terminal state coordination tested through in-memory DO HTTP adapter | LOCAL_TEST | OBSERVED_IN_CI | `services/relay/test/model.test.mjs`; Boundary Relay CI | Live two-device end-to-end, auth/privacy review and actual financial consequence |
+| New family mobile G1 and full two-device payment/guardian loop | LIVE_INTEGRATION_TARGET | BLOCKED / NOT PROVEN | Existing physical Samsung UNKNOWN receipt and `docs/G1-PHYSICAL-SAMSUNG-OBSERVATION-2026-10-07.md` | True authorized account provisioning, new build, physical wallet execution, RPC receipts, negatives and recovery |
+
+Reminder: the existing release-mode standalone Devnet APK is an old-family configured test binary; **CI green does not imply a new user's wallet can transact**. Neither source documentation nor partial relay functionality promotes LIVE_CORE_G1, BUILD_CANDIDATE_READY, PRODUCT_COMPLETE or SUBMITTED.
+
+
+| 2026-10-11 Samsung + Solflare WALLET_PROOF message signing | PHYSICAL_CLIENT / MWA_MESSAGE_SIGNING_REPORTED | OBSERVED at UI and public receipt level, NOT CRYPTOGRAPHICALLY INDEPENDENTLY VERIFIED | Operator-provided public receipt `cresco-key.mobile-g1-runtime-receipt.v1` at `2026-10-11T20:07:28.896Z` and ~65s operator video (chat-supplied, not yet stable repo artifact); wallet `BW5dWcUfrmKNGuwuccWYAKArPseBM23qwV8PiZ96ySkT`, chain `solana:devnet`, `SIGNED`, 64 signature bytes | No actual signature bytes for independent verification; mandate nonce = BUILD_CONFIG_NOT_LIVE_AT_RECEIPT_TIME; beneficiary mismatch vs original demo charter; `relay=null`; no real Devnet payment/guardian G1 or on-chain account consequence. See `docs/G1-PHYSICAL-SAMSUNG-OBSERVATION-2026-10-07.md` |
+
+## 2026-10-11 — Cloudflare Boundary Relay public deployment
+
+**LIVE_RELAY_INFRASTRUCTURE_VERIFIED** (only the coordination service; NOT a G1 financial claim).
+
+- Successful human-triggered Deploy Boundary Relay run: 38174012603; `main@d4ed1d80af23cd58834f7efee49c96889e6a1c2c`.
+- Deployed URL: https://cresco-key-boundary-relay.faadil-casecraft.workers.dev
+- After publication, GitHub Actions verified live public GET /health and GET /ready: HTTP JSON responses identified the coordination-only service and a configured Durable Object binding.
+- Public deployment receipt artifact: https://github.com/Faadil1/cresco-key/actions/runs/38174012603/artifacts/11714828715
+- Failed older run 38173719658 uploaded Worker but received HTML from public smoke; was not accepted.
+- Evidence classification: LIVE_RELAY_INFRASTRUCTURE_VERIFIED. Relay cannot grant onchain financial authority or move funds. Full two-device flow, mobile relay integration, Guardian signature, exact allowance, payment, replay, and LIVE_CORE_G1 remain unverified.
+- A newly compiled APK must explicitly configure the deployed relay HTTPS origin; old physical Samsung APK did not use this newly verified route.
