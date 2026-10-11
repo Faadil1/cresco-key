@@ -4,6 +4,7 @@ export const REQUEST_STATUSES = Object.freeze([
   "PENDING",
   "REFUSED",
   "ALLOWANCE_SUBMITTED",
+  "KEY_CHANGE_REPORTED",
   "EXPIRED",
 ]);
 
@@ -11,6 +12,7 @@ export const RELAY_EVENT_TYPES = Object.freeze([
   "GUARDIAN_OPENED",
   "REFUSED",
   "ALLOWANCE_SUBMITTED",
+  "KEY_CHANGE_REPORTED",
   "EXPIRED",
 ]);
 
@@ -99,7 +101,7 @@ export function validateRelayEvent(input) {
     txSignature: null,
   };
 
-  if (input.type === "ALLOWANCE_SUBMITTED") {
+  if (input.type === "ALLOWANCE_SUBMITTED" || input.type === "KEY_CHANGE_REPORTED") {
     event.txSignature = requireString(input.txSignature, "txSignature", {
       max: 128,
     });
@@ -124,6 +126,9 @@ export function statusAfterEvent(currentStatus, eventType) {
       return "REFUSED";
     case "ALLOWANCE_SUBMITTED":
       return "ALLOWANCE_SUBMITTED";
+    case "KEY_CHANGE_REPORTED":
+      // Coordination marker only; never grants or verifies on-chain authority.
+      return "KEY_CHANGE_REPORTED";
     case "EXPIRED":
       return "EXPIRED";
     default:
