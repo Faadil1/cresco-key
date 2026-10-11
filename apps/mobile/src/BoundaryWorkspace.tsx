@@ -1031,7 +1031,16 @@ export function BoundaryWorkspace() {
   };
 
   const grantExactAllowanceOnce = async () => {
-    if (!guardianCapability || !relayRequest || !account) return;
+    if (!guardianCapability || !relayRequest || !account || busy) return;
+    if (relayRequest.guardianWallet !== account.address.toString()) {
+      setStatus("Connected wallet is not the guardian named in this request. No wallet transaction.");
+      return;
+    }
+    if (relayRequest.expiresAt !== null &&
+        Math.floor(Date.now() / 1000) >= relayRequest.expiresAt) {
+      setStatus("This exact request is expired. It must be recreated; no approval was submitted.");
+      return;
+    }
 
     if (capitalConfigMissing.length > 0) {
       setStatus(
@@ -1051,6 +1060,11 @@ export function BoundaryWorkspace() {
     );
 
     try {
+      const onchainKey = await readGuardianKey(true);
+      if (onchainKey.state !== "READY") {
+        setStatus(`Cannot approve this request: Key ${onchainKey.state} — ${onchainKey.reason}`);
+        return;
+      }
       const programConfig = paymentProgramConfigFromEnv();
       const guardian = address(account.address.toString());
       const beneficiary = address(relayRequest.requesterWallet);
@@ -1120,7 +1134,11 @@ export function BoundaryWorkspace() {
   };
 
   const executeExactAllowance = async (recipientOverride?: string) => {
-    if (!relayRequest || !account) return;
+    if (!relayRequest || !account || busy) return;
+    if (relayRequest.requesterWallet !== account.address.toString()) {
+      setStatus("This exact allowance belongs to a different beneficiary. No transaction attempted.");
+      return;
+    }
 
     if (relayRequest.status !== "ALLOWANCE_SUBMITTED") {
       setStatus(
@@ -1144,6 +1162,23 @@ export function BoundaryWorkspace() {
     );
 
     try {
+      // Relay says only that a guardian action was reported; verify the
+      // beneficiary's actual Key and nonce before asking this wallet to pay.
+      const liveKey = await inspectStandingKey(makeStandingKeyRpc(), {
+        chain,
+        config: paymentProgramConfigFromEnv(),
+        beneficiaryWallet: account.address.toString(),
+        mint: relayRequest.mint,
+      });
+      if (liveKey.state !== "READY") {
+        setStatus(`Cannot use allowance: live Key ${liveKey.state} — ${liveKey.reason}`);
+        return;
+      }
+      if (liveKey.key.mandate.toString() !== relayRequest.mandate ||
+          liveKey.key.nonce.toString() !== relayRequest.mandateNonce) {
+        setStatus("Existing approval is stale for this onchain Key. Create a new exact request.");
+        return;
+      }
       const programConfig = paymentProgramConfigFromEnv();
       const instruction = await buildExecutePaymentOnceInstruction({
         config: programConfig,
