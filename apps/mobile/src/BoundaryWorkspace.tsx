@@ -744,15 +744,12 @@ export function BoundaryWorkspace() {
     if (!account || !intent) {
       return { state: "BLOCKED", reason: "WALLET_OR_PAYMENT_INTENT_MISSING" };
     }
-    if (!config.guardianWallet) {
-      return { state: "BLOCKED", reason: "EXPECTED_GUARDIAN_NOT_CONFIGURED" };
-    }
     try {
       return await inspectStandingKey(makeStandingKeyRpc(), {
         chain,
         config: paymentProgramConfigFromEnv(),
         beneficiaryWallet: account.address.toString(),
-        guardianWallet: config.guardianWallet,
+        // Guardian identity is resolved from the real Anchor charter.
         mint: intent.mint,
       });
     } catch (error) {
