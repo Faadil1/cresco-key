@@ -67,9 +67,13 @@ The Cloudflare boundary relay, where deployed, is for coordination only. Financi
 
 ## Optional SKR bounty — Charter Atelier
 
-`apps/mobile/src/skr/SkrCharterAtelier.tsx` includes a voluntary read-only query of the official SKR mint on **Solana Mainnet**, separate from CRESCO's **Devnet payment** path. If a connected public wallet holds SKR, it can access family-discussion prompts on independence, exceptions, and reflection. It **does not** sign, stake, transfer, distribute rewards, prove identity/parental status, or expand financial authority.
+The official CLOCK IN bonus is **$10,000 paid in SKR for a creative and meaningful SKR integration**. This is **separate from the USDC main prize pool**, not a guarantee of prize qualification.
 
-This is an **optional source-level bounty candidate**, not a claim of production readiness, a verified SKR-holder test, or bonus-prize qualification. Core spending permissions do not require SKR.
+`apps/mobile/src/skr/SkrCharterAtelier.tsx` is now available in **both Young and Guardian roles**. It makes a voluntary, read-only Solana Mainnet query for the **official SKR mint** `SKRbvo6Gf7GondiT3BbTfuRDPqLWei4j2Qy2NPGZhW3` in the connected public wallet. This is unrelated to the app's Devnet payment token. Holding 10 Devnet SOL is not holding SKR.
+
+**Actual product capability on this PR**: A wallet with observed Mainnet SKR token-account balance above zero may enter the Charter Atelier. It can share guided family policy discussion prompts. If the same connected wallet is a verified party to a **live Devnet Charter inspected by CRESCO** and a validated standing-Key snapshot is present, the Atelier can prepare a **read-only boundary review** showing the actual guardian/beneficiary identities, asset, nonce, per-action cap, period cap, used amount and remaining nominal period cap in token base units. The record is shareable and explicitly declares **no financial authority**. There is no simulated balance or bypass for unverified SKR holdings.
+
+**Security/claim boundary**: no SKR or Mainnet financial transaction, no staking/rewards, no paid access to the core Key, no SKR-based Guardian privileges. The summary can be stale and is *not* payment-readiness, proof of available funds or a signed Guardian decision. Tests are in `apps/mobile/scripts/test-skr-live-key-review.cjs`, executed in Mobile CI. Until the new APK is compiled and actually tested with a Mainnet SKR-holder wallet and a legitimate Devnet family Key, classify this as **SOURCE / CI CANDIDATE** only. Do not call the bonus integration complete or prize-qualified.
 
 ## Build and development
 
