@@ -1,0 +1,45 @@
+name: Inspect public Devnet allowance (read-only)
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "tools/devnet/inspect-payment-allowance.cjs"
+      - ".github/workflows/inspect-public-allowance.yml"
+  workflow_dispatch:
+    inputs:
+      public_allowance:
+        description: "Public Devnet payment allowance address (never key material)"
+        required: false
+        type: string
+        default: "2x4NZztgoauD5sTbPL7noSv8QQiTNwW6sHanTaQMKzRm"
+
+permissions:
+  contents: read
+
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    defaults:
+      run:
+        working-directory: tools/devnet
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22.13.0"
+      - name: Install dependencies
+        run: npm install --ignore-scripts
+      - name: Inspect Devnet account state without signatures
+        env:
+          CRESCO_PUBLIC_PAYMENT_ALLOWANCE: ${{ inputs.public_allowance || '2x4NZztgoauD5sTbPL7noSv8QQiTNwW6sHanTaQMKzRm' }}
+        run: node inspect-payment-allowance.cjs
+      - name: Upload read-only proof
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cresco-key-public-allowance-inspection
+          path: evidence/devnet-distinct-program/public-allowance-inspection.json
+          if-no-files-found: warn
+          retention-days: 30
