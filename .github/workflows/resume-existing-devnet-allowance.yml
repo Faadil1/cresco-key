@@ -1,0 +1,50 @@
+name: Resume exact Devnet allowance (manual)
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm_resume:
+        description: "Authorize developer-signed Devnet-only mutation/exact/replay attempts on the existing verified unused allowance"
+        required: true
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cresco-key-resume-existing-payment-allowance
+  cancel-in-progress: false
+
+jobs:
+  resume:
+    if: ${{ inputs.confirm_resume == true }}
+    runs-on: ubuntu-latest
+    environment: devnet-deploy
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: tools/devnet
+    env:
+      CRESCO_RESUME_DEVNET_OPT_IN: I_AUTHORIZE_EXACT_EXISTING_DEVNET_ALLOWANCE
+      CRESCO_GUARDIAN_KEYPAIR_JSON: ${{ secrets.CRESCO_GUARDIAN_KEYPAIR_JSON }}
+      CRESCO_BENEFICIARY_KEYPAIR_JSON: ${{ secrets.CRESCO_BENEFICIARY_KEYPAIR_JSON }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22.13.0"
+      - name: Install development-only dependencies
+        run: npm install --ignore-scripts
+      - name: Fail-closed proof source syntax
+        run: node --check resume-exact-allowance.cjs
+      - name: Inspect existing unused grant and execute only verified test path
+        run: node resume-exact-allowance.cjs
+      - name: Preserve public intermediate proof
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cresco-key-resumed-exact-allowance
+          path: evidence/devnet-distinct-program/resumed-exact-allowance-receipt.json
+          if-no-files-found: warn
+          retention-days: 30
