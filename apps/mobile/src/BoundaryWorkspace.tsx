@@ -264,6 +264,19 @@ export function BoundaryWorkspace() {
       ? "This wallet is not the beneficiary of the configured Devnet charter. Provision a new charter and mandate with authorized signatures before payment."
       : null;
 
+  const makeStandingKeyRpc = (): StandingKeyRpc => ({
+    getAccountInfo: (key, options) => ({
+      send: async () => {
+        const response = await client.rpc.getAccountInfo(key, options).send();
+        return {
+          value: response.value
+            ? { owner: response.value.owner, data: response.value.data as readonly [string, string] }
+            : null,
+        };
+      },
+    }),
+  });
+
   const rpcForOutcome: Parameters<typeof waitForTransactionOutcome>[0] = {
     getSignatureStatuses: (signatures) =>
       client.rpc.getSignatureStatuses(signatures),
@@ -289,6 +302,7 @@ export function BoundaryWorkspace() {
         programId:
           process.env.EXPO_PUBLIC_CRESCO_KEY_PROGRAM_ID?.trim() ?? null,
         mandateNonce: config.mandateNonce || null,
+        mandateNonceSource: "BUILD_CONFIG_NOT_LIVE_AT_RECEIPT_TIME",
         tokenProgramId:
           process.env.EXPO_PUBLIC_DEMO_TOKEN_PROGRAM_ID?.trim() ?? null,
       },
@@ -413,6 +427,7 @@ export function BoundaryWorkspace() {
 
   const createBoundaryFromVerifiedRefusal = async (
     refusal: Extract<TransactionOutcome, { state: "REFUSE" }>,
+    liveMandateNonce: bigint,
   ) => {
     if (!intent || !account) return;
 
@@ -445,7 +460,7 @@ export function BoundaryWorkspace() {
     const created = await createBoundaryRequest({
       requestId,
       mandate: accounts.mandate,
-      mandateNonce: config.mandateNonce,
+      mandateNonce: liveMandateNonce.toString(),
       mint: intent.mint,
       recipient: intent.recipient,
       amountBaseUnits,
@@ -605,8 +620,18 @@ export function BoundaryWorkspace() {
       setBusy(false);
       return;
     }
+    // A real Key may have changed after the initial APK was built.
+    const standingKey = await readYoungStandingKey();
+    if (standingKey.state !== "READY") {
+      const reason = standingKey.reason;
+      setPreflightBlocked(reason);
+      setStatus(`STANDING KEY ${standingKey.state} · ${reason}`);
+      setBusy(false);
+      return;
+    }
+    const liveMandateNonce = standingKey.key.nonce;
     setPreflightBlocked(null);
-    setStatus("Live Devnet accounts checked; requesting the actual CRESCO payment via wallet.");
+    setStatus(`Live Key nonce ${liveMandateNonce} and accounts checked; requesting the actual payment via wallet.`);
 
     try {
       const programConfig = paymentProgramConfigFromEnv();
@@ -619,7 +644,7 @@ export function BoundaryWorkspace() {
           amountBaseUnits: BigInt(
             decimalToBaseUnits(intent.amountUi, config.tokenDecimals),
           ),
-          expectedNonce: BigInt(config.mandateNonce),
+          expectedNonce: liveMandateNonce,
         });
 
       let outcome: TransactionOutcome;
@@ -634,10 +659,11 @@ export function BoundaryWorkspace() {
       setStandingOutcome(outcome.state);
       recordReceipt("STANDING_PAYMENT", {
         outcome: outcomeReceipt(outcome),
+        verifiedBeforeSubmissionMandateNonce: liveMandateNonce.toString(),
       });
 
       if (outcome.state === "REFUSE") {
-        await createBoundaryFromVerifiedRefusal(outcome);
+        await createBoundaryFromVerifiedRefusal(outcome, liveMandateNonce);
       }
     } catch (error) {
       setStandingOutcome("UNKNOWN");
@@ -685,6 +711,31 @@ export function BoundaryWorkspace() {
     }
   };
 
+  // The young person's Key is dynamic. A guardian Widen increments the live
+  // nonce, so a compiled demo nonce must never be used for a subsequent payment.
+  const readYoungStandingKey = async (): Promise<KeyInspection> => {
+    if (!account || !intent) {
+      return { state: "BLOCKED", reason: "WALLET_OR_PAYMENT_INTENT_MISSING" };
+    }
+    if (!config.guardianWallet) {
+      return { state: "BLOCKED", reason: "EXPECTED_GUARDIAN_NOT_CONFIGURED" };
+    }
+    try {
+      return await inspectStandingKey(makeStandingKeyRpc(), {
+        chain,
+        config: paymentProgramConfigFromEnv(),
+        beneficiaryWallet: account.address.toString(),
+        guardianWallet: config.guardianWallet,
+        mint: intent.mint,
+      });
+    } catch (error) {
+      return {
+        state: "UNKNOWN",
+        reason: error instanceof Error ? error.message : "KEY_POLICY_RPC_UNKNOWN",
+      };
+    }
+  };
+
   // Read the actual standing Key from the CRESCO program. The relay only
   // provides the requested beneficiary/mint and never grants any authority.
   const readGuardianKey = async (): Promise<KeyInspection> => {
@@ -698,18 +749,7 @@ export function BoundaryWorkspace() {
       return { state: "BLOCKED", reason: "CONNECTED_WALLET_NOT_REQUEST_GUARDIAN" };
     }
     try {
-      const reader: StandingKeyRpc = {
-        getAccountInfo: (key, options) => ({
-          send: async () => {
-            const response = await client.rpc.getAccountInfo(key, options).send();
-            return {
-              value: response.value
-                ? { owner: response.value.owner, data: response.value.data as readonly [string, string] }
-                : null,
-            };
-          },
-        }),
-      };
+      const reader = makeStandingKeyRpc();
       const result = await inspectStandingKey(reader, {
         chain,
         config: paymentProgramConfigFromEnv(),
@@ -809,18 +849,7 @@ export function BoundaryWorkspace() {
       // the actual authority accounts and verify nonce and BOTH cap changes.
       // Request nonce is now intentionally old, so read the same Key without
       // applying the request-staleness check used for new decisions.
-      const reader: StandingKeyRpc = {
-        getAccountInfo: (key, options) => ({
-          send: async () => {
-            const response = await client.rpc.getAccountInfo(key, options).send();
-            return {
-              value: response.value
-                ? { owner: response.value.owner, data: response.value.data as readonly [string, string] }
-                : null,
-            };
-          },
-        }),
-      };
+      const reader = makeStandingKeyRpc();
       const verified = await inspectStandingKey(reader, {
         chain, config: paymentProgramConfigFromEnv(),
         beneficiaryWallet: relayRequest.requesterWallet,
