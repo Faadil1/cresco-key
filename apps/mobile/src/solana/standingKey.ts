@@ -46,6 +46,8 @@ export type StandingKeySnapshot = {
   maxActionAmount: bigint;
   maxPeriodAmount: bigint;
   periodSeconds: bigint;
+  periodStartedAt: bigint;
+  spentThisPeriod: bigint;
   maxUnitPriceMicroUsd: bigint;
   pythFeedId: number;
 };
@@ -189,6 +191,8 @@ export async function inspectStandingKey(
         maxActionAmount: uint64(rule, 74),
         maxPeriodAmount: uint64(rule, 82),
         periodSeconds: int64(rule, 90),
+        periodStartedAt: int64(rule, 98),
+        spentThisPeriod: uint64(rule, 106),
         maxUnitPriceMicroUsd: uint64(rule, 122),
         pythFeedId: uint32(rule, 130),
       },
