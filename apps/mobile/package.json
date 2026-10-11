@@ -8,7 +8,8 @@
     "android": "expo run:android",
     "typecheck": "tsc --noEmit",
     "test:financial-boundaries": "node scripts/test-financial-boundaries.cjs",
-    "test:enrollment": "node scripts/test-enrollment.cjs"
+    "test:enrollment": "node scripts/test-enrollment.cjs",
+    "test:skr-live-review": "node scripts/test-skr-live-key-review.cjs"
   },
   "dependencies": {
     "@solana/kit": "^7.0.0",
