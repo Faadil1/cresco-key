@@ -197,7 +197,23 @@ stop_capture() {
 trap stop_capture EXIT
 sleep 2
 adb shell monkey -p com.faadil.crescokey -c android.intent.category.LAUNCHER 1 >/dev/null
-wait_text "Connect wallet" 30
+# Cold Android 36 runners sometimes hang in Pixel Launcher after the long
+# Gradle builds. This is an Android SYSTEM ANR, not a failed wallet session.
+# Recover exactly once only if a captured system dialog identifies it.
+# The test still FAILS unless CRESCO's actual Connect wallet CTA appears.
+if ! wait_text "Connect wallet" 30; then
+  if grep -Fq "Pixel Launcher isn't responding" "$EVIDENCE/timeout.xml"; then
+    echo "ANDROID_SYSTEM_LAUNCHER_ANR_OBSERVED; one bounded retry" > "$EVIDENCE/launcher-recovery.txt"
+    adb shell am force-stop com.google.android.apps.nexuslauncher || true
+    adb shell input keyevent 3 || true
+    sleep 3
+    adb shell monkey -p com.faadil.crescokey -c android.intent.category.LAUNCHER 1 >/dev/null
+    wait_text "Connect wallet" 30
+  else
+    echo "CRESCO_ENTRY_NOT_OBSERVED: no confirmed system-launcher ANR to recover" >&2
+    exit 1
+  fi
+fi
 dump_ui "01-cresco-disconnected"
 
 echo "== Negative path: decline authorize =="
