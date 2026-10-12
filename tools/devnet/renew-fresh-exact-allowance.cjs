@@ -111,6 +111,29 @@ function decodeAllowance(info) {
     usedAt:b.readBigInt64LE(225).toString(),
   };
 }
+async function simulateSignedTxBeforeNegativeBroadcast(tx) {
+  // web3.js v1 legacy Transaction.simulateTransaction does NOT support a
+  // VersionedTransaction-style options object; it throws "Invalid arguments".
+  // Use the official raw public JSON-RPC simulateTransaction endpoint instead.
+  const response = await fetch(rpc, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({
+      jsonrpc: "2.0", id: 1, method: "simulateTransaction",
+      params: [tx.serialize({requireAllSignatures:true}).toString("base64"), {
+        encoding: "base64", commitment: "confirmed", sigVerify: true,
+      }],
+    }),
+    signal: AbortSignal.timeout(15000),
+  });
+  if (!response.ok) throw Error("SIMULATION_RPC_HTTP_" + response.status);
+  const result = await response.json();
+  if (result.error) {
+    throw Error("SIMULATION_RPC_ERROR_" + JSON.stringify(result.error).slice(0,230));
+  }
+  if (!result.result?.value) throw Error("SIMULATION_RETURNED_NO_VALUE");
+  return result.result.value;
+}
 async function sendRefusal(c,label,programIx,guardian,beneficiary,expected) {
   const tx = new Transaction().add(programIx);
   const last = await c.getLatestBlockhash("confirmed");
@@ -120,16 +143,14 @@ async function sendRefusal(c,label,programIx,guardian,beneficiary,expected) {
   // Before broadcasting a deliberately failing transaction, require the
   // currently simulated bank to show the EXACT expected program error.
   // An unexpected AllowanceAlreadyUsed is not a recipient-mutation proof.
-  const simulated = await c.simulateTransaction(tx, {
-    sigVerify: true, commitment: "confirmed",
-  });
-  const simLogs = (simulated.value.logs || []).filter(x =>
+  const simulation = await simulateSignedTxBeforeNegativeBroadcast(tx);
+  const simLogs = (simulation.logs || []).filter(x =>
     /Program log:|Program failed:/.test(x));
-  const simMatches = Boolean(simulated.value.err) &&
+  const simMatches = Boolean(simulation.err) &&
     simLogs.some(v => expected.test(v));
   receipt.transactions[label + "Simulation"] = {
     evidenceClass: "LIVE_DEVNET_RPC_SIMULATION_NOT_TRANSACTION",
-    returnedError: simulated.value.err,
+    returnedError: simulation.err,
     programLogs: simLogs,
     expectedErrorObserved: simMatches,
   };
