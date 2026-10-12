@@ -1,5 +1,19 @@
 # CLOCK IN 2026 — Final form copy and URL checklist
 
+## COACH remediation — 2026-10-12 (70/100 diagnostic)
+
+**DECK NOT READ**: the coach could not parse the GitHub Release link, although the underlying PDF has 18 pages and a verified extractable text layer. Preferred Radiants DECK URL once explicitly publicly shared ("Anyone with link / Viewer"):
+https://drive.google.com/file/d/1Ggoz9-ZGc5IqMnl_4s_F8-b24SYTXIvS/view?usp=drivesdk
+
+Accessible 18-slide text companion (native Google Doc, also must be shared publicly):
+https://docs.google.com/document/d/1eXYe0ButXf8rSFtogB1LhvnA57Ul66hIYpn87uEWwSE/edit
+
+**CODE NONE**: ensure the REPOSITORY URL field contains `https://github.com/Faadil1/cresco-key` and SAVE it, then click coach OPEN SECURITY AUDIT. Newly published source-to-APK, mobile tests and Devnet proof map:
+https://github.com/Faadil1/cresco-key/blob/main/docs/CLOCK-IN-2026-REVIEWER-CODE-AUDIT-INDEX.md
+
+No external security audit verdict is implied by this index. P0 Guardian allowance redemption is not fixed. Do not claim onchain redemption/replay, phone-origin payment, or repeat retention metrics as completed. Submit before Radiants cutoff once links are public and accepted; SAVE != SUBMIT.
+
+
 **Submission status: NOT CONFIRMED.** Save is not Submit. Verify the final confirmation in Radiants.
 
 ## Project name
