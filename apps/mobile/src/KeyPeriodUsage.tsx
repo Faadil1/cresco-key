@@ -20,7 +20,7 @@ export function KeyPeriodUsage({
   return (
     <View style={styles.container}>
       <View style={styles.labels}>
-        <Text style={styles.label}>Recorded use of period limit</Text>
+        <Text style={styles.label}>Used this period</Text>
         <Text style={styles.number}>{hasLimit ? percent + "%" : "Unknown"}</Text>
       </View>
       <View
@@ -32,8 +32,7 @@ export function KeyPeriodUsage({
         <View style={[styles.fill, { width: `${percent}%` as `${number}%` }]} />
       </View>
       <Text style={styles.caption}>
-        Based on actual Key rule counters. This does not show token balance
-        or prove that a payment came from this device.
+        Live onchain rule counter · not a wallet balance or a device payment receipt.
       </Text>
     </View>
   );
@@ -43,8 +42,8 @@ const styles = StyleSheet.create({
   container: { gap: 8, paddingTop: 8 },
   labels: { flexDirection: "row", alignItems: "baseline", justifyContent: "space-between", gap: 8 },
   label: { fontSize: 12, fontWeight: "700", color: c.secondaryInk, flexShrink: 1 },
-  number: { fontSize: 17, fontWeight: "700", color: c.deepBrass },
-  track: { height: 9, backgroundColor: c.border, borderRadius: 5, overflow: "hidden" },
-  fill: { height: "100%", backgroundColor: c.verified, borderRadius: 5 },
+  number: { fontSize: 17, fontWeight: "700", color: c.ink },
+  track: { height: 7, backgroundColor: c.border, borderRadius: 99, overflow: "hidden" },
+  fill: { height: "100%", backgroundColor: c.verified, borderRadius: 99 },
   caption: { fontSize: 11, lineHeight: 17, color: c.secondaryInk },
 });
