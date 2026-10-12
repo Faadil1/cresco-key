@@ -1,0 +1,32 @@
+name: Publish CLOCK IN real Android and interactive explainer videos
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/publish-cresco-clockin-two-videos.yml
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify source-controlled MPEG-4 evidence files
+        run: |
+          set -euo pipefail
+          test -s docs/assets/clock-in-2026/cresco-key-real-android-walkthrough-86s.mp4
+          test -s docs/assets/clock-in-2026/cresco-key-interactive-explainer-54s.mp4
+          printf '%s  %s\n' 'f9cdea3d777319588a85fc25fb9eb5993d18858ea1b59b2d06ac3ec1f5c165c5' 'docs/assets/clock-in-2026/cresco-key-real-android-walkthrough-86s.mp4' | sha256sum -c -
+          printf '%s  %s\n' 'ee22b2ce4ae306ea71d0d484b36518717e5eaa255dd6260a84631d3ea8ee1794' 'docs/assets/clock-in-2026/cresco-key-interactive-explainer-54s.mp4' | sha256sum -c -
+      - name: Publish both videos alongside APK and deck
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          gh release upload clock-in-2026-signature-0bd51d53 \
+            docs/assets/clock-in-2026/cresco-key-real-android-walkthrough-86s.mp4 \
+            docs/assets/clock-in-2026/cresco-key-interactive-explainer-54s.mp4 \
+            --clobber
