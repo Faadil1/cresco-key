@@ -14,6 +14,12 @@ CRESCO Key is a new React Native / Expo Android application adapted from an exis
 ## SKR integration
 Yes — optional, read-only **SKR Charter Atelier**. With a connected wallet, the app checks the official SKR token mint on Solana Mainnet using public account data. A detected holder can access family financial-boundary discussion prompts and build a shareable, read-only review of a separately inspected live Devnet Key (caps, usage, nonce and role). SKR does not transfer assets, modify Key authority or unlock the core app. No real physical-device SKR-holder use is claimed.
 
+## Physical Android evidence update — October 12
+A real external Android phone ran the Signature APK, completed a live read of the configured Solana Devnet Key, displayed standing caps and usage, connected Solflare and opened the Young Person screens. The app correctly rejected the built-in five-unit test intent when the connected wallet did not match its configured beneficiary. A read-only Devnet account check reported `NOT_PROVISIONED` for that wallet. **No phone-origin token payment was sent**. This client-side setup refusal is distinct from the separately verified onchain over-limit refusal. Guardian redemption and replay remain blocked.
+
+Real-device proof: https://github.com/Faadil1/cresco-key/blob/main/docs/assets/clock-in-2026/cresco-key-physical-android-proof-57s.mp4
+Evidence-class guide: https://github.com/Faadil1/cresco-key/blob/main/docs/CLOCK-IN-2026-PHYSICAL-ANDROID-EVIDENCE.md
+
 ## Repository URL
 https://github.com/Faadil1/cresco-key
 
