@@ -4,6 +4,7 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 
 import { MuseumHero, MuseumButton, ProofStrip, museumColors as c } from "./design/MuseumLedgerUI";
 import { JudgeReadOnlyTour } from "./JudgeReadOnlyTour";
+import { LivingKeySeal } from "./design/LivingKeySeal";
 
 type ConnectState = "IDLE" | "CONNECTING" | "REFUSED";
 
@@ -41,7 +42,10 @@ export function WalletGate() {
       accessibilityLabel="CRESCO Key welcome"
     >
       <View style={styles.brandRow}>
-        <Text style={styles.wordmark}>CRESCO <Text style={styles.italic}>Key</Text></Text>
+        <View style={styles.brandIdentity}>
+          <LivingKeySeal size={38} />
+          <Text style={styles.wordmark}>CRESCO <Text style={styles.italic}>Key</Text></Text>
+        </View>
         <View style={styles.networkPill}><View style={styles.networkDot} /><Text style={styles.networkText}>SOLANA DEVNET</Text></View>
       </View>
 
@@ -117,6 +121,7 @@ export function WalletGate() {
 const styles = StyleSheet.create({
   container: { paddingHorizontal: 20, paddingTop: 10, paddingBottom: 48, backgroundColor: c.ivory, gap: 16, flexGrow: 1 },
   brandRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", gap: 8 },
+  brandIdentity: { flexDirection: "row", alignItems: "center", gap: 4, flexShrink: 1 },
   wordmark: { color: c.ink, fontFamily: "serif", fontSize: 26, letterSpacing: 0.8, flexShrink: 1 },
   italic: { fontStyle: "italic" },
   networkPill: { flexDirection: "row", alignItems: "center", gap: 6, borderWidth: 1, borderColor: c.border, borderRadius: 20, paddingHorizontal: 9, paddingVertical: 7 },
