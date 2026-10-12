@@ -1447,7 +1447,7 @@ export function BoundaryWorkspace() {
           style={styles.roleCard}>
           <View style={styles.roleHeader}>
             <Text style={styles.roleEyebrow}>I'M HELPING</Text>
-            <LivingKeySeal size={45} mood="request" />
+            <LivingKeySeal size={45} mood="standing" />
           </View>
           <Text style={styles.roleTitle}>Guardian →</Text>
           <Text style={styles.roleDescription}>Review an exact request, say no or authorize only that action once.</Text>
@@ -1489,7 +1489,7 @@ export function BoundaryWorkspace() {
           <MuseumPlate exhibit="REQUEST / EXACT BOUNDARY" title={relayRequest.display?.label ?? "Guardian review"}
             tone={relayRequest.status === "REFUSED" ? "boundary" : "pending"}>
             <View style={styles.exactChoiceHeader}>
-            <LivingKeySeal size={38} mood={relayRequest.status === "REFUSED" ? "boundary" : "request"} />
+            <LivingKeySeal size={38} mood={relayRequest.status === "REFUSED" ? "boundary" : relayRequest.status === "PENDING" ? "request" : "standing"} />
             <Text style={styles.roleDescription}>One exact request · standing limits stay unchanged</Text>
           </View>
           <MuseumFact label="COORDINATION STATUS (NOT PAYMENT)" value={relayRequest.status} />
