@@ -58,3 +58,11 @@ https://github.com/Faadil1/cresco-key/blob/main/docs/CLOCK-IN-2026-SIGNATURE-JUD
 - [ ] SUBMIT PROJECT clicked by lead and success/entry URL recorded.
 - [ ] Guardian exact one-time redemption/replay repaired and separately verified (P0; not a condition for truthful hackathon submission).
 - [ ] Full physical-device Solflare end-to-end payment verified (not a condition for truthful hackathon submission).
+
+## New short Explain video — exported and locally QA verified (2026-10-12)
+- Google Drive upload: https://drive.google.com/file/d/1m2I69eDMRG8S_bM-dVFKDJjFmkqsIZfx/view?usp=drivesdk
+- Original exported MP4: `CRESCO Key  CLOCK IN Demo.mp4`, SHA-256 `d1d3334a4bb072b03e47dd997599ba85af8c84eb5793a3bd068caa148f6dd7a8`, runtime **133.617 seconds** (2m13.6s), H.264 1280x720 at 60 fps, AAC stereo 48kHz and embedded mov_text subtitle track. Audio waveform is non-silent; captured frames show a titled Scrimba narrator explainer with three authentic emulator screenshots and proof-boundary slides.
+- **IMPORTANT:** Drive file was uploaded **PRIVATE** (shared=false) by connector. The human must select General access → Anyone with the link → Viewer and confirm in an incognito window before using this URL as Radiants DEMO VIDEO URL. A Scrimba URL or private Drive link alone is not an accepted public video field.
+- Evidence classification: narrated *pitch/explainer* with static authentic Android screenshots, **not** a continuous real-user mobile walkthrough or a live Guardian payment. Preserve a separate public actual-emulator recording for the demo evidence: https://github.com/Faadil1/cresco-key/releases/download/clock-in-2026-signature-0bd51d53/cresco-key-signature-demo-88sec.mp4 .
+- CLOCK IN public event page states APK, source, demo video, and pitch deck; the publicly accessible announcement did not publish a numeric **CLOCK IN-specific** video duration cap. 2m13.6s is below a conservative 3-minute target but do not label that a confirmed event requirement.
+- No Radiants form submission or confirmation is inferred from video publication.
