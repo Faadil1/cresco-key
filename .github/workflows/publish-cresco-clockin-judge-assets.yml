@@ -1,0 +1,32 @@
+name: Publish CLOCK IN judge PDF and demo MP4
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/publish-cresco-clockin-judge-assets.yml
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check PDF and MP4 are source-controlled and valid
+        run: |
+          set -euo pipefail
+          test -s docs/assets/clock-in-2026/cresco-key-signature-jury-deck-18-slides.pdf
+          test -s docs/assets/clock-in-2026/cresco-key-signature-demo-88sec.mp4
+          file docs/assets/clock-in-2026/cresco-key-signature-jury-deck-18-slides.pdf
+          file docs/assets/clock-in-2026/cresco-key-signature-demo-88sec.mp4
+      - name: Attach public jury assets to existing Signature prerelease
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          gh release upload clock-in-2026-signature-0bd51d53 \
+            docs/assets/clock-in-2026/cresco-key-signature-jury-deck-18-slides.pdf \
+            docs/assets/clock-in-2026/cresco-key-signature-demo-88sec.mp4 \
+            --clobber
