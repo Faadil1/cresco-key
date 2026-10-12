@@ -1684,8 +1684,7 @@ export function BoundaryWorkspace() {
                   : paymentReadiness.state === "BLOCKED"
                     ? "Payment cannot proceed yet"
                     : "Account status is unknown"}
-                tone={paymentReadiness.state === "READY_FOR_WALLET_ATTEMPT"
-                  ? "verified" : "blocked"}>
+                tone={paymentReadiness.state === "BLOCKED" ? "blocked" : paymentReadiness.state === "UNKNOWN" ? "unknown" : "neutral"}>
                 <Text style={styles.body}>
                   {paymentReadiness.state === "BLOCKED"
                     ? paymentReadiness.reasons.join(" · ")
