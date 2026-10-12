@@ -4,8 +4,6 @@ import { useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 
 import {
-  MuseumHero,
-  MuseumPlate,
   MuseumButton,
   MuseumFact,
   museumColors as c,
@@ -84,64 +82,129 @@ export function JudgeReadOnlyTour({ onExit }: { onExit: () => void }) {
     }
   };
 
+  const units = (value: bigint): string =>
+    decimals === null ? value.toString() + " base units" : displayTokenUnits(value, decimals) + " test token units";
+
   return (
-    <ScrollView contentContainerStyle={s.container}>
-      <MuseumHero
-        exhibit="READ-ONLY / SOLANA DEVNET"
-        title="See what a Key allows."
-        subtitle="Explore a sample family's real spending limits without connecting a wallet. No payment or approval happens here."
-        compact
-      />
-      <MuseumPlate exhibit="01 / LIVE LIMITS" title="How much freedom does this Key give?">
-        <Text style={s.body}>These numbers belong to a separately provisioned developer test family, not to your wallet. They are read from Devnet, never invented by the app.</Text>
-        <MuseumButton label={loading ? "Checking real Devnet accounts…" : "Check sample Key limits"} disabled={loading} onPress={queryPublishedKey} />
+    <ScrollView contentContainerStyle={s.container} accessibilityLabel="Read-only Devnet Key explorer">
+      <View style={s.topbar}>
+        <Pressable accessibilityRole="button" accessibilityLabel="Back to welcome" onPress={onExit} style={s.back}>
+          <Text style={s.backText}>←  Back</Text>
+        </Pressable>
+        <Text style={s.network}>DEVNET  /  READ ONLY</Text>
+      </View>
+
+      <View style={s.hero}>
+        <Text style={s.kicker}>A KEY IN THE REAL WORLD</Text>
+        <Text style={s.headline}>See the rules.{"\n"}In real time.</Text>
+        <Text style={s.body}>Inspect an actual developer test family's spending boundaries on Solana Devnet. No wallet, signature or payment required.</Text>
+      </View>
+
+      <View style={s.liveCard}>
+        <View style={s.liveTop}>
+          <Text style={s.cardKicker}>STANDING KEY</Text>
+          <Text style={s.source}>ONCHAIN RULES</Text>
+        </View>
         {state?.state === "READY" ? (
-          <View style={s.evidence}>
-            <Text style={s.good} accessibilityLiveRegion="polite">Devnet accounts read successfully</Text>
-            <MuseumFact label="MAXIMUM PER PURCHASE" value={decimals !== null ? displayTokenUnits(state.key.maxActionAmount, decimals) + " test token units" : state.key.maxActionAmount.toString() + " base units"} />
-            <MuseumFact label="MAXIMUM PER PERIOD" value={decimals !== null ? displayTokenUnits(state.key.maxPeriodAmount, decimals) + " test token units" : state.key.maxPeriodAmount.toString() + " base units"} />
-            <MuseumFact label="RECORDED AS SPENT" value={decimals !== null ? displayTokenUnits(state.key.spentThisPeriod, decimals) + " test token units" : state.key.spentThisPeriod.toString() + " base units"} />
-            <KeyPeriodUsage spentBaseUnits={state.key.spentThisPeriod} maxPeriodBaseUnits={state.key.maxPeriodAmount} />
-            <Text style={s.note}>These are authorization limits, not a spendable balance and not evidence of a mobile payment.</Text>
-            <Pressable accessibilityRole="button"
-              accessibilityState={{ expanded: showAddresses }}
-              onPress={() => setShowAddresses(v => !v)} style={s.detailToggle}>
-              <Text style={s.detailText}>Inspect onchain account identifiers</Text>
-              <Text style={s.detailText}>{showAddresses ? "−" : "+"}</Text>
-            </Pressable>
-            {showAddresses ? (
-              <View style={s.details}>
-                <MuseumFact label="CHARTER" value={state.key.charter.toString()} />
-                <MuseumFact label="MANDATE" value={state.key.mandate.toString()} />
-                <MuseumFact label="ASSET RULE" value={state.key.assetRule.toString()} />
-                <MuseumFact label="MANDATE NONCE" value={state.key.nonce.toString()} />
-                <MuseumFact label="GUARDIAN" value={guardian} />
-                <MuseumFact label="BENEFICIARY" value={beneficiary} />
+          <View style={s.liveContent} accessibilityLiveRegion="polite">
+            <Text style={s.resultLabel}>Maximum per payment</Text>
+            <Text style={s.heroNumber} selectable adjustsFontSizeToFit numberOfLines={1}>{units(state.key.maxActionAmount)}</Text>
+            <View style={s.divider} />
+            <View style={s.limitRow}>
+              <View style={s.limitCopy}>
+                <Text style={s.resultLabel}>Limit for this period</Text>
+                <Text style={s.limitValue} selectable>{units(state.key.maxPeriodAmount)}</Text>
               </View>
-            ) : null}
+            </View>
+            <KeyPeriodUsage spentBaseUnits={state.key.spentThisPeriod} maxPeriodBaseUnits={state.key.maxPeriodAmount} />
+            <Text style={s.finePrint}>Actual rule counters, not an available balance or evidence of a phone payment.</Text>
           </View>
         ) : state ? (
-          <Text style={s.note} accessibilityLiveRegion="polite">We couldn't verify the sample Key right now ({state.state}: {state.reason}). No spending permission was assumed. You can retry.</Text>
+          <View style={s.liveContent} accessibilityLiveRegion="polite">
+            <Text style={s.unavailableTitle}>The Key could not be verified.</Text>
+            <Text style={s.muted} selectable>{state.state}: {state.reason}</Text>
+            <Text style={s.finePrint}>No spending permission was assumed. You can retry a read-only lookup.</Text>
+          </View>
         ) : (
-          <Text style={s.note}>Tap to inspect; no chain verification is claimed before a successful read.</Text>
+          <View style={s.empty}>
+            <Text style={s.emptyTitle}>{loading ? "Reading the current Key…" : "Your live Key snapshot"}</Text>
+            <Text style={s.muted}>The real limits appear here after a successful Devnet read. We never display sample numbers as a payment balance.</Text>
+          </View>
         )}
-        {checkedAt ? <Text style={s.note}>Inspected: {checkedAt}</Text> : null}
-      </MuseumPlate>
-      <MuseumPlate exhibit="02 / WHY IT MATTERS" title="One exception is not a new rule">
-        <Text style={s.body}>A young person should be free to make ordinary purchases within clear limits. For a purchase outside them, a Guardian should be able to decide on that exact request instead of permanently raising the limit.</Text>
-        <Text style={s.note}>The complete mobile Guardian payment and replay sequence is still being validated. This read-only tour does not grant an exception.</Text>
-      </MuseumPlate>
-      <MuseumButton label="Connect your own wallet" variant="secondary" onPress={onExit} />
+        <MuseumButton
+          label={loading ? "Reading Devnet…" : state?.state === "READY" ? "Refresh live limits" : "Read live Key limits"}
+          disabled={loading} onPress={queryPublishedKey}
+        />
+        {checkedAt ? <Text style={s.timestamp}>Last inspected: {checkedAt}</Text> : null}
+      </View>
+
+      <View style={s.principle}>
+        <View style={s.principleHead}>
+          <Text style={s.principleTitle}>A request is not a new limit.</Text>
+          <View style={s.ruleMark} />
+        </View>
+        <Text style={s.muted}>When a payment crosses a rule, a Guardian can decide on that exact request. The standing Key itself remains unchanged.</Text>
+        <Text style={s.finePrint}>The complete Guardian approval and payment sequence is still being verified. This screen does not grant any authority.</Text>
+      </View>
+
+      {state?.state === "READY" ? (
+        <View style={s.technical}>
+          <Pressable accessibilityRole="button" accessibilityState={{ expanded: showAddresses }}
+            accessibilityLabel="Inspect complete Devnet account identifiers"
+            onPress={() => setShowAddresses(v => !v)} style={s.toggle}>
+            <Text style={s.toggleText}>Onchain account details</Text>
+            <Text style={s.toggleText}>{showAddresses ? "−" : "+"}</Text>
+          </Pressable>
+          {showAddresses ? (
+            <View style={s.identifiers}>
+              <MuseumFact label="CHARTER" value={state.key.charter.toString()} />
+              <MuseumFact label="MANDATE" value={state.key.mandate.toString()} />
+              <MuseumFact label="ASSET RULE" value={state.key.assetRule.toString()} />
+              <MuseumFact label="MANDATE NONCE" value={state.key.nonce.toString()} />
+              <MuseumFact label="GUARDIAN" value={guardian} />
+              <MuseumFact label="BENEFICIARY" value={beneficiary} />
+            </View>
+          ) : null}
+        </View>
+      ) : null}
+      <MuseumButton label="Back to connect wallet" variant="secondary" onPress={onExit} />
     </ScrollView>
   );
 }
+
 const s = StyleSheet.create({
-  container: { padding: 22, paddingBottom: 50, backgroundColor: c.ivory, gap: 15 },
-  body: { color: c.ink, fontSize: 14, lineHeight: 21 },
-  note: { color: c.secondaryInk, fontSize: 12, lineHeight: 18 },
-  good: { color: c.verified, fontSize: 12, fontWeight: "700" },
-  evidence: { gap: 8, paddingTop: 12, borderTopWidth: 1, borderTopColor: c.border },
-  detailToggle: { minHeight: 46, borderTopWidth: 1, borderBottomWidth: 1, borderColor: c.border, flexDirection: "row", justifyContent: "space-between", alignItems: "center", gap: 9, paddingVertical: 12 },
-  detailText: { fontSize: 13, fontWeight: "700", color: c.deepBrass },
-  details: { gap: 8 },
+  container: { paddingHorizontal: 22, paddingTop: 13, paddingBottom: 50, backgroundColor: c.ivory, gap: 21, flexGrow: 1 },
+  topbar: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", gap: 12 },
+  back: { minHeight: 44, justifyContent: "center", paddingRight: 12 },
+  backText: { fontSize: 15, fontWeight: "700", color: c.ink },
+  network: { fontSize: 10, letterSpacing: 1, fontWeight: "700", color: c.secondaryInk },
+  hero: { paddingTop: 12, gap: 12 },
+  kicker: { color: c.deepBrass, fontWeight: "800", fontSize: 10, letterSpacing: 1.5 },
+  headline: { fontSize: 37, fontFamily: "serif", color: c.ink, lineHeight: 44, letterSpacing: -1.3 },
+  body: { color: c.secondaryInk, fontSize: 15, lineHeight: 23 },
+  muted: { color: c.secondaryInk, fontSize: 13, lineHeight: 20 },
+  liveCard: { padding: 18, gap: 17, borderRadius: 22, backgroundColor: c.paper, borderWidth: 1, borderColor: c.border },
+  liveTop: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", gap: 10 },
+  cardKicker: { color: c.deepBrass, fontSize: 10, letterSpacing: 1.4, fontWeight: "800" },
+  source: { color: c.secondaryInk, fontSize: 9, fontWeight: "700", letterSpacing: 0.7 },
+  liveContent: { gap: 10 },
+  resultLabel: { fontSize: 12, color: c.secondaryInk, fontWeight: "600" },
+  heroNumber: { fontSize: 26, fontWeight: "700", letterSpacing: -0.7, color: c.ink },
+  divider: { height: 1, backgroundColor: c.border, marginVertical: 4 },
+  limitRow: { flexDirection: "row", alignItems: "center", gap: 12 },
+  limitCopy: { gap: 5, flex: 1 },
+  limitValue: { fontSize: 18, fontWeight: "700", color: c.ink },
+  finePrint: { fontSize: 11, lineHeight: 17, color: c.secondaryInk },
+  empty: { minHeight: 114, justifyContent: "center", gap: 9 },
+  emptyTitle: { color: c.ink, fontFamily: "serif", fontSize: 24, lineHeight: 30 },
+  unavailableTitle: { color: c.vermilion, fontSize: 16, fontWeight: "700" },
+  timestamp: { fontSize: 10, color: c.secondaryInk },
+  principle: { paddingTop: 5, gap: 10 },
+  principleHead: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", gap: 12 },
+  principleTitle: { fontSize: 22, lineHeight: 28, color: c.ink, fontFamily: "serif", flexShrink: 1 },
+  ruleMark: { width: 24, height: 3, borderRadius: 3, backgroundColor: c.brass },
+  technical: { borderTopWidth: 1, borderColor: c.border, gap: 13 },
+  toggle: { minHeight: 52, flexDirection: "row", justifyContent: "space-between", alignItems: "center", gap: 12 },
+  toggleText: { fontSize: 13, fontWeight: "700", color: c.ink },
+  identifiers: { gap: 11, paddingBottom: 14 },
 });
