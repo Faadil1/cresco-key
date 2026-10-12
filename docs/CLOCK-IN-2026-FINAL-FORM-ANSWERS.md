@@ -26,7 +26,10 @@ https://github.com/Faadil1/cresco-key/releases/download/clock-in-2026-signature-
 ## Original Drive deck (private until shared)
 https://drive.google.com/file/d/1Ggoz9-ZGc5IqMnl_4s_F8-b24SYTXIvS/view?usp=drivesdk
 
-## Demo video URL — exists but MUST be made public in Drive
+## Public demo MP4 fallback (jury access verified via published GitHub Release; Radiants field may restrict domains)
+https://github.com/Faadil1/cresco-key/releases/download/clock-in-2026-signature-0bd51d53/cresco-key-signature-demo-88sec.mp4
+
+## Demo video URL — Drive requires Anyone with link / Viewer before using in Radiants
 https://drive.google.com/file/d/1zEvFxz9zz5Kj_6lXwu26mXNqzs3NR0iz/view?usp=drivesdk
 
 **Operator must set both Drive files General Access → Anyone with the link → Viewer and test in an incognito browser. The Google Drive files are private until changed.**
