@@ -1,6 +1,10 @@
 # CRESCO Key
 ### Freedom with Boundaries.
 
+### CLOCK IN coach / security review — source-indexed evidence
+
+**[Start here: exact APK-to-source code map and reproducible test commands](docs/CLOCK-IN-2026-REVIEWER-CODE-AUDIT-INDEX.md)** · [Public 18-slide visual jury deck](https://github.com/Faadil1/cresco-key/releases/download/clock-in-2026-signature-0bd51d53/cresco-key-signature-jury-deck-18-slides.pdf) · [Physical phone evidence](docs/CLOCK-IN-2026-PHYSICAL-ANDROID-EVIDENCE.md) · [P0 blocker #76](https://github.com/Faadil1/cresco-key/issues/76). The code index maps source files, CI runs and Devnet receipts and does **not** substitute for an independent security audit. The GitHub release deck has extractable text locally, but the coach may need its **public Google Drive PDF version** for supported ingestion.
+
 ### Real physical Android evidence — recorded October 12
 
 **[WATCH: 57-second physical Android proof](https://github.com/Faadil1/cresco-key/blob/main/docs/assets/clock-in-2026/cresco-key-physical-android-proof-57s.mp4)** · [Evidence ledger and explicit limitations](docs/CLOCK-IN-2026-PHYSICAL-ANDROID-EVIDENCE.md). A real Solflare-connected phone read live Devnet Key limits (10 per action, 100 per period, 5% used), reached Young Person screens, and safely blocked a different-beneficiary test intent without sending a transaction. The connected wallet is **NOT_PROVISIONED**, and neither a mobile payment nor Guardian grant redemption is claimed. PIN and messaging screens were removed from the edited recording.
