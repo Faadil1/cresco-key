@@ -70,7 +70,7 @@ fi
 
 # The judge-facing no-wallet route is a FIRST-CLASS product surface.
 # Actually open it; a visible CTA alone does not prove navigation works.
-# Never click "Check sample Key limits" in smoke and mistake a seed, spinner,
+# Never click "Read live Key limits" in smoke and mistake a seed, spinner,
 # or read-only RPC attempt for a real financial transaction.
 echo "== Verify no-wallet Key tour is navigable on Android =="
 TOUR_COORDS="$(EVIDENCE="$EVIDENCE" python3 - <<'PY'
@@ -97,8 +97,8 @@ TOUR_SEEN=0
 for attempt in $(seq 1 8); do
   adb shell uiautomator dump /sdcard/cresco-judge.xml >/dev/null 2>&1 || true
   adb pull /sdcard/cresco-judge.xml "$EVIDENCE/cresco-judge.xml" >/dev/null 2>&1 || true
-  if grep -q 'See what a Key allows' "$EVIDENCE/cresco-judge.xml" && \
-     grep -q 'Check sample Key limits' "$EVIDENCE/cresco-judge.xml"; then
+  if grep -q 'EXPLORE THE KEY' "$EVIDENCE/cresco-judge.xml" && \
+     grep -q 'Read live Key limits' "$EVIDENCE/cresco-judge.xml"; then
     TOUR_SEEN=1
     break
   fi
