@@ -1,4 +1,4 @@
-import { MobileWalletProvider, createSolanaDevnet } from "@wallet-ui/react-native-kit";
+import { MobileWalletProvider, createSolanaDevnet, useMobileWallet } from "@wallet-ui/react-native-kit";
 import { StatusBar } from "expo-status-bar";
 import { Platform, SafeAreaView, StatusBar as NativeStatusBar, StyleSheet } from "react-native";
 
@@ -24,11 +24,20 @@ export default function App() {
         icon: "favicon.png",
       }}
     >
-      <SafeAreaView style={styles.root}>
-        <StatusBar style="dark" />
-        <MobileExperience />
-      </SafeAreaView>
+      <WalletShell />
     </MobileWalletProvider>
+  );
+}
+
+// Match Android status bar contrast to the actual connected/disconnected screen.
+function WalletShell() {
+  const { account } = useMobileWallet();
+  const darkLaunch = !account;
+  return (
+    <SafeAreaView style={[styles.root, { backgroundColor: darkLaunch ? "#15211D" : theme.color.ivory }]}>
+      <StatusBar style={darkLaunch ? "light" : "dark"} />
+      <MobileExperience />
+    </SafeAreaView>
   );
 }
 

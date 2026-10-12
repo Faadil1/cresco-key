@@ -44,9 +44,9 @@ PY
       adb shell input tap "$x" "$y"
       return 0
     fi
-    # Museum Ledger intentionally uses a scrollable editorial layout.
+    # The consumer flow is scrollable; accessible actions remain the test targets.
     # Scroll only for first-party buttons; never swipe the wallet approval UI.
-    if [ "$needle" = "Sign TRC-01 proof message" ] || [ "$needle" = "Connect wallet" ] || [ "$needle" = "Wallet proof and technical evidence" ]; then
+    if [ "$needle" = "Sign TRC-01 proof message" ] || [ "$needle" = "Connect wallet" ] || [ "$needle" = "Wallet proof and technical evidence" ] || [ "$needle" = "Load 5-unit in-bounds demo intent" ]; then
       adb shell input swipe 550 1700 550 560 320 || true
     fi
     sleep 1
@@ -236,7 +236,7 @@ while [ "$elapsed" -lt 30 ]; do
   adb shell uiautomator dump /sdcard/auth.xml >/dev/null 2>&1 || true
   adb pull /sdcard/auth.xml "$EVIDENCE/auth-prompt.xml" >/dev/null 2>&1 || true
 
-  if grep -Fq "Who are you today?" "$EVIDENCE/auth-prompt.xml"; then
+  if grep -Fq "Continue as young person" "$EVIDENCE/auth-prompt.xml"; then
     break
   fi
 
@@ -259,29 +259,43 @@ while [ "$elapsed" -lt 30 ]; do
   elapsed=$((elapsed+1))
 done
 
-wait_text "Who are you today?" 15
+wait_text "Continue as young person" 15
 dump_ui "05-cresco-connected"
 
 echo "== signMessage path =="
 # User-facing proof controls are intentionally collapsed until requested.
 tap_text "Wallet proof and technical evidence" 15
-wait_text "Sign TRC-01 proof message" 10
-tap_text "Sign TRC-01 proof message" 15
+# The newly expanded proof card is below the first viewport on compact phones.
+# tap_text performs a bounded first-party scroll and only passes if it taps
+# the actual accessible Sign TRC-01 control (never a screenshot-coordinate guess).
+tap_text "Sign TRC-01 proof message" 22
 wait_text "Approve" 20
 dump_ui "06-wallet-sign-message"
 tap_text "Approve" 10
 wait_text "SIGNED" 30
 dump_ui "07-cresco-signed"
 
-echo "== Capture Young intent without signing =="
-if tap_text "Continue as young person" 10; then
-  sleep 2
-  dump_ui "09-cresco-young-flow"
-  if tap_text "Load 5-unit in-bounds demo intent" 15; then
-    sleep 3
-    dump_ui "10-cresco-demo-intent"
-  fi
-fi
+echo "== Capture real connected-role mobile screens (no financial signing) =="
+# After signing, the technical proof expansion leaves role cards above viewport.
+# Return the FIRST-PARTY list to top rather than guessing touch coordinates.
+adb shell input swipe 540 600 540 1780 400 || true
+sleep 1
+tap_text "Continue as guardian" 12
+sleep 2
+wait_text "GUARDIAN · EXACT DECISION" 15
+wait_text "Back to role selection" 15
+dump_ui "09-cresco-guardian-entry"
+tap_text "Back to role selection" 10
+sleep 1
+adb shell input swipe 540 600 540 1780 400 || true
+tap_text "Continue as young person" 12
+sleep 2
+dump_ui "10-cresco-young-flow"
+# A configured test intent is a test convenience; no wallet signature or payment
+# is attempted during visual smoke.
+tap_text "Load 5-unit in-bounds demo intent" 18
+sleep 3
+dump_ui "11-cresco-demo-intent"
 
 echo "== Kill/relaunch truthfulness =="
 adb shell am force-stop com.faadil.crescokey
@@ -291,7 +305,7 @@ sleep 8
 dump_ui "08-cresco-relaunch"
 
 RELAUNCH_STATE="UNKNOWN"
-if grep -Fq "Who are you today?" "$EVIDENCE/08-cresco-relaunch.xml"; then
+if grep -Fq "Continue as young person" "$EVIDENCE/08-cresco-relaunch.xml"; then
   RELAUNCH_STATE="CONNECTED_RESTORED"
 elif grep -Fq "Connect wallet" "$EVIDENCE/08-cresco-relaunch.xml"; then
   RELAUNCH_STATE="DISCONNECTED_TRUTHFUL"
