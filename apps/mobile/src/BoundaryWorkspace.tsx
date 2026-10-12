@@ -26,6 +26,7 @@ import {
 } from "./solana/paymentReadiness";
 import { MuseumHero, MuseumPlate, MuseumButton, MuseumFact, ProofStrip, museumColors as color } from "./design/MuseumLedgerUI";
 import { SkrCharterAtelier } from "./skr/SkrCharterAtelier";
+import { KeyPeriodUsage } from "./KeyPeriodUsage";
 import {
   inspectStandingKey,
   assessStandingIntent,
@@ -1516,6 +1517,7 @@ export function BoundaryWorkspace() {
                   <MuseumFact label="LIVE ACTION LIMIT / TOKEN UNITS" value={displayTokenUnits(guardianKeyInspection.key.maxActionAmount, guardianDisplayDecimals!)} />
                   <MuseumFact label="LIVE PERIOD LIMIT / TOKEN UNITS" value={displayTokenUnits(guardianKeyInspection.key.maxPeriodAmount, guardianDisplayDecimals!)} />
                   <MuseumFact label="SPENT IN CURRENT PERIOD / TOKEN UNITS" value={displayTokenUnits(guardianKeyInspection.key.spentThisPeriod, guardianDisplayDecimals!)} />
+                  <KeyPeriodUsage spentBaseUnits={guardianKeyInspection.key.spentThisPeriod} maxPeriodBaseUnits={guardianKeyInspection.key.maxPeriodAmount} />
                   <MuseumFact label="MANDATE NONCE" value={guardianKeyInspection.key.nonce.toString()} />
                   <Text style={styles.scenarioLabel}>NEW PER-ACTION LIMIT / TOKEN UNITS</Text>
                   <TextInput
@@ -1682,6 +1684,7 @@ export function BoundaryWorkspace() {
               <MuseumPlate exhibit="YOUR REAL KEY / DEVNET" title="Standing authority right now" tone="neutral">
                 <MuseumFact label="PER-ACTION LIMIT" value={displayTokenUnits(youngKeyInspection.key.maxActionAmount, youngDisplayDecimals!)} />
                 <MuseumFact label="PER-PERIOD LIMIT" value={displayTokenUnits(youngKeyInspection.key.maxPeriodAmount, youngDisplayDecimals!)} />
+                <KeyPeriodUsage spentBaseUnits={youngKeyInspection.key.spentThisPeriod} maxPeriodBaseUnits={youngKeyInspection.key.maxPeriodAmount} />
                 <MuseumFact label="MANDATE NONCE" value={youngKeyInspection.key.nonce.toString()} />
                 <MuseumFact label="AUTHORITY STAGE" value={youngKeyInspection.key.mandateStage.toString()} />
                 <Text style={styles.body}>These limits are read from the CRESCO program. A payment still needs its own wallet approval and onchain enforcement.</Text>
