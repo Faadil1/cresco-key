@@ -1496,7 +1496,7 @@ export function BoundaryWorkspace() {
         </View>
         {relayRequest ? (
           <MuseumPlate exhibit="AN EXACT REQUEST" title={relayRequest.display?.label ?? "Guardian review"}
-            tone={relayRequest.status === "REFUSED" ? "boundary" : "pending"}>
+            tone={relayRequest.status === "REFUSED" ? "boundary" : relayRequest.status === "PENDING" || relayRequest.status === "ALLOWANCE_SUBMITTED" ? "pending" : "unknown"}>
             <View style={styles.exactChoiceHeader}>
             <LivingKeySeal size={38} mood={relayRequest.status === "REFUSED" ? "boundary" : relayRequest.status === "PENDING" ? "request" : relayRequest.status === "EXPIRED" ? "unknown" : "standing"} />
             <Text style={styles.roleDescription}>One exact request · standing limits stay unchanged</Text>
@@ -1786,7 +1786,7 @@ export function BoundaryWorkspace() {
       ) : null}
       {relayRequest ? (
         <MuseumPlate exhibit="ONE EXACT EXCEPTION" title="The boundary did not move."
-          tone={relayRequest.status === "REFUSED" ? "boundary" : "pending"}>
+          tone={relayRequest.status === "REFUSED" ? "boundary" : relayRequest.status === "PENDING" || relayRequest.status === "ALLOWANCE_SUBMITTED" ? "pending" : "unknown"}>
           <MuseumFact label="RELAY COORDINATION STATUS" value={relayRequest.status} />
           <Text style={styles.body}>A relay response alone never moves capital or grants new standing authority.</Text>
           {shareLink ? <MuseumButton label="Share to guardian device" onPress={() => {
