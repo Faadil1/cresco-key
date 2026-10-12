@@ -223,6 +223,11 @@ export function BoundaryWorkspace() {
   } = useMobileWallet();
 
   const [mode, setMode] = useState<Mode>(null);
+  // Disclosure state is UX only: never used to bypass chain or wallet checks.
+  const [showYoungSetup, setShowYoungSetup] = useState(false);
+  const [showWidenControls, setShowWidenControls] = useState(false);
+  const [showSkr, setShowSkr] = useState(false);
+  const [showTechnical, setShowTechnical] = useState(false);
   const [scanning, setScanning] = useState(false);
   const [intent, setIntent] = useState<SolanaPayTransferIntent | null>(null);
   // The configured scenario is a test convenience, never an eligibility rule
@@ -1417,24 +1422,48 @@ export function BoundaryWorkspace() {
   if (!mode) {
     return (
       <ScrollView contentContainerStyle={styles.section}>
-        <Text style={styles.eyebrow}>CHOOSE YOUR ROLE</Text>
         <MuseumHero
-          exhibit="CATALOGUE 001 / THE FAMILY KEY"
-          title="Freedom with Boundaries."
-          subtitle="The next generation deserves room to act. The standing Key sets the limits; a guardian appears only when needed."
-          showKey
+          exhibit="ONE FAMILY · TWO DISTINCT WALLETS"
+          title="Who are you today?"
+          subtitle="The young person spends within their Key. A Guardian decides when an exception needs a second look. Each uses their own wallet."
+          compact
         />
-        <MuseumPlate exhibit="EXHIBIT A / YOUR KEY" title="Choose your role">
-          <Text style={styles.body}>Each person signs with their own wallet. No shared custody or silent approval.</Text>
-          <MuseumButton label="Young person flow" onPress={() => setMode("YOUNG")} />
-          <MuseumButton label="Guardian flow" variant="secondary" onPress={() => setMode("GUARDIAN")} />
-        </MuseumPlate>
-        <ProofStrip />
-        <MuseumPlate exhibit="VERIFICATION / LOCAL WALLET" title="Inspect your session">
-          <Text style={styles.body}>{walletProof}</Text>
-          <MuseumButton label="Sign TRC-01 proof message" disabled={busy} variant="secondary" onPress={signWalletProof} />
-        </MuseumPlate>
-        <LatestReceiptCard receiptJson={latestReceiptJson} busy={busy} />
+        <Pressable accessibilityRole="button"
+          accessibilityLabel="Continue as young person"
+          onPress={() => setMode("YOUNG")}
+          style={[styles.roleCard, styles.roleCardPrimary]}>
+          <Text style={styles.roleEyebrow}>I'M SPENDING</Text>
+          <Text style={styles.roleTitle}>Young person →</Text>
+          <Text style={styles.roleDescription}>Check your limit, scan a payment and ask only if you reach a boundary.</Text>
+        </Pressable>
+        <Pressable accessibilityRole="button"
+          accessibilityLabel="Continue as guardian"
+          onPress={() => setMode("GUARDIAN")}
+          style={styles.roleCard}>
+          <Text style={styles.roleEyebrow}>I'M HELPING</Text>
+          <Text style={styles.roleTitle}>Guardian →</Text>
+          <Text style={styles.roleDescription}>Review an exact request, say no or authorize only that action once.</Text>
+        </Pressable>
+        <Text style={styles.status}>DEVNET TEST APP · A connected wallet alone does not create a family Key.</Text>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityState={{ expanded: showTechnical }}
+          onPress={() => setShowTechnical(v => !v)}
+          style={styles.disclosure}>
+          <Text style={styles.disclosureTitle}>Wallet proof and technical evidence</Text>
+          <Text style={styles.disclosureTitle}>{showTechnical ? "−" : "+"}</Text>
+        </Pressable>
+        {showTechnical ? (
+          <>
+            <MuseumPlate exhibit="LOCAL WALLET" title="Inspect your session">
+              <Text style={styles.body}>{walletProof}</Text>
+              <MuseumButton label="Sign TRC-01 proof message" disabled={busy}
+                variant="secondary" onPress={signWalletProof} />
+            </MuseumPlate>
+            <ProofStrip />
+            <LatestReceiptCard receiptJson={latestReceiptJson} busy={busy} />
+          </>
+        ) : null}
       </ScrollView>
     );
   }
@@ -1442,8 +1471,12 @@ export function BoundaryWorkspace() {
   if (mode === "GUARDIAN") {
     return (
       <ScrollView contentContainerStyle={styles.section}>
-        <MuseumHero exhibit="EXHIBIT C / THE DECISION" title="One action. Your call."
-          subtitle="Choose consciously: refuse, allow exactly once, or change the standing Key. Only the last choice changes ongoing authority." compact />
+        <Pressable accessibilityRole="button" accessibilityLabel="Back to role selection"
+          onPress={() => setMode(null)} style={styles.backAction}>
+          <Text style={styles.backText}>← All roles</Text>
+        </Pressable>
+        <MuseumHero exhibit="GUARDIAN / DECISION" title="One request. Your call."
+          subtitle="Review the recipient and amount, then refuse or approve one exact payment. Permanent limits are a separate choice." compact />
         {relayRequest ? (
           <MuseumPlate exhibit="REQUEST / EXACT BOUNDARY" title={relayRequest.display?.label ?? "Guardian review"}
             tone={relayRequest.status === "REFUSED" ? "boundary" : "pending"}>
@@ -1466,7 +1499,15 @@ export function BoundaryWorkspace() {
           <>
             <MuseumButton label="Allow this exact payment once" disabled={busy} onPress={grantExactAllowanceOnce} />
             <MuseumButton label="Not this time" variant="boundary" disabled={busy} onPress={refuseBoundaryRequest} />
-            <MuseumPlate exhibit="THIRD CHOICE / PERMANENT AUTHORITY" title="Widen the standing Key" tone="neutral">
+            <Pressable accessibilityRole="button"
+              accessibilityState={{ expanded: showWidenControls }}
+              accessibilityLabel="Change ongoing limits, separate from Allow Once"
+              onPress={() => setShowWidenControls(v => !v)} style={styles.disclosure}>
+              <Text style={styles.disclosureTitle}>Change ongoing limits (different action)</Text>
+              <Text style={styles.disclosureTitle}>{showWidenControls ? "−" : "+"}</Text>
+            </Pressable>
+            {showWidenControls ? (
+            <MuseumPlate exhibit="SEPARATE / PERMANENT AUTHORITY" title="Change the standing Key" tone="neutral">
               <Text style={styles.body}>This is NOT Allow Once. Widen changes the permanent amount limits of the actual onchain asset rule. It advances the mandate nonce and invalidates pending exact authorizations tied to the old version.</Text>
               <MuseumButton label="Read current standing Key from Devnet" variant="secondary"
                 disabled={busy} onPress={inspectGuardianStandingKey} />
@@ -1522,21 +1563,35 @@ export function BoundaryWorkspace() {
                 </Text>
               ) : null}
             </MuseumPlate>
+            ) : null}
           </>
         ) : null}
         <MuseumPlate exhibit="AUTHORITY / IMPORTANT">
           <Text style={styles.body}>The relay coordinates the request. Only the CRESCO Solana program can grant a one-time allowance. A confirmed allowance is not a completed payment.</Text>
           <Text style={styles.status} accessibilityLiveRegion="polite">{status}</Text>
         </MuseumPlate>
-        <LatestReceiptCard receiptJson={latestReceiptJson} busy={busy} />
-        <SkrCharterAtelier walletAddress={account?.address?.toString() ?? ""} liveKey={guardianKeyInspection?.state === "READY" ? guardianKeyInspection.key : null} />
-        <MuseumButton label="Change role" variant="secondary" onPress={() => setMode(null)} />
+        <Pressable accessibilityRole="button" accessibilityState={{ expanded: showSkr }}
+          onPress={() => setShowSkr(v => !v)} style={styles.disclosure}>
+          <Text style={styles.disclosureTitle}>Optional Solana Mobile / SKR tools</Text>
+          <Text style={styles.disclosureTitle}>{showSkr ? "−" : "+"}</Text>
+        </Pressable>
+        {showSkr ? <SkrCharterAtelier walletAddress={account?.address?.toString() ?? ""} liveKey={guardianKeyInspection?.state === "READY" ? guardianKeyInspection.key : null} /> : null}
+        <Pressable accessibilityRole="button" accessibilityState={{ expanded: showTechnical }}
+          onPress={() => setShowTechnical(v => !v)} style={styles.disclosure}>
+          <Text style={styles.disclosureTitle}>Transaction receipts / technical evidence</Text>
+          <Text style={styles.disclosureTitle}>{showTechnical ? "−" : "+"}</Text>
+        </Pressable>
+        {showTechnical ? <LatestReceiptCard receiptJson={latestReceiptJson} busy={busy} /> : null}
       </ScrollView>
     );
   }
 
   return (
     <ScrollView contentContainerStyle={styles.section}>
+      <Pressable accessibilityRole="button" accessibilityLabel="Back to role selection"
+        onPress={() => setMode(null)} style={styles.backAction}>
+        <Text style={styles.backText}>← All roles</Text>
+      </Pressable>
       {!relayRequest ? (
         <MuseumButton label="Resume my previous private request" disabled={busy}
           variant="secondary" onPress={restoreYoungSession} />
@@ -1548,10 +1603,17 @@ export function BoundaryWorkspace() {
           ? "This attempt was refused. A narrow guardian request may be created without changing your standing rules."
           : standingOutcome === "ALLOW" ? "Your standing Key permitted this exact action on Devnet." : "Act independently inside your rules. Start by scanning an exact payment intent."}
         tone={standingOutcome === "REFUSE" ? "boundary" : "neutral"}
-        compact={Boolean(intent)}
-        showKey={!intent}
+        compact
       />
-      <MuseumPlate exhibit="START HERE / REAL DEVNET KEY SETUP" title="Does this wallet have its own Key?">
+      <Pressable accessibilityRole="button"
+        accessibilityState={{ expanded: showYoungSetup }}
+        onPress={() => setShowYoungSetup(v => !v)}
+        style={styles.disclosure}>
+        <Text style={styles.disclosureTitle}>Check wallet setup before paying</Text>
+        <Text style={styles.disclosureTitle}>{showYoungSetup ? "−" : "+"}</Text>
+      </Pressable>
+      {showYoungSetup ? (
+      <MuseumPlate exhibit="DEVNET / YOUR WALLET" title="Does this wallet have its own Key?">
         <Text style={styles.body}>Inspect the connected Solflare wallet on Devnet. A build-time demo Key cannot authorize another person's wallet.</Text>
         <MuseumButton label="Check my actual Devnet Charter and balance"
           disabled={busy || !account} variant="secondary" onPress={inspectMyKeySetup} />
@@ -1581,6 +1643,7 @@ export function BoundaryWorkspace() {
           </View>
         ) : null}
       </MuseumPlate>
+      ) : null}
       <MuseumPlate exhibit="EXHIBIT A / PAYMENT INTENT" title={intent ? "Your requested action" : "Start with an action"}
         tone={standingOutcome === "REFUSE" ? "boundary" : standingOutcome === "ALLOW" ? "verified" : "neutral"}>
         {intent ? (
@@ -1698,13 +1761,26 @@ export function BoundaryWorkspace() {
           <Text style={styles.body}>{status}</Text>
         </MuseumPlate>
       ) : null}
-      <SkrCharterAtelier walletAddress={account?.address?.toString() ?? ""} liveKey={youngKeyInspection?.state === "READY" ? youngKeyInspection.key : null} />
-      <LatestReceiptCard receiptJson={latestReceiptJson} busy={busy} />
-      <ProofStrip />
-      <MuseumPlate exhibit="OPERATOR DETAIL / CURRENT STATUS">
-        <Text style={styles.status} accessibilityLiveRegion="polite">{status}</Text>
-      </MuseumPlate>
-      <MuseumButton label="Change role" variant="secondary" onPress={() => setMode(null)} />
+      <Pressable accessibilityRole="button" accessibilityState={{ expanded: showSkr }}
+        onPress={() => setShowSkr(v => !v)} style={styles.disclosure}>
+        <Text style={styles.disclosureTitle}>Optional Solana Mobile / SKR tools</Text>
+        <Text style={styles.disclosureTitle}>{showSkr ? "−" : "+"}</Text>
+      </Pressable>
+      {showSkr ? <SkrCharterAtelier walletAddress={account?.address?.toString() ?? ""} liveKey={youngKeyInspection?.state === "READY" ? youngKeyInspection.key : null} /> : null}
+      <Pressable accessibilityRole="button" accessibilityState={{ expanded: showTechnical }}
+        onPress={() => setShowTechnical(v => !v)} style={styles.disclosure}>
+        <Text style={styles.disclosureTitle}>Receipts and operator details</Text>
+        <Text style={styles.disclosureTitle}>{showTechnical ? "−" : "+"}</Text>
+      </Pressable>
+      {showTechnical ? (
+        <>
+          <LatestReceiptCard receiptJson={latestReceiptJson} busy={busy} />
+          <ProofStrip />
+          <MuseumPlate exhibit="CURRENT RUNTIME STATUS">
+            <Text style={styles.status} accessibilityLiveRegion="polite">{status}</Text>
+          </MuseumPlate>
+        </>
+      ) : null}
     </ScrollView>
   );
 }
@@ -1806,13 +1882,22 @@ function Row({ label, value }: { label: string; value: string }) {
 const styles = StyleSheet.create({
   full: { flex: 1 },
   section: {
-    paddingHorizontal: 22,
+    paddingHorizontal: 20,
     paddingVertical: 16,
     paddingBottom: 48,
     gap: 15,
     backgroundColor: color.ivory,
     flexGrow: 1,
   },
+  backAction: { minHeight: 44, justifyContent: "center", alignSelf: "flex-start", paddingHorizontal: 2 },
+  backText: { color: color.deepBrass, fontWeight: "700", fontSize: 15 },
+  roleCard: { borderWidth: 1, borderColor: color.border, backgroundColor: color.paper, borderRadius: 16, padding: 19, gap: 8, minHeight: 138 },
+  roleCardPrimary: { borderColor: color.deepBrass, backgroundColor: "#EDE3D1" },
+  roleEyebrow: { color: color.deepBrass, fontSize: 10, fontWeight: "700", letterSpacing: 1.5 },
+  roleTitle: { color: color.ink, fontSize: 27, fontFamily: "serif", lineHeight: 33 },
+  roleDescription: { color: color.secondaryInk, fontSize: 14, lineHeight: 21 },
+  disclosure: { borderTopWidth: 1, borderBottomWidth: 1, borderColor: color.border, paddingVertical: 13, minHeight: 48, flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 12 },
+  disclosureTitle: { color: color.deepBrass, fontWeight: "700", fontSize: 13, flexShrink: 1 },
   scenarios: { gap: 10, borderTopWidth: 1, borderTopColor: color.border, paddingTop: 12 },
   limitInput: {
     minHeight: 48, borderColor: color.border, borderWidth: 1, borderRadius: 8,
