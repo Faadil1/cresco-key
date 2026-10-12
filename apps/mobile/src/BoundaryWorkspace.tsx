@@ -1489,7 +1489,7 @@ export function BoundaryWorkspace() {
           <MuseumPlate exhibit="REQUEST / EXACT BOUNDARY" title={relayRequest.display?.label ?? "Guardian review"}
             tone={relayRequest.status === "REFUSED" ? "boundary" : "pending"}>
             <View style={styles.exactChoiceHeader}>
-            <LivingKeySeal size={38} mood={relayRequest.status === "REFUSED" ? "boundary" : relayRequest.status === "PENDING" ? "request" : "standing"} />
+            <LivingKeySeal size={38} mood={relayRequest.status === "REFUSED" ? "boundary" : relayRequest.status === "PENDING" ? "request" : relayRequest.status === "UNKNOWN" ? "unknown" : "standing"} />
             <Text style={styles.roleDescription}>One exact request · standing limits stay unchanged</Text>
           </View>
           <MuseumFact label="COORDINATION STATUS (NOT PAYMENT)" value={relayRequest.status} />
@@ -1666,7 +1666,7 @@ export function BoundaryWorkspace() {
                 <Text style={styles.roleEyebrow}>REQUESTED TOKEN AMOUNT</Text>
                 <Text style={styles.purchaseAmount} selectable>{intent.amountUi}</Text>
               </View>
-              <LivingKeySeal size={46} mood={standingOutcome === "REFUSE" ? "boundary" : "standing"} />
+              <LivingKeySeal size={46} mood={standingOutcome === "REFUSE" ? "boundary" : standingOutcome === "UNKNOWN" ? "unknown" : "standing"} />
             </View>
             <MuseumFact label="TOKEN MINT" value={intent.mint} />
             <MuseumFact label="RECIPIENT" value={intent.recipient} />
