@@ -68,6 +68,50 @@ if [ "$WALLET_SURFACE_OBSERVED" != "1" ]; then
   exit 1
 fi
 
+# The judge-facing no-wallet route is a FIRST-CLASS product surface.
+# Actually open it; a visible CTA alone does not prove navigation works.
+# Never click "Check sample Key limits" in smoke and mistake a seed, spinner,
+# or read-only RPC attempt for a real financial transaction.
+echo "== Verify no-wallet Key tour is navigable on Android =="
+TOUR_COORDS="$(EVIDENCE="$EVIDENCE" python3 - <<'PY'
+import os, re, sys, xml.etree.ElementTree as ET
+p=os.path.join(os.environ["EVIDENCE"],"cresco-window.xml")
+root=ET.parse(p).getroot()
+for n in root.iter("node"):
+    v=n.attrib.get("text","") or n.attrib.get("content-desc","")
+    if "Explore live Devnet Key" in v:
+        m=re.match(r"\[(\d+),(\d+)\]\[(\d+),(\d+)\]",n.attrib.get("bounds",""))
+        if m:
+            a,b,c,d=map(int,m.groups())
+            print((a+c)//2,(b+d)//2)
+            sys.exit(0)
+sys.exit(1)
+PY
+)" || {
+  echo "FAIL: no-wallet tour button lacks usable Android accessibility bounds." >&2
+  exit 1
+}
+read -r TOUR_X TOUR_Y <<< "$TOUR_COORDS"
+adb shell input tap "$TOUR_X" "$TOUR_Y"
+TOUR_SEEN=0
+for attempt in $(seq 1 8); do
+  adb shell uiautomator dump /sdcard/cresco-judge.xml >/dev/null 2>&1 || true
+  adb pull /sdcard/cresco-judge.xml "$EVIDENCE/cresco-judge.xml" >/dev/null 2>&1 || true
+  if grep -q 'See what a Key allows' "$EVIDENCE/cresco-judge.xml" && \
+     grep -q 'Check sample Key limits' "$EVIDENCE/cresco-judge.xml"; then
+    TOUR_SEEN=1
+    break
+  fi
+  sleep 2
+done
+adb exec-out screencap -p > "$EVIDENCE/cresco-judge-tour.png"
+if [ "$TOUR_SEEN" != "1" ]; then
+  echo "FAIL: No-wallet live-Key inspection screen did not render." >&2
+  exit 1
+fi
+echo "NO_WALLET_JUDGE_TOUR_NAVIGATION=OBSERVED (no RPC assertion, no payment)"
+adb shell input keyevent 4 || true
+
 echo "== Verify an installed MWA-compatible handler is discoverable =="
 LAUNCH_RESULT="$(adb shell am start -W \
   -a android.intent.action.VIEW \
