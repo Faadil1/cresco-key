@@ -9,6 +9,8 @@
 ## Downloads and source
 
 - [Latest Signature standalone Android APK](https://github.com/Faadil1/cresco-key/releases/download/clock-in-2026-signature-0bd51d53/cresco-key-signature-clock-in-0bd51d53-devnet.apk)
+- [Public 18-slide Signature jury deck PDF](https://github.com/Faadil1/cresco-key/releases/download/clock-in-2026-signature-0bd51d53/cresco-key-signature-jury-deck-18-slides.pdf)
+- [Public 88s real-emulator demo MP4](https://github.com/Faadil1/cresco-key/releases/download/clock-in-2026-signature-0bd51d53/cresco-key-signature-demo-88sec.mp4)
 - [Public release, build receipt and SHA-256](https://github.com/Faadil1/cresco-key/releases/tag/clock-in-2026-signature-0bd51d53)
 - [Mobile Signature source, PR #85](https://github.com/Faadil1/cresco-key/pull/85) — source commit 0bd51d53
 - [Actual Android emulator workflow](https://github.com/Faadil1/cresco-key/actions/runs/38297714925)
