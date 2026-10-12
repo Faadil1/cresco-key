@@ -76,11 +76,11 @@ export function MuseumPlate({
     <View style={[styles.plate, tone === "boundary" && styles.plateBoundary, tone === "verified" && styles.plateVerified, (tone === "unknown" || tone === "blocked") && styles.plateUnknown]}>
       <View style={styles.plateHeader}>
         <Text style={styles.overline}>{exhibit}</Text>
-        <View style={[styles.seal, tone === "boundary" && styles.sealBoundary, tone === "verified" && styles.sealVerified, (tone === "unknown" || tone === "blocked") && styles.sealUnknown]}>
+        {tone !== "neutral" ? <View style={[styles.seal, tone === "boundary" && styles.sealBoundary, tone === "verified" && styles.sealVerified, (tone === "unknown" || tone === "blocked") && styles.sealUnknown]}>
           <Text style={[styles.sealText, tone === "boundary" && styles.sealTextBoundary, tone === "verified" && styles.sealTextVerified, (tone === "unknown" || tone === "blocked") && styles.sealTextUnknown]}>
-            {tone === "boundary" ? "REFUSED" : tone === "verified" ? "VERIFIED" : tone === "pending" ? "PENDING" : tone === "unknown" ? "UNKNOWN" : tone === "blocked" ? "BLOCKED" : "CRESCO"}
+            {tone === "boundary" ? "BOUNDARY" : tone === "verified" ? "VERIFIED" : tone === "pending" ? "PENDING" : tone === "unknown" ? "UNKNOWN" : tone === "blocked" ? "BLOCKED" : ""}
           </Text>
-        </View>
+        </View> : null}
       </View>
       {title ? <Text style={styles.plateTitle}>{title}</Text> : null}
       {children}
@@ -115,7 +115,7 @@ export function MuseumButton({
       ]}
     >
       <Text style={[styles.buttonText, variant === "secondary" && styles.buttonTextSecondary, variant === "boundary" && styles.buttonTextBoundary]}>{label}</Text>
-      <Text style={[styles.buttonArrow, variant === "secondary" && styles.buttonTextSecondary, variant === "boundary" && styles.buttonTextBoundary]}>→</Text>
+      <Text style={[styles.buttonArrow, variant === "secondary" && styles.buttonTextSecondary, variant === "boundary" && styles.buttonTextBoundary]}>↗</Text>
     </Pressable>
   );
 }
@@ -157,60 +157,60 @@ export function ProofStrip() {
 export const museumColors = t.color;
 
 const styles = StyleSheet.create({
-  hero: { paddingTop: 23, paddingBottom: 21, gap: 14, borderBottomWidth: 1, borderBottomColor: t.color.border },
-  heroCompact: { paddingTop: 10, paddingBottom: 12, gap: 8 },
-  boundaryHero: { borderBottomColor: t.color.vermilion },
+  hero: { paddingTop: 16, paddingBottom: 20, gap: 12 },
+  heroCompact: { paddingTop: 8, paddingBottom: 12, gap: 7 },
+  boundaryHero: { borderLeftWidth: 3, borderLeftColor: t.color.vermilion, paddingLeft: 13 },
   heroTop: { flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
-  heroContent: { flexDirection: "column", alignItems: "stretch" },
-  artifactStage: { height: 175, flexDirection: "row", justifyContent: "flex-end", alignItems: "center", gap: 16, marginVertical: 1 },
-  artifactStageCompact: { height: 100 },
-  artifactCaption: { maxWidth: 113, gap: 7, alignSelf: "center" },
-  artifactIndex: { fontFamily: "serif", color: t.color.deepBrass, fontSize: 16, fontStyle: "italic" },
-  artifactNote: { color: t.color.deepBrass, fontSize: 10, letterSpacing: 1.5, lineHeight: 16 },
+  heroContent: { flexDirection: "column" },
+  artifactStage: { minHeight: 126, flexDirection: "row", alignItems: "center", justifyContent: "flex-end", gap: 12 },
+  artifactStageCompact: { minHeight: 76 },
+  artifactCaption: { maxWidth: 110, gap: 5 },
+  artifactIndex: { color: t.color.deepBrass, fontSize: 12, fontWeight: "700" },
+  artifactNote: { color: t.color.secondaryInk, fontSize: 10, letterSpacing: 0.8, lineHeight: 15 },
   heroCopy: { flex: 1, minWidth: 0 },
-  overline: { fontSize: 10, lineHeight: 15, letterSpacing: 1.85, color: t.color.deepBrass, fontWeight: "700" },
-  starDot: { height: 8, width: 8, backgroundColor: t.color.brass, transform: [{ rotate: "45deg" }] },
-  heroTitle: { fontFamily: "serif", fontSize: 39, lineHeight: 44, color: t.color.ink, letterSpacing: -1 },
-  heroTitleCompact: { fontSize: 30, lineHeight: 35 },
-  heroSubtitle: { color: t.color.secondaryInk, fontSize: 14, lineHeight: 21, marginTop: 8, maxWidth: 340 },
-  artifact: { justifyContent: "flex-start", alignItems: "center", marginLeft: 5 },
-  keyRingOuter: { borderWidth: 5, borderColor: t.color.deepBrass, backgroundColor: t.color.brass, alignItems: "center", justifyContent: "center", elevation: 4 },
-  keyRingInner: { borderWidth: 1, borderColor: "#F7E7C6", justifyContent: "center", alignItems: "center", backgroundColor: "#B9955B" },
-  keyStar: { color: t.color.ink, lineHeight: 69, textAlign: "center" },
-  keyMicro: { fontSize: 8, letterSpacing: 2.3, color: t.color.ink, marginTop: -13 },
-  artifactFoot: { height: 15, width: 17, backgroundColor: t.color.brass, borderLeftWidth: 2, borderRightWidth: 2, borderColor: t.color.deepBrass },
-  artifactTooth: { height: 8, width: 32, backgroundColor: t.color.brass, borderWidth: 2, borderColor: t.color.deepBrass, marginLeft: 15 },
-  plate: { padding: 18, borderWidth: 1, borderColor: t.color.border, borderRadius: 13, backgroundColor: t.color.paper, gap: 12 },
-  plateBoundary: { borderColor: t.color.vermilion, backgroundColor: "#FCF6F2" },
-  plateUnknown: { borderColor: t.color.unknown, backgroundColor: t.color.unknownWash },
-  plateVerified: { borderColor: t.color.verified },
+  overline: { fontSize: 10, lineHeight: 15, letterSpacing: 1.5, color: t.color.deepBrass, fontWeight: "700" },
+  starDot: { width: 5, height: 5, backgroundColor: t.color.brass, borderRadius: 3 },
+  heroTitle: { fontFamily: "serif", fontSize: 36, lineHeight: 43, letterSpacing: -1.25, color: t.color.ink },
+  heroTitleCompact: { fontSize: 32, lineHeight: 39 },
+  heroSubtitle: { color: t.color.secondaryInk, fontSize: 15, lineHeight: 23, marginTop: 7, maxWidth: 350 },
+  artifact: { justifyContent: "flex-start", alignItems: "center" },
+  keyRingOuter: { borderWidth: 3, borderColor: t.color.deepBrass, backgroundColor: t.color.paper, alignItems: "center", justifyContent: "center" },
+  keyRingInner: { borderWidth: 1, borderColor: t.color.border, justifyContent: "center", alignItems: "center", backgroundColor: t.color.paper },
+  keyStar: { color: t.color.deepBrass, textAlign: "center" },
+  keyMicro: { fontSize: 8, letterSpacing: 2, color: t.color.deepBrass, marginTop: -9 },
+  artifactFoot: { height: 15, width: 14, backgroundColor: t.color.brass },
+  artifactTooth: { height: 7, width: 27, backgroundColor: t.color.brass, marginLeft: 12 },
+  plate: { paddingHorizontal: 19, paddingVertical: 20, borderWidth: 1, borderColor: t.color.border, borderRadius: 22, backgroundColor: t.color.paper, gap: 12 },
+  plateBoundary: { borderColor: "#EBC9C5", backgroundColor: "#FFF8F7" },
+  plateUnknown: { borderColor: t.color.border, backgroundColor: t.color.unknownWash },
+  plateVerified: { borderColor: "#B9D6C1" },
   plateHeader: { flexDirection: "row", gap: 8, justifyContent: "space-between", alignItems: "center" },
-  plateTitle: { fontFamily: "serif", fontSize: 27, lineHeight: 32, color: t.color.ink },
-  seal: { borderWidth: 1, borderColor: t.color.brass, paddingHorizontal: 8, paddingVertical: 4 },
-  sealBoundary: { borderColor: t.color.vermilion },
-  sealUnknown: { borderColor: t.color.unknown },
-  sealVerified: { borderColor: t.color.verified },
-  sealText: { fontSize: 9, color: t.color.deepBrass, fontWeight: "700", letterSpacing: 1 },
+  plateTitle: { fontFamily: "serif", fontSize: 24, lineHeight: 30, letterSpacing: -0.5, color: t.color.ink },
+  seal: { borderRadius: 99, paddingHorizontal: 9, paddingVertical: 5, backgroundColor: t.color.unknownWash },
+  sealBoundary: { backgroundColor: t.color.vermilionWash },
+  sealUnknown: { backgroundColor: t.color.unknownWash },
+  sealVerified: { backgroundColor: t.color.verifiedWash },
+  sealText: { fontSize: 9, color: t.color.deepBrass, fontWeight: "800", letterSpacing: 0.7 },
   sealTextBoundary: { color: t.color.vermilion },
   sealTextVerified: { color: t.color.verified },
   sealTextUnknown: { color: t.color.unknown },
-  button: { minHeight: 54, backgroundColor: t.color.brass, borderRadius: 12, paddingHorizontal: 19, paddingVertical: 13, flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 12, borderWidth: 1, borderColor: t.color.deepBrass },
-  buttonSecondary: { backgroundColor: "transparent", borderColor: t.color.brass },
-  buttonBoundary: { backgroundColor: t.color.vermilion, borderColor: t.color.vermilion },
-  buttonPressed: { opacity: 0.82 },
-  buttonDisabled: { opacity: 0.44 },
-  buttonText: { fontSize: 16, fontWeight: "700", lineHeight: 22, color: t.color.ink, flexShrink: 1 },
+  button: { minHeight: 56, backgroundColor: t.color.ink, borderRadius: 16, paddingHorizontal: 20, paddingVertical: 14, flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 12 },
+  buttonSecondary: { backgroundColor: t.color.paper, borderWidth: 1, borderColor: t.color.border },
+  buttonBoundary: { backgroundColor: t.color.vermilionWash, borderWidth: 1, borderColor: "#EBC9C5" },
+  buttonPressed: { opacity: 0.78, transform: [{ scale: 0.995 }] },
+  buttonDisabled: { opacity: 0.4 },
+  buttonText: { fontSize: 15, fontWeight: "700", lineHeight: 22, color: t.color.white, flexShrink: 1 },
   buttonTextSecondary: { color: t.color.ink },
-  buttonTextBoundary: { color: t.color.white },
-  buttonArrow: { fontSize: 23, color: t.color.ink },
-  fact: { borderTopWidth: 1, borderColor: t.color.border, paddingTop: 8, gap: 3 },
-  factLabel: { color: t.color.deepBrass, fontWeight: "700", letterSpacing: 1.1, fontSize: 11 },
-  factValue: { color: t.color.ink, fontSize: 15, lineHeight: 21 },
-  proof: { borderWidth: 1, borderColor: t.color.border, borderRadius: 14, padding: 14, gap: 12, backgroundColor: t.color.paper },
+  buttonTextBoundary: { color: t.color.vermilion },
+  buttonArrow: { fontSize: 20, color: t.color.white },
+  fact: { borderTopWidth: 1, borderColor: t.color.border, paddingTop: 11, gap: 5 },
+  factLabel: { color: t.color.secondaryInk, fontWeight: "700", letterSpacing: 0.7, fontSize: 10 },
+  factValue: { color: t.color.ink, fontSize: 15, lineHeight: 23 },
+  proof: { borderWidth: 1, borderColor: t.color.border, borderRadius: 16, padding: 14, gap: 12, backgroundColor: t.color.paper },
   proofItems: { flexDirection: "row", justifyContent: "space-between" },
   proofItem: { flex: 1, alignItems: "center", gap: 3, paddingHorizontal: 4 },
-  proofTitle: { fontSize: 12, fontWeight: "700", color: t.color.ink, letterSpacing: 1 },
+  proofTitle: { fontSize: 12, fontWeight: "700", color: t.color.ink },
   proofSmall: { fontSize: 10, color: t.color.secondaryInk, textAlign: "center" },
   greenTick: { fontSize: 18, color: t.color.verified },
-  pendingTick: { fontSize: 18, color: t.color.deepBrass },
+  pendingTick: { fontSize: 18, color: t.color.unknown },
 });

@@ -1425,9 +1425,9 @@ export function BoundaryWorkspace() {
     return (
       <ScrollView contentContainerStyle={styles.section}>
         <MuseumHero
-          exhibit="ONE FAMILY · TWO DISTINCT WALLETS"
-          title="Who are you today?"
-          subtitle="The young person spends within their Key. A Guardian decides when an exception needs a second look. Each uses their own wallet."
+          exhibit="TWO ROLES · TWO DISTINCT WALLETS"
+          title="Your Key. Your role."
+          subtitle="Everyday freedom for young people. Thoughtful decisions for Guardians. Each person uses their own wallet."
           compact
         />
         <Pressable accessibilityRole="button"
@@ -1438,7 +1438,7 @@ export function BoundaryWorkspace() {
             <Text style={styles.roleEyebrow}>I'M SPENDING</Text>
             <LivingKeySeal size={45} mood="standing" />
           </View>
-          <Text style={styles.roleTitle}>Young person →</Text>
+          <Text style={styles.roleTitle}>Young person  ↗</Text>
           <Text style={styles.roleDescription}>Check your limit, scan a payment and ask only if you reach a boundary.</Text>
         </Pressable>
         <Pressable accessibilityRole="button"
@@ -1449,7 +1449,7 @@ export function BoundaryWorkspace() {
             <Text style={styles.roleEyebrow}>I'M HELPING</Text>
             <LivingKeySeal size={45} mood="standing" />
           </View>
-          <Text style={styles.roleTitle}>Guardian →</Text>
+          <Text style={styles.roleTitle}>Guardian  ↗</Text>
           <Text style={styles.roleDescription}>Review an exact request, say no or authorize only that action once.</Text>
         </Pressable>
         <Text style={styles.status}>DEVNET TEST APP · A connected wallet alone does not create a family Key.</Text>
@@ -1483,24 +1483,27 @@ export function BoundaryWorkspace() {
           onPress={() => setMode(null)} style={styles.backAction}>
           <Text style={styles.backText}>← All roles</Text>
         </Pressable>
-        <MuseumHero exhibit="GUARDIAN / DECISION" title="One request. Your call."
-          subtitle="Review the recipient and amount, then refuse or approve one exact payment. Permanent limits are a separate choice." compact />
+        <MuseumHero exhibit="GUARDIAN / DECISION" title="One request. Your choice."
+          subtitle="Check the exact payment before deciding. Allowing it once never changes the standing Key." compact />
         {relayRequest ? (
-          <MuseumPlate exhibit="REQUEST / EXACT BOUNDARY" title={relayRequest.display?.label ?? "Guardian review"}
+          <MuseumPlate exhibit="AN EXACT REQUEST" title={relayRequest.display?.label ?? "Guardian review"}
             tone={relayRequest.status === "REFUSED" ? "boundary" : "pending"}>
             <View style={styles.exactChoiceHeader}>
             <LivingKeySeal size={38} mood={relayRequest.status === "REFUSED" ? "boundary" : relayRequest.status === "PENDING" ? "request" : relayRequest.status === "EXPIRED" ? "unknown" : "standing"} />
             <Text style={styles.roleDescription}>One exact request · standing limits stay unchanged</Text>
           </View>
-          <MuseumFact label="COORDINATION STATUS (NOT PAYMENT)" value={relayRequest.status} />
-            <MuseumFact label="AMOUNT / TOKEN BASE UNITS" value={relayRequest.amountBaseUnits} />
-            <MuseumFact label="TOKEN MINT" value={relayRequest.mint} />
-            <MuseumFact label="RECIPIENT" value={relayRequest.recipient} />
-            <MuseumFact label="MANDATE NONCE" value={relayRequest.mandateNonce} />
-            <Text style={styles.body}>Approval would cover only these exact terms once. It is not payment execution.</Text>
+          <View style={styles.exactAmountBlock}>
+            <Text style={styles.roleEyebrow}>REQUESTED AMOUNT · TOKEN BASE UNITS</Text>
+            <Text style={styles.exactAmount} selectable>{relayRequest.amountBaseUnits}</Text>
+          </View>
+          <MuseumFact label="RECIPIENT" value={relayRequest.recipient} />
+          <MuseumFact label="TOKEN MINT" value={relayRequest.mint} />
+          <MuseumFact label="COORDINATION STATUS — NOT A PAYMENT" value={relayRequest.status} />
+          <MuseumFact label="MANDATE NONCE" value={relayRequest.mandateNonce} />
+          <Text style={styles.body}>If allowed, this approval covers only the exact terms above, once. No payment has executed.</Text>
           </MuseumPlate>
         ) : (
-          <MuseumPlate exhibit="REQUEST / NONE YET" title="Awaiting a boundary">
+          <MuseumPlate exhibit="NO REQUEST LOADED" title="Nothing to review yet">
             <Text style={styles.body}>Open a private boundary link from the young person's device to load a real request.</Text>
           </MuseumPlate>
         )}
@@ -1610,54 +1613,15 @@ export function BoundaryWorkspace() {
           variant="secondary" onPress={restoreYoungSession} />
       ) : null}
       <MuseumHero
-        exhibit={standingOutcome === "REFUSE" ? "EXHIBIT B / BOUNDARY REACHED" : standingOutcome === "ALLOW" ? "EXHIBIT E / WITHIN THE KEY" : "EXHIBIT A / YOUR KEY"}
-        title={standingOutcome === "REFUSE" ? "This action needs a guardian." : standingOutcome === "ALLOW" ? "Within your Key." : "Freedom with Boundaries."}
+        exhibit={standingOutcome === "REFUSE" ? "YOUR BOUNDARY" : standingOutcome === "ALLOW" ? "KEY PERMITTED THE ACTION" : "YOUR STANDING KEY"}
+        title={standingOutcome === "REFUSE" ? "A Guardian is needed." : standingOutcome === "ALLOW" ? "Within your Key." : "Spend on your terms."}
         subtitle={standingOutcome === "REFUSE"
           ? "This attempt was refused. A narrow guardian request may be created without changing your standing rules."
           : standingOutcome === "ALLOW" ? "Your standing Key permitted this exact action on Devnet." : "Act independently inside your rules. Start by scanning an exact payment intent."}
         tone={standingOutcome === "REFUSE" ? "boundary" : "neutral"}
         compact
       />
-      <Pressable accessibilityRole="button"
-        accessibilityState={{ expanded: showYoungSetup }}
-        onPress={() => setShowYoungSetup(v => !v)}
-        style={styles.disclosure}>
-        <Text style={styles.disclosureTitle}>Check wallet setup before paying</Text>
-        <Text style={styles.disclosureTitle}>{showYoungSetup ? "−" : "+"}</Text>
-      </Pressable>
-      {showYoungSetup ? (
-      <MuseumPlate exhibit="DEVNET / YOUR WALLET" title="Does this wallet have its own Key?">
-        <Text style={styles.body}>Inspect the connected Solflare wallet on Devnet. A build-time demo Key cannot authorize another person's wallet.</Text>
-        <MuseumButton label="Check my actual Devnet Charter and balance"
-          disabled={busy || !account} variant="secondary" onPress={inspectMyKeySetup} />
-        {enrollmentInspection && account?.address.toString() === enrollmentInspection.beneficiary ? (
-          <View style={styles.scenarios}>
-            <MuseumFact label="ONCHAIN SETUP" value={enrollmentInspection.status} />
-            <MuseumFact label="BENEFICIARY" value={enrollmentInspection.beneficiary} />
-            <MuseumFact label="CHARTER PDA" value={enrollmentInspection.charter} />
-            <MuseumFact label="MANDATE PDA" value={enrollmentInspection.mandate} />
-            <MuseumFact label="DEVNET SOL / LAMPORTS" value={enrollmentInspection.walletBalanceLamports} />
-            <Text style={styles.body}>This is a read-only account check. Even when both accounts exist, Guardian identity and financial rules still require independent verification. No Key has been created by this screen.</Text>
-            <Text style={styles.scenarioLabel}>INTENDED GUARDIAN PUBLIC ADDRESS</Text>
-            <TextInput
-              accessibilityLabel="Guardian Solana public wallet address"
-              style={styles.limitInput}
-              value={guardianSetupAddress}
-              onChangeText={setGuardianSetupAddress}
-              autoCapitalize="none"
-              autoCorrect={false}
-              placeholder="Paste distinct Guardian public key"
-              placeholderTextColor={color.unknown}
-            />
-            <MuseumButton label="Share public Key setup request (no transaction)"
-              disabled={busy || !guardianSetupAddress.trim()}
-              variant="secondary" onPress={shareEnrollmentRequest} />
-            <Text style={styles.body}>Creating a new Charter requires a single valid Solana transaction signed by both the Guardian and this beneficiary. Sharing a request is not consent, wallet signing, a completed Charter, or a payment.</Text>
-          </View>
-        ) : null}
-      </MuseumPlate>
-      ) : null}
-      <MuseumPlate exhibit="EXHIBIT A / PAYMENT INTENT" title={intent ? "Your requested action" : "Start with an action"}
+      <MuseumPlate exhibit="YOUR PAYMENT" title={intent ? "Ready to review" : "Make a payment"}
         tone={standingOutcome === "REFUSE" ? "boundary" : standingOutcome === "ALLOW" ? "verified" : "neutral"}>
         {intent ? (
           <>
@@ -1698,7 +1662,7 @@ export function BoundaryWorkspace() {
             <MuseumButton label="View my live standing Key limits" disabled={busy}
               variant="secondary" onPress={inspectYoungCurrentKey} />
             {youngKeyInspection?.state === "READY" && youngDisplayDecimals !== null ? (
-              <MuseumPlate exhibit="YOUR REAL KEY / DEVNET" title="Standing authority right now" tone="neutral">
+              <MuseumPlate exhibit="LIVE DEVNET KEY" title="Standing authority right now" tone="neutral">
                 <MuseumFact label="PER-ACTION LIMIT" value={displayTokenUnits(youngKeyInspection.key.maxActionAmount, youngDisplayDecimals!)} />
                 <MuseumFact label="PER-PERIOD LIMIT" value={displayTokenUnits(youngKeyInspection.key.maxPeriodAmount, youngDisplayDecimals!)} />
                 <KeyPeriodUsage spentBaseUnits={youngKeyInspection.key.spentThisPeriod} maxPeriodBaseUnits={youngKeyInspection.key.maxPeriodAmount} />
@@ -1720,8 +1684,7 @@ export function BoundaryWorkspace() {
                   : paymentReadiness.state === "BLOCKED"
                     ? "Payment cannot proceed yet"
                     : "Account status is unknown"}
-                tone={paymentReadiness.state === "READY_FOR_WALLET_ATTEMPT"
-                  ? "verified" : "blocked"}>
+                tone={paymentReadiness.state === "BLOCKED" ? "blocked" : paymentReadiness.state === "UNKNOWN" ? "unknown" : "neutral"}>
                 <Text style={styles.body}>
                   {paymentReadiness.state === "BLOCKED"
                     ? paymentReadiness.reasons.join(" · ")
@@ -1739,6 +1702,45 @@ export function BoundaryWorkspace() {
           </View>
         ) : null}
       </MuseumPlate>
+      <Pressable accessibilityRole="button"
+        accessibilityState={{ expanded: showYoungSetup }}
+        onPress={() => setShowYoungSetup(v => !v)}
+        style={styles.disclosure}>
+        <Text style={styles.disclosureTitle}>Check wallet setup before paying</Text>
+        <Text style={styles.disclosureTitle}>{showYoungSetup ? "−" : "+"}</Text>
+      </Pressable>
+      {showYoungSetup ? (
+      <MuseumPlate exhibit="DEVNET / YOUR WALLET" title="Does this wallet have its own Key?">
+        <Text style={styles.body}>Inspect the connected Solflare wallet on Devnet. A build-time demo Key cannot authorize another person's wallet.</Text>
+        <MuseumButton label="Check my actual Devnet Charter and balance"
+          disabled={busy || !account} variant="secondary" onPress={inspectMyKeySetup} />
+        {enrollmentInspection && account?.address.toString() === enrollmentInspection.beneficiary ? (
+          <View style={styles.scenarios}>
+            <MuseumFact label="ONCHAIN SETUP" value={enrollmentInspection.status} />
+            <MuseumFact label="BENEFICIARY" value={enrollmentInspection.beneficiary} />
+            <MuseumFact label="CHARTER PDA" value={enrollmentInspection.charter} />
+            <MuseumFact label="MANDATE PDA" value={enrollmentInspection.mandate} />
+            <MuseumFact label="DEVNET SOL / LAMPORTS" value={enrollmentInspection.walletBalanceLamports} />
+            <Text style={styles.body}>This is a read-only account check. Even when both accounts exist, Guardian identity and financial rules still require independent verification. No Key has been created by this screen.</Text>
+            <Text style={styles.scenarioLabel}>INTENDED GUARDIAN PUBLIC ADDRESS</Text>
+            <TextInput
+              accessibilityLabel="Guardian Solana public wallet address"
+              style={styles.limitInput}
+              value={guardianSetupAddress}
+              onChangeText={setGuardianSetupAddress}
+              autoCapitalize="none"
+              autoCorrect={false}
+              placeholder="Paste distinct Guardian public key"
+              placeholderTextColor={color.unknown}
+            />
+            <MuseumButton label="Share public Key setup request (no transaction)"
+              disabled={busy || !guardianSetupAddress.trim()}
+              variant="secondary" onPress={shareEnrollmentRequest} />
+            <Text style={styles.body}>Creating a new Charter requires a single valid Solana transaction signed by both the Guardian and this beneficiary. Sharing a request is not consent, wallet signing, a completed Charter, or a payment.</Text>
+          </View>
+        ) : null}
+      </MuseumPlate>
+      ) : null}
       {preflightBlocked ? <MuseumPlate exhibit="OPERATOR / CONFIGURATION BLOCKED" title="Preflight stopped safely" tone="blocked">
         <Text style={styles.body}>{preflightBlocked}</Text>
       </MuseumPlate> : null}
@@ -1758,7 +1760,7 @@ export function BoundaryWorkspace() {
         </MuseumPlate>
       ) : null}
       {relayRequest ? (
-        <MuseumPlate exhibit="EXHIBIT B / EXACT EXCEPTION" title="The boundary did not move."
+        <MuseumPlate exhibit="ONE EXACT EXCEPTION" title="The boundary did not move."
           tone={relayRequest.status === "REFUSED" ? "boundary" : "pending"}>
           <MuseumFact label="RELAY COORDINATION STATUS" value={relayRequest.status} />
           <Text style={styles.body}>A relay response alone never moves capital or grants new standing authority.</Text>
@@ -1775,7 +1777,7 @@ export function BoundaryWorkspace() {
         </MuseumPlate>
       ) : null}
       {exactExecutionState !== "IDLE" ? (
-        <MuseumPlate exhibit="EXHIBIT E / ONE-TIME OUTCOME"
+        <MuseumPlate exhibit="EXACT REQUEST OUTCOME"
           title={exactExecutionState === "ALLOW" ? "This approval was used once." : exactExecutionState === "REFUSE" ? "The Key refused this attempt." : "Confirmation unavailable"}
           tone={exactExecutionState === "ALLOW" ? "verified" : exactExecutionState === "REFUSE" ? "boundary" : "unknown"}>
           <Text style={styles.body}>{status}</Text>
@@ -1902,27 +1904,29 @@ function Row({ label, value }: { label: string; value: string }) {
 const styles = StyleSheet.create({
   full: { flex: 1 },
   section: {
-    paddingHorizontal: 20,
-    paddingVertical: 16,
+    paddingHorizontal: 22,
+    paddingTop: 10,
     paddingBottom: 48,
-    gap: 15,
+    gap: 17,
     backgroundColor: color.ivory,
     flexGrow: 1,
   },
   backAction: { minHeight: 44, justifyContent: "center", alignSelf: "flex-start", paddingHorizontal: 2 },
-  backText: { color: color.deepBrass, fontWeight: "700", fontSize: 15 },
-  roleCard: { borderWidth: 1, borderColor: color.border, backgroundColor: color.paper, borderRadius: 16, padding: 19, gap: 8, minHeight: 138 },
+  backText: { color: color.ink, fontWeight: "700", fontSize: 15 },
+  roleCard: { borderWidth: 1, borderColor: color.border, backgroundColor: color.paper, borderRadius: 23, padding: 20, gap: 9, minHeight: 153 },
   roleHeader: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", gap: 12 },
   exactChoiceHeader: { flexDirection: "row", alignItems: "center", gap: 10 },
   purchaseAmountRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 14 },
   purchaseAmountCopy: { flex: 1, gap: 4 },
-  purchaseAmount: { color: color.ink, fontSize: 36, fontFamily: "serif", lineHeight: 42 },
-  roleCardPrimary: { borderColor: color.deepBrass, backgroundColor: "#EDE3D1" },
+  purchaseAmount: { color: color.ink, fontSize: 38, fontWeight: "700", lineHeight: 45 },
+  exactAmountBlock: { gap: 6, paddingVertical: 8 },
+  exactAmount: { color: color.ink, fontSize: 31, fontWeight: "700", lineHeight: 38 },
+  roleCardPrimary: { borderColor: "#D5E5D8", backgroundColor: "#E8EFE9" },
   roleEyebrow: { color: color.deepBrass, fontSize: 10, fontWeight: "700", letterSpacing: 1.5 },
-  roleTitle: { color: color.ink, fontSize: 27, fontFamily: "serif", lineHeight: 33 },
+  roleTitle: { color: color.ink, fontSize: 27, fontFamily: "serif", lineHeight: 34, letterSpacing: -0.8 },
   roleDescription: { color: color.secondaryInk, fontSize: 14, lineHeight: 21 },
   disclosure: { borderTopWidth: 1, borderBottomWidth: 1, borderColor: color.border, paddingVertical: 13, minHeight: 48, flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 12 },
-  disclosureTitle: { color: color.deepBrass, fontWeight: "700", fontSize: 13, flexShrink: 1 },
+  disclosureTitle: { color: color.secondaryInk, fontWeight: "700", fontSize: 13, flexShrink: 1 },
   scenarios: { gap: 10, borderTopWidth: 1, borderTopColor: color.border, paddingTop: 12 },
   limitInput: {
     minHeight: 48, borderColor: color.border, borderWidth: 1, borderRadius: 8,
