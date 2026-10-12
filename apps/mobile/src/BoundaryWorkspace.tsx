@@ -1424,7 +1424,7 @@ export function BoundaryWorkspace() {
 
   if (!mode) {
     return (
-      <ScrollView contentContainerStyle={styles.section}>
+      <ScrollView key="role-picker" contentContainerStyle={styles.section}>
         <View style={styles.roleHero}>
           <View style={styles.roleHeroText}>
             <Text style={styles.roleHeroKicker}>YOUR KEY · YOUR CHOICE</Text>
@@ -1481,7 +1481,7 @@ export function BoundaryWorkspace() {
 
   if (mode === "GUARDIAN") {
     return (
-      <ScrollView contentContainerStyle={styles.section}>
+      <ScrollView key="guardian" contentContainerStyle={styles.section}>
         <Pressable accessibilityRole="button" accessibilityLabel="Back to role selection"
           onPress={() => setMode(null)} style={styles.backAction}>
           <Text style={styles.backText}>← All roles</Text>
@@ -1613,7 +1613,7 @@ export function BoundaryWorkspace() {
   }
 
   return (
-    <ScrollView contentContainerStyle={styles.section}>
+    <ScrollView key="young" contentContainerStyle={styles.section}>
       <Pressable accessibilityRole="button" accessibilityLabel="Back to role selection"
         onPress={() => setMode(null)} style={styles.backAction}>
         <Text style={styles.backText}>← All roles</Text>
