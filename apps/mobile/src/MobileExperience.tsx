@@ -17,7 +17,7 @@ export function MobileExperience() {
       <View style={styles.masthead}>
         <View>
           <Text style={styles.brand}>CRESCO <Text style={styles.brandItalic}>Key</Text></Text>
-          <Text style={styles.byline}>YOUR MONEY · YOUR RULES</Text>
+          <Text style={styles.byline}>YOUR KEY · YOUR DECISIONS</Text>
         </View>
         <View style={styles.network}>
           <View style={styles.networkDot} />
@@ -41,7 +41,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
   },
-  brand: { color: c.ink, fontFamily: "serif", fontSize: 23, lineHeight: 29, letterSpacing: -0.6 },
+  brand: { color: c.ink, fontFamily: "serif", fontSize: 24, lineHeight: 29, letterSpacing: -0.8 },
   brandItalic: { fontStyle: "italic", fontSize: 23 },
   byline: { fontSize: 9, fontWeight: "700", letterSpacing: 1.1, color: c.deepBrass },
   network: { flexDirection: "row", alignItems: "center", gap: 5 },
