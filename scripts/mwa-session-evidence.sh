@@ -275,15 +275,26 @@ tap_text "Approve" 10
 wait_text "SIGNED" 30
 dump_ui "07-cresco-signed"
 
-echo "== Capture Young intent without signing =="
-if tap_text "Continue as young person" 10; then
-  sleep 2
-  dump_ui "09-cresco-young-flow"
-  if tap_text "Load 5-unit in-bounds demo intent" 15; then
-    sleep 3
-    dump_ui "10-cresco-demo-intent"
-  fi
-fi
+echo "== Capture real connected-role mobile screens (no financial signing) =="
+# After signing, the technical proof expansion leaves role cards above viewport.
+# Return the FIRST-PARTY list to top rather than guessing touch coordinates.
+adb shell input swipe 540 600 540 1780 400 || true
+sleep 1
+tap_text "Continue as guardian" 12
+sleep 2
+wait_text "One exact request" 8 || wait_text "Nothing to review yet" 8
+dump_ui "09-cresco-guardian-entry"
+tap_text "Back to role selection" 10
+sleep 1
+adb shell input swipe 540 600 540 1780 400 || true
+tap_text "Continue as young person" 12
+sleep 2
+dump_ui "10-cresco-young-flow"
+# A configured test intent is a test convenience; no wallet signature or payment
+# is attempted during visual smoke.
+tap_text "Load 5-unit in-bounds demo intent" 18
+sleep 3
+dump_ui "11-cresco-demo-intent"
 
 echo "== Kill/relaunch truthfulness =="
 adb shell am force-stop com.faadil.crescokey
