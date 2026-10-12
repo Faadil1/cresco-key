@@ -28,7 +28,10 @@ https://drive.google.com/file/d/1Ggoz9-ZGc5IqMnl_4s_F8-b24SYTXIvS/view?usp=drive
 
 ## Recommended two videos (public direct-download; Radiants may insist on YouTube, Loom or public Drive)
 REAL Android Walkthrough (86 s): https://github.com/Faadil1/cresco-key/releases/download/clock-in-2026-signature-0bd51d53/cresco-key-real-android-walkthrough-86s.mp4
-Editorial explainer inspired by browser slide-walkthrough (54 s): https://github.com/Faadil1/cresco-key/releases/download/clock-in-2026-signature-0bd51d53/cresco-key-interactive-explainer-54s.mp4
+Recommended reference-style interactive browser recording (29 s): https://github.com/Faadil1/cresco-key/releases/download/clock-in-2026-signature-0bd51d53/cresco-key-real-browser-interactive-story-29s.mp4
+Google Drive (PRIVATE until shared): https://drive.google.com/file/d/1rw4iPpExyeEU9DOFN6l-32iwJh14p-bH/view
+
+Earlier editorial slide explainer (54 s): https://github.com/Faadil1/cresco-key/releases/download/clock-in-2026-signature-0bd51d53/cresco-key-interactive-explainer-54s.mp4
 Both are published as GitHub Release assets. Main submission should use the genuine Android recording. These are not proof of real-world wallet payment.
 
 Google Drive video 01 (PRIVATE until manually shared): https://drive.google.com/file/d/1PC7qm4VptTtcp8QsUKWX5Jjj2DnmHNRN/view
