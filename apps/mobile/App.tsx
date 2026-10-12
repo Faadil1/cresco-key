@@ -1,6 +1,6 @@
 import { MobileWalletProvider, createSolanaDevnet } from "@wallet-ui/react-native-kit";
 import { StatusBar } from "expo-status-bar";
-import { SafeAreaView, StyleSheet } from "react-native";
+import { Platform, SafeAreaView, StatusBar as NativeStatusBar, StyleSheet } from "react-native";
 
 import { MobileExperience } from "./src/MobileExperience";
 
@@ -34,5 +34,8 @@ export default function App() {
 const styles = StyleSheet.create({
   root: {
     flex: 1,
+    // Android edge-to-edge status-bar icons otherwise collide with the wordmark.
+    // React Native SafeAreaView handles iOS but not Android top insets.
+    paddingTop: Platform.OS === "android" ? (NativeStatusBar.currentHeight ?? 28) : 0,
   },
 });
