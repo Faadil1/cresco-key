@@ -1,0 +1,50 @@
+name: Resume verified fresh Guardian grant (manual)
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm_existing_fresh_allowance:
+        description: "I authorize Devnet-only test of the existing 12-unit signed Guardian grant from run 38195868820; no new grant or wallet setup"
+        required: true
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cresco-key-resume-fresh-grant-38195868820
+  cancel-in-progress: false
+
+jobs:
+  resume-fresh:
+    if: ${{ inputs.confirm_existing_fresh_allowance == true }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    environment: devnet-deploy
+    defaults:
+      run:
+        working-directory: tools/devnet
+    env:
+      CRESCO_RESUME_FRESH_DEVNET_OPT_IN: I_AUTHORIZE_EXISTING_FRESH_ALLOWANCE_ONLY
+      CRESCO_GUARDIAN_KEYPAIR_JSON: ${{ secrets.CRESCO_GUARDIAN_KEYPAIR_JSON }}
+      CRESCO_BENEFICIARY_KEYPAIR_JSON: ${{ secrets.CRESCO_BENEFICIARY_KEYPAIR_JSON }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22.13.0"
+      - name: Install local Devnet tooling
+        run: npm install --ignore-scripts
+      - name: Check safe runner syntax
+        run: node --check resume-fresh-exact-allowance.cjs
+      - name: Read existing authorization, simulate, then confirm real outcomes if safe
+        run: node resume-fresh-exact-allowance.cjs
+      - name: Always preserve public proof and partial failure
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cresco-key-resume-fresh-devnet-allowance-evidence
+          path: evidence/devnet-distinct-program/resumed-fresh-exact-allowance-receipt.json
+          if-no-files-found: warn
+          retention-days: 30
