@@ -102,18 +102,20 @@ export function MuseumButton({
   return (
     <Pressable
       accessibilityRole="button"
+      accessibilityLabel={label}
       accessibilityState={{ disabled }}
       disabled={disabled}
       onPress={onPress}
-      style={[
+      style={({ pressed }) => [
         styles.button,
         variant === "secondary" && styles.buttonSecondary,
         variant === "boundary" && styles.buttonBoundary,
+        pressed && !disabled && styles.buttonPressed,
         disabled && styles.buttonDisabled,
       ]}
     >
-      <Text style={[styles.buttonText, variant === "secondary" && styles.buttonTextSecondary]}>{label}</Text>
-      <Text style={[styles.buttonArrow, variant === "secondary" && styles.buttonTextSecondary]}>→</Text>
+      <Text style={[styles.buttonText, variant === "secondary" && styles.buttonTextSecondary, variant === "boundary" && styles.buttonTextBoundary]}>{label}</Text>
+      <Text style={[styles.buttonArrow, variant === "secondary" && styles.buttonTextSecondary, variant === "boundary" && styles.buttonTextBoundary]}>→</Text>
     </Pressable>
   );
 }
@@ -122,7 +124,7 @@ export function MuseumFact({ label, value }: { label: string; value: string }) {
   return (
     <View style={styles.fact}>
       <Text style={styles.factLabel}>{label}</Text>
-      <Text style={styles.factValue} selectable numberOfLines={3}>{value}</Text>
+      <Text style={styles.factValue} selectable>{value}</Text>
     </View>
   );
 }
@@ -195,12 +197,14 @@ const styles = StyleSheet.create({
   button: { minHeight: 54, backgroundColor: t.color.brass, borderRadius: 12, paddingHorizontal: 19, paddingVertical: 13, flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 12, borderWidth: 1, borderColor: t.color.deepBrass },
   buttonSecondary: { backgroundColor: "transparent", borderColor: t.color.brass },
   buttonBoundary: { backgroundColor: t.color.vermilion, borderColor: t.color.vermilion },
+  buttonPressed: { opacity: 0.82 },
   buttonDisabled: { opacity: 0.44 },
-  buttonText: { fontFamily: "serif", fontSize: 19, lineHeight: 24, color: t.color.ink, flexShrink: 1 },
+  buttonText: { fontSize: 16, fontWeight: "700", lineHeight: 22, color: t.color.ink, flexShrink: 1 },
   buttonTextSecondary: { color: t.color.ink },
+  buttonTextBoundary: { color: t.color.white },
   buttonArrow: { fontSize: 23, color: t.color.ink },
   fact: { borderTopWidth: 1, borderColor: t.color.border, paddingTop: 8, gap: 3 },
-  factLabel: { color: t.color.deepBrass, fontWeight: "700", letterSpacing: 1.3, fontSize: 10 },
+  factLabel: { color: t.color.deepBrass, fontWeight: "700", letterSpacing: 1.1, fontSize: 11 },
   factValue: { color: t.color.ink, fontSize: 15, lineHeight: 21 },
   proof: { borderWidth: 1, borderColor: t.color.border, borderRadius: 14, padding: 14, gap: 12, backgroundColor: t.color.paper },
   proofItems: { flexDirection: "row", justifyContent: "space-between" },

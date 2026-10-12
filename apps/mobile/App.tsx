@@ -1,8 +1,9 @@
 import { MobileWalletProvider, createSolanaDevnet } from "@wallet-ui/react-native-kit";
 import { StatusBar } from "expo-status-bar";
-import { SafeAreaView, StyleSheet } from "react-native";
+import { Platform, SafeAreaView, StatusBar as NativeStatusBar, StyleSheet } from "react-native";
 
 import { MobileExperience } from "./src/MobileExperience";
+import { museumLedgerTokens as theme } from "./src/design/museumLedger";
 
 const rpcUrl =
   process.env.EXPO_PUBLIC_SOLANA_RPC_URL ?? "https://api.devnet.solana.com";
@@ -24,7 +25,7 @@ export default function App() {
       }}
     >
       <SafeAreaView style={styles.root}>
-        <StatusBar style="auto" />
+        <StatusBar style="dark" />
         <MobileExperience />
       </SafeAreaView>
     </MobileWalletProvider>
@@ -34,5 +35,9 @@ export default function App() {
 const styles = StyleSheet.create({
   root: {
     flex: 1,
+    backgroundColor: theme.color.ivory,
+    // Android edge-to-edge status-bar icons otherwise collide with the wordmark.
+    // React Native SafeAreaView handles iOS but not Android top insets.
+    paddingTop: Platform.OS === "android" ? (NativeStatusBar.currentHeight ?? 28) : 0,
   },
 });
