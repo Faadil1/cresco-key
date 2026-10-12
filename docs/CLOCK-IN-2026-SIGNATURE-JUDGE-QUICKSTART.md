@@ -11,6 +11,7 @@
 - [Latest Signature standalone Android APK](https://github.com/Faadil1/cresco-key/releases/download/clock-in-2026-signature-0bd51d53/cresco-key-signature-clock-in-0bd51d53-devnet.apk)
 - [Public 18-slide Signature jury deck PDF](https://github.com/Faadil1/cresco-key/releases/download/clock-in-2026-signature-0bd51d53/cresco-key-signature-jury-deck-18-slides.pdf)
 - [Genuine Android-emulator footage montage, 86 seconds (six edited continuous excerpts from one recorded session)](https://github.com/Faadil1/cresco-key/releases/download/clock-in-2026-signature-0bd51d53/cresco-key-real-android-walkthrough-86s.mp4) — preferred product-view footage. Mock MWA, not a physical Solflare transaction.
+- [Actual browser-recorded interactive story, 29 seconds](https://github.com/Faadil1/cresco-key/releases/download/clock-in-2026-signature-0bd51d53/cresco-key-real-browser-interactive-story-29s.mp4) — genuine browser clicks and animated story slides; not the Android financial UI.
 - [Interactive editorial explainer, 54 seconds](https://github.com/Faadil1/cresco-key/releases/download/clock-in-2026-signature-0bd51d53/cresco-key-interactive-explainer-54s.mp4) — storytelling, not a simulated live web app.
 - [Earlier 88s proof montage](https://github.com/Faadil1/cresco-key/releases/download/clock-in-2026-signature-0bd51d53/cresco-key-signature-demo-88sec.mp4) — retained only as archive.
 - [Public release, build receipt and SHA-256](https://github.com/Faadil1/cresco-key/releases/tag/clock-in-2026-signature-0bd51d53)
