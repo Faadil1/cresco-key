@@ -46,7 +46,7 @@ PY
     fi
     # Museum Ledger intentionally uses a scrollable editorial layout.
     # Scroll only for first-party buttons; never swipe the wallet approval UI.
-    if [ "$needle" = "Sign TRC-01 proof message" ] || [ "$needle" = "Connect wallet" ]; then
+    if [ "$needle" = "Sign TRC-01 proof message" ] || [ "$needle" = "Connect wallet" ] || [ "$needle" = "Wallet proof and technical evidence" ]; then
       adb shell input swipe 550 1700 550 560 320 || true
     fi
     sleep 1
@@ -205,7 +205,7 @@ tap_text "Connect wallet" 10
 wait_text "Cancel" 20
 dump_ui "02-wallet-authorize-request"
 tap_text "Cancel" 10
-wait_text "REFUSED" 20
+wait_text "Connection not completed" 20
 dump_ui "03-cresco-declined"
 
 echo "== Success path: authorize =="
@@ -220,7 +220,7 @@ while [ "$elapsed" -lt 30 ]; do
   adb shell uiautomator dump /sdcard/auth.xml >/dev/null 2>&1 || true
   adb pull /sdcard/auth.xml "$EVIDENCE/auth-prompt.xml" >/dev/null 2>&1 || true
 
-  if grep -Fq "CHOOSE YOUR ROLE" "$EVIDENCE/auth-prompt.xml"; then
+  if grep -Fq "Who are you today?" "$EVIDENCE/auth-prompt.xml"; then
     break
   fi
 
@@ -243,10 +243,13 @@ while [ "$elapsed" -lt 30 ]; do
   elapsed=$((elapsed+1))
 done
 
-wait_text "CHOOSE YOUR ROLE" 15
+wait_text "Who are you today?" 15
 dump_ui "05-cresco-connected"
 
 echo "== signMessage path =="
+# User-facing proof controls are intentionally collapsed until requested.
+tap_text "Wallet proof and technical evidence" 15
+wait_text "Sign TRC-01 proof message" 10
 tap_text "Sign TRC-01 proof message" 15
 wait_text "Approve" 20
 dump_ui "06-wallet-sign-message"
@@ -255,7 +258,7 @@ wait_text "SIGNED" 30
 dump_ui "07-cresco-signed"
 
 echo "== Capture Young intent without signing =="
-if tap_text "Young person flow" 10; then
+if tap_text "Continue as young person" 10; then
   sleep 2
   dump_ui "09-cresco-young-flow"
   if tap_text "Load 5-unit in-bounds demo intent" 15; then
@@ -272,7 +275,7 @@ sleep 8
 dump_ui "08-cresco-relaunch"
 
 RELAUNCH_STATE="UNKNOWN"
-if grep -Fq "CHOOSE YOUR ROLE" "$EVIDENCE/08-cresco-relaunch.xml"; then
+if grep -Fq "Who are you today?" "$EVIDENCE/08-cresco-relaunch.xml"; then
   RELAUNCH_STATE="CONNECTED_RESTORED"
 elif grep -Fq "Connect wallet" "$EVIDENCE/08-cresco-relaunch.xml"; then
   RELAUNCH_STATE="DISCONNECTED_TRUTHFUL"
