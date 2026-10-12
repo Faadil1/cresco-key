@@ -27,6 +27,7 @@ import {
 import { MuseumHero, MuseumPlate, MuseumButton, MuseumFact, ProofStrip, museumColors as color } from "./design/MuseumLedgerUI";
 import { SkrCharterAtelier } from "./skr/SkrCharterAtelier";
 import { KeyPeriodUsage } from "./KeyPeriodUsage";
+import { LivingKeySeal } from "./design/LivingKeySeal";
 import {
   inspectStandingKey,
   assessStandingIntent,
@@ -1433,7 +1434,10 @@ export function BoundaryWorkspace() {
           accessibilityLabel="Continue as young person"
           onPress={() => setMode("YOUNG")}
           style={[styles.roleCard, styles.roleCardPrimary]}>
-          <Text style={styles.roleEyebrow}>I'M SPENDING</Text>
+          <View style={styles.roleHeader}>
+            <Text style={styles.roleEyebrow}>I'M SPENDING</Text>
+            <LivingKeySeal size={45} mood="standing" />
+          </View>
           <Text style={styles.roleTitle}>Young person →</Text>
           <Text style={styles.roleDescription}>Check your limit, scan a payment and ask only if you reach a boundary.</Text>
         </Pressable>
@@ -1441,7 +1445,10 @@ export function BoundaryWorkspace() {
           accessibilityLabel="Continue as guardian"
           onPress={() => setMode("GUARDIAN")}
           style={styles.roleCard}>
-          <Text style={styles.roleEyebrow}>I'M HELPING</Text>
+          <View style={styles.roleHeader}>
+            <Text style={styles.roleEyebrow}>I'M HELPING</Text>
+            <LivingKeySeal size={45} mood="request" />
+          </View>
           <Text style={styles.roleTitle}>Guardian →</Text>
           <Text style={styles.roleDescription}>Review an exact request, say no or authorize only that action once.</Text>
         </Pressable>
@@ -1481,7 +1488,11 @@ export function BoundaryWorkspace() {
         {relayRequest ? (
           <MuseumPlate exhibit="REQUEST / EXACT BOUNDARY" title={relayRequest.display?.label ?? "Guardian review"}
             tone={relayRequest.status === "REFUSED" ? "boundary" : "pending"}>
-            <MuseumFact label="STATUS" value={relayRequest.status} />
+            <View style={styles.exactChoiceHeader}>
+            <LivingKeySeal size={38} mood={relayRequest.status === "REFUSED" ? "boundary" : "request"} />
+            <Text style={styles.roleDescription}>One exact request · standing limits stay unchanged</Text>
+          </View>
+          <MuseumFact label="COORDINATION STATUS (NOT PAYMENT)" value={relayRequest.status} />
             <MuseumFact label="AMOUNT / TOKEN BASE UNITS" value={relayRequest.amountBaseUnits} />
             <MuseumFact label="TOKEN MINT" value={relayRequest.mint} />
             <MuseumFact label="RECIPIENT" value={relayRequest.recipient} />
@@ -1650,7 +1661,13 @@ export function BoundaryWorkspace() {
         tone={standingOutcome === "REFUSE" ? "boundary" : standingOutcome === "ALLOW" ? "verified" : "neutral"}>
         {intent ? (
           <>
-            <MuseumFact label="AMOUNT" value={intent.amountUi} />
+            <View style={styles.purchaseAmountRow}>
+              <View style={styles.purchaseAmountCopy}>
+                <Text style={styles.roleEyebrow}>REQUESTED TOKEN AMOUNT</Text>
+                <Text style={styles.purchaseAmount} selectable>{intent.amountUi}</Text>
+              </View>
+              <LivingKeySeal size={46} mood={standingOutcome === "REFUSE" ? "boundary" : "standing"} />
+            </View>
             <MuseumFact label="TOKEN MINT" value={intent.mint} />
             <MuseumFact label="RECIPIENT" value={intent.recipient} />
             {intent.label ? <MuseumFact label="REQUEST LABEL" value={intent.label} /> : null}
@@ -1895,6 +1912,11 @@ const styles = StyleSheet.create({
   backAction: { minHeight: 44, justifyContent: "center", alignSelf: "flex-start", paddingHorizontal: 2 },
   backText: { color: color.deepBrass, fontWeight: "700", fontSize: 15 },
   roleCard: { borderWidth: 1, borderColor: color.border, backgroundColor: color.paper, borderRadius: 16, padding: 19, gap: 8, minHeight: 138 },
+  roleHeader: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", gap: 12 },
+  exactChoiceHeader: { flexDirection: "row", alignItems: "center", gap: 10 },
+  purchaseAmountRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 14 },
+  purchaseAmountCopy: { flex: 1, gap: 4 },
+  purchaseAmount: { color: color.ink, fontSize: 36, fontFamily: "serif", lineHeight: 42 },
   roleCardPrimary: { borderColor: color.deepBrass, backgroundColor: "#EDE3D1" },
   roleEyebrow: { color: color.deepBrass, fontSize: 10, fontWeight: "700", letterSpacing: 1.5 },
   roleTitle: { color: color.ink, fontSize: 27, fontFamily: "serif", lineHeight: 33 },
