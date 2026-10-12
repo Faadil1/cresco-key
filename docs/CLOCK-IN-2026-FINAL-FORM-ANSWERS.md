@@ -26,7 +26,15 @@ https://github.com/Faadil1/cresco-key/releases/download/clock-in-2026-signature-
 ## Original Drive deck (private until shared)
 https://drive.google.com/file/d/1Ggoz9-ZGc5IqMnl_4s_F8-b24SYTXIvS/view?usp=drivesdk
 
-## Public demo MP4 fallback (jury access verified via published GitHub Release; Radiants field may restrict domains)
+## Recommended two videos (public direct-download; Radiants may insist on YouTube, Loom or public Drive)
+REAL Android Walkthrough (86 s): https://github.com/Faadil1/cresco-key/releases/download/clock-in-2026-signature-0bd51d53/cresco-key-real-android-walkthrough-86s.mp4
+Editorial explainer inspired by browser slide-walkthrough (54 s): https://github.com/Faadil1/cresco-key/releases/download/clock-in-2026-signature-0bd51d53/cresco-key-interactive-explainer-54s.mp4
+Both are published as GitHub Release assets. Main submission should use the genuine Android recording. These are not proof of real-world wallet payment.
+
+Google Drive video 01 (PRIVATE until manually shared): https://drive.google.com/file/d/1PC7qm4VptTtcp8QsUKWX5Jjj2DnmHNRN/view
+Google Drive video 02 (PRIVATE until manually shared): https://drive.google.com/file/d/1WmUlL-nl3imTaxS3HoyV525PASTHG4qH/view
+
+## Previous public demo MP4 (superseded)
 https://github.com/Faadil1/cresco-key/releases/download/clock-in-2026-signature-0bd51d53/cresco-key-signature-demo-88sec.mp4
 
 ## Demo video URL — Drive requires Anyone with link / Viewer before using in Radiants
