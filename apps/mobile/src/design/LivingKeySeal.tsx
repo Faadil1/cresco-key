@@ -18,6 +18,29 @@ export function LivingKeySeal({
   size?: number;
   mood?: KeySealMood;
 }) {
+  const [reduceMotion, setReduceMotion] = useState(true);
+  const motion = useRef(new Animated.Value(0)).current;
+  useEffect(() => {
+    let mounted = true;
+    AccessibilityInfo.isReduceMotionEnabled()
+      .then(v => { if (mounted) setReduceMotion(v); })
+      .catch(() => { if (mounted) setReduceMotion(true); });
+    const subscription = AccessibilityInfo.addEventListener("reduceMotionChanged", setReduceMotion);
+    return () => { mounted = false; subscription.remove(); };
+  }, []);
+
+  useEffect(() => {
+    motion.stopAnimation();
+    motion.setValue(0);
+    if (reduceMotion || (mood !== "request" && mood !== "boundary")) return;
+    const sequence = Animated.sequence([
+      Animated.timing(motion, { toValue: 1, duration: 220, useNativeDriver: true }),
+      Animated.timing(motion, { toValue: 0, duration: 360, useNativeDriver: true }),
+    ]);
+    sequence.start();
+    return () => sequence.stop();
+  }, [mood, reduceMotion, motion]);
+
   const markerColor =
     mood === "boundary" ? t.color.vermilion :
     mood === "unknown" ? t.color.unknown : t.color.brass;
