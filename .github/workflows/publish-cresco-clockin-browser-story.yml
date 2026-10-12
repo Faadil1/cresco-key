@@ -1,0 +1,25 @@
+name: Publish CLOCK IN interactive browser story video
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/publish-cresco-clockin-browser-story.yml
+permissions:
+  contents: write
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify the genuine browser-recording video
+        run: |
+          set -euo pipefail
+          VIDEO=docs/assets/clock-in-2026/cresco-key-real-browser-interactive-story-29s.mp4
+          test -s "$VIDEO"
+          printf '%s  %s\n' 'c39ec4f96b512fd29a2b5992550625f7fd2e1da350525469aca85ad1f8d1062d' "$VIDEO" | sha256sum -c -
+      - name: Attach to public Signature release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: gh release upload clock-in-2026-signature-0bd51d53 docs/assets/clock-in-2026/cresco-key-real-browser-interactive-story-29s.mp4 --clobber
