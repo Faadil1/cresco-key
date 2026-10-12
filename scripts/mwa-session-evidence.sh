@@ -46,7 +46,7 @@ PY
     fi
     # The consumer flow is scrollable; accessible actions remain the test targets.
     # Scroll only for first-party buttons; never swipe the wallet approval UI.
-    if [ "$needle" = "Sign TRC-01 proof message" ] || [ "$needle" = "Connect wallet" ] || [ "$needle" = "Wallet proof and technical evidence" ]; then
+    if [ "$needle" = "Sign TRC-01 proof message" ] || [ "$needle" = "Connect wallet" ] || [ "$needle" = "Wallet proof and technical evidence" ] || [ "$needle" = "Load 5-unit in-bounds demo intent" ]; then
       adb shell input swipe 550 1700 550 560 320 || true
     fi
     sleep 1
