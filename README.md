@@ -1,6 +1,13 @@
 # CRESCO Key
 ### Freedom with Boundaries.
 
+### CLOCK IN 2026 — Latest Signature Android Candidate
+
+**[Download latest CRESCO Key Signature APK (public, direct, no GitHub login)](https://github.com/Faadil1/cresco-key/releases/download/clock-in-2026-signature-0bd51d53/cresco-key-signature-clock-in-0bd51d53-devnet.apk)** · [Release evidence and SHA-256](https://github.com/Faadil1/cresco-key/releases/tag/clock-in-2026-signature-0bd51d53) · [Signature source branch / PR #85](https://github.com/Faadil1/cresco-key/pull/85) · [Judge quickstart and proof boundary](docs/CLOCK-IN-2026-SIGNATURE-JUDGE-QUICKSTART.md)
+
+**Build truth (October 12, 2026):** Signature source `0bd51d53` passed Mobile CI, configured G1 preflight, Android emulator, Mock MWA session (including message signing and role navigation), and standalone APK evidence. This is an **Android/CI-verified Devnet prototype**, not a production financial service. The distinct onchain 5-unit payment and 12-unit limit refusal were executed using **developer-controlled Devnet signers**, *not the Android device*. Guardian exact redemption and replay on the current program are **BLOCKED** ([issue #76](https://github.com/Faadil1/cresco-key/issues/76)); a physical-wallet end-to-end financial test remains open. The original release linked below is **historical**, not the latest Signature version.
+
+
 **Give a young person room to act. Keep the family's spending boundary intact.**
 
 CRESCO Key is an **Android-first Solana Mobile prototype** that explores a better alternative to two extremes: asking a guardian about every payment, or giving unrestricted wallet access. A family sets a **standing Key** with explicit onchain limits. An ordinary action can proceed within those limits. When an action crosses the boundary, the guardian may choose to refuse it or authorize **that exact payment once** — without silently widening the standing rule.
