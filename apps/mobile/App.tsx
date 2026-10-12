@@ -25,7 +25,7 @@ export default function App() {
       }}
     >
       <SafeAreaView style={styles.root}>
-        <StatusBar style="dark" backgroundColor={theme.color.ivory} />
+        <StatusBar style="dark" />
         <MobileExperience />
       </SafeAreaView>
     </MobileWalletProvider>
