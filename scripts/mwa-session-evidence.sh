@@ -265,8 +265,10 @@ dump_ui "05-cresco-connected"
 echo "== signMessage path =="
 # User-facing proof controls are intentionally collapsed until requested.
 tap_text "Wallet proof and technical evidence" 15
-wait_text "Sign TRC-01 proof message" 10
-tap_text "Sign TRC-01 proof message" 15
+# The newly expanded proof card is below the first viewport on compact phones.
+# tap_text performs a bounded first-party scroll and only passes if it taps
+# the actual accessible Sign TRC-01 control (never a screenshot-coordinate guess).
+tap_text "Sign TRC-01 proof message" 22
 wait_text "Approve" 20
 dump_ui "06-wallet-sign-message"
 tap_text "Approve" 10
