@@ -1489,7 +1489,7 @@ export function BoundaryWorkspace() {
           <MuseumPlate exhibit="REQUEST / EXACT BOUNDARY" title={relayRequest.display?.label ?? "Guardian review"}
             tone={relayRequest.status === "REFUSED" ? "boundary" : "pending"}>
             <View style={styles.exactChoiceHeader}>
-            <LivingKeySeal size={38} mood={relayRequest.status === "REFUSED" ? "boundary" : relayRequest.status === "PENDING" ? "request" : relayRequest.status === "UNKNOWN" ? "unknown" : "standing"} />
+            <LivingKeySeal size={38} mood={relayRequest.status === "REFUSED" ? "boundary" : relayRequest.status === "PENDING" ? "request" : relayRequest.status === "EXPIRED" ? "unknown" : "standing"} />
             <Text style={styles.roleDescription}>One exact request · standing limits stay unchanged</Text>
           </View>
           <MuseumFact label="COORDINATION STATUS (NOT PAYMENT)" value={relayRequest.status} />
