@@ -4,7 +4,6 @@ import { useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 
 import {
-  MuseumButton,
   MuseumFact,
   museumColors as c,
 } from "./design/MuseumLedgerUI";
@@ -17,6 +16,7 @@ import {
 import { paymentProgramConfigFromEnv } from "./solana/programClient";
 import { parseSolanaPayTransferRequest } from "./payment/solanaPay";
 import { KeyPeriodUsage } from "./KeyPeriodUsage";
+import { KeyPortal } from "./design/KeyPortal";
 
 // A REAL read-only inspection of the *published developer test family*.
 // No wallet, keys, tx signing, artificial balance, custody or financial claim.
@@ -86,125 +86,142 @@ export function JudgeReadOnlyTour({ onExit }: { onExit: () => void }) {
     decimals === null ? value.toString() + " base units" : displayTokenUnits(value, decimals) + " test token units";
 
   return (
-    <ScrollView contentContainerStyle={s.container} accessibilityLabel="Read-only Devnet Key explorer">
-      <View style={s.topbar}>
-        <Pressable accessibilityRole="button" accessibilityLabel="Back to welcome" onPress={onExit} style={s.back}>
-          <Text style={s.backText}>←  Back</Text>
-        </Pressable>
-        <Text style={s.network}>DEVNET  /  READ ONLY</Text>
-      </View>
-
-      <View style={s.hero}>
-        <Text style={s.kicker}>A KEY IN THE REAL WORLD</Text>
-        <Text style={s.headline}>See the rules.{"\n"}In real time.</Text>
-        <Text style={s.body}>Inspect an actual developer test family's spending boundaries on Solana Devnet. No wallet, signature or payment required.</Text>
-      </View>
-
-      <View style={s.liveCard}>
-        <View style={s.liveTop}>
-          <Text style={s.cardKicker}>STANDING KEY</Text>
-          <Text style={s.source}>ONCHAIN RULES</Text>
-        </View>
-        {state?.state === "READY" ? (
-          <View style={s.liveContent} accessibilityLiveRegion="polite">
-            <Text style={s.resultLabel}>Maximum per payment</Text>
-            <Text style={s.heroNumber} selectable adjustsFontSizeToFit numberOfLines={1}>{units(state.key.maxActionAmount)}</Text>
-            <View style={s.divider} />
-            <View style={s.limitRow}>
-              <View style={s.limitCopy}>
-                <Text style={s.resultLabel}>Limit for this period</Text>
-                <Text style={s.limitValue} selectable>{units(state.key.maxPeriodAmount)}</Text>
-              </View>
-            </View>
-            <KeyPeriodUsage spentBaseUnits={state.key.spentThisPeriod} maxPeriodBaseUnits={state.key.maxPeriodAmount} />
-            <Text style={s.finePrint}>Actual rule counters, not an available balance or evidence of a phone payment.</Text>
-          </View>
-        ) : state ? (
-          <View style={s.liveContent} accessibilityLiveRegion="polite">
-            <Text style={s.unavailableTitle}>The Key could not be verified.</Text>
-            <Text style={s.muted} selectable>{state.state}: {state.reason}</Text>
-            <Text style={s.finePrint}>No spending permission was assumed. You can retry a read-only lookup.</Text>
-          </View>
-        ) : (
-          <View style={s.empty}>
-            <Text style={s.emptyTitle}>{loading ? "Reading the current Key…" : "Your live Key snapshot"}</Text>
-            <Text style={s.muted}>The real limits appear here after a successful Devnet read. We never display sample numbers as a payment balance.</Text>
-          </View>
-        )}
-        <MuseumButton
-          label={loading ? "Reading Devnet…" : state?.state === "READY" ? "Refresh live limits" : "Read live Key limits"}
-          disabled={loading} onPress={queryPublishedKey}
-        />
-        {checkedAt ? <Text style={s.timestamp}>Last inspected: {checkedAt}</Text> : null}
-      </View>
-
-      <View style={s.principle}>
-        <View style={s.principleHead}>
-          <Text style={s.principleTitle}>A request is not a new limit.</Text>
-          <View style={s.ruleMark} />
-        </View>
-        <Text style={s.muted}>When a payment crosses a rule, a Guardian can decide on that exact request. The standing Key itself remains unchanged.</Text>
-        <Text style={s.finePrint}>The complete Guardian approval and payment sequence is still being verified. This screen does not grant any authority.</Text>
-      </View>
-
-      {state?.state === "READY" ? (
-        <View style={s.technical}>
-          <Pressable accessibilityRole="button" accessibilityState={{ expanded: showAddresses }}
-            accessibilityLabel="Inspect complete Devnet account identifiers"
-            onPress={() => setShowAddresses(v => !v)} style={s.toggle}>
-            <Text style={s.toggleText}>Onchain account details</Text>
-            <Text style={s.toggleText}>{showAddresses ? "−" : "+"}</Text>
+    <ScrollView contentContainerStyle={s.screen}
+      accessibilityLabel="Read-only Devnet Key explorer">
+      <View style={s.darkHeader}>
+        <View style={s.topline}>
+          <Pressable accessibilityRole="button" accessibilityLabel="Back to welcome" onPress={onExit} style={s.back}>
+            <Text style={s.backText}>←  Back</Text>
           </Pressable>
-          {showAddresses ? (
-            <View style={s.identifiers}>
-              <MuseumFact label="CHARTER" value={state.key.charter.toString()} />
-              <MuseumFact label="MANDATE" value={state.key.mandate.toString()} />
-              <MuseumFact label="ASSET RULE" value={state.key.assetRule.toString()} />
-              <MuseumFact label="MANDATE NONCE" value={state.key.nonce.toString()} />
-              <MuseumFact label="GUARDIAN" value={guardian} />
-              <MuseumFact label="BENEFICIARY" value={beneficiary} />
-            </View>
-          ) : null}
+          <Text style={s.topright}>DEVNET / READ ONLY</Text>
         </View>
-      ) : null}
-      <MuseumButton label="Back to connect wallet" variant="secondary" onPress={onExit} />
+        <View style={s.portalRow}>
+          <View style={s.titleArea}>
+            <Text style={s.eyebrow}>EXPLORE THE KEY</Text>
+            <Text style={s.heroTitle}>See what{"\n"}freedom looks like.</Text>
+            <Text style={s.heroCopy}>Real onchain limits. No connected wallet or signature.</Text>
+          </View>
+          <KeyPortal size={148} mood="standing" />
+        </View>
+      </View>
+
+      <View style={s.body}>
+        <View style={s.keyCard}>
+          <View style={s.keyCardTop}>
+            <View><Text style={s.overline}>STANDING KEY / LIVE READ</Text>
+              <Text style={s.keyTitle}>Your Key, clearly.</Text></View>
+            <View style={s.rpcLabel}><Text style={s.rpcText}>{state?.state === "READY" ? "READ COMPLETE" : loading ? "READING" : "NOT VERIFIED"}</Text></View>
+          </View>
+
+          {state?.state === "READY" ? (
+            <View style={s.realLimits} accessibilityLiveRegion="polite">
+              <Text style={s.fieldLabel}>MAXIMUM PER PAYMENT</Text>
+              <Text style={s.largeAmount} selectable>{units(state.key.maxActionAmount)}</Text>
+              <View style={s.divider}/>
+              <Text style={s.fieldLabel}>LIMIT PER PERIOD</Text>
+              <Text style={s.mediumAmount} selectable>{units(state.key.maxPeriodAmount)}</Text>
+              <KeyPeriodUsage spentBaseUnits={state.key.spentThisPeriod} maxPeriodBaseUnits={state.key.maxPeriodAmount} />
+              <Text style={s.truth}>Read from the configured developer family's actual Devnet rule accounts. Not a token balance or payment receipt.</Text>
+            </View>
+          ) : state ? (
+            <View style={s.emptyArea} accessibilityLiveRegion="polite">
+              <Text style={s.emptyTitle}>We can't verify this Key yet.</Text>
+              <Text style={s.muted} selectable>{state.state}: {state.reason}</Text>
+              <Text style={s.truth}>UNKNOWN is not an approval. No limits have been invented.</Text>
+            </View>
+          ) : (
+            <View style={s.emptyArea}>
+              <Text style={s.emptyTitle}>{loading ? "Reading current limits…" : "Ready to inspect the real Key"}</Text>
+              <Text style={s.muted}>Read the standing rules of a configured test family directly from Solana Devnet.</Text>
+            </View>
+          )}
+
+          <Pressable accessibilityRole="button"
+            accessibilityLabel={loading ? "Reading Devnet" : "Read live Key limits"}
+            accessibilityState={{ disabled: loading }} disabled={loading}
+            onPress={queryPublishedKey} style={({ pressed }) => [s.readButton, pressed && s.pressed, loading && s.disabled]}>
+            <Text style={s.readButtonText}>{loading ? "Reading Devnet…" : state?.state === "READY" ? "Refresh live Key" : "Read live Key limits"}</Text>
+            <Text style={s.readArrow}>↗</Text>
+          </Pressable>
+          {checkedAt ? <Text style={s.timestamp}>Last inspected: {checkedAt}</Text> : null}
+        </View>
+
+        <View style={s.principle}>
+          <Text style={s.principleEyebrow}>WHY IT MATTERS</Text>
+          <Text style={s.principleTitle}>One exception.{"\n"}Never a new rule.</Text>
+          <Text style={s.muted}>A Guardian can make a precise decision on a payment that reaches a boundary. The standing Key does not expand.</Text>
+          <Text style={s.truth}>This read-only experience cannot sign, authorize or send payments. Guardian Allow Once is not yet fully verified.</Text>
+        </View>
+
+        {state?.state === "READY" ? (
+          <View style={s.technical}>
+            <Pressable accessibilityRole="button" accessibilityState={{ expanded: showAddresses }}
+              accessibilityLabel="Inspect complete Devnet account identifiers"
+              onPress={() => setShowAddresses(v => !v)} style={s.toggle}>
+              <Text style={s.toggleText}>Technical account identifiers</Text>
+              <Text style={s.toggleText}>{showAddresses ? "−" : "+"}</Text>
+            </Pressable>
+            {showAddresses ? (
+              <View style={s.identifiers}>
+                <MuseumFact label="CHARTER" value={state.key.charter.toString()} />
+                <MuseumFact label="MANDATE" value={state.key.mandate.toString()} />
+                <MuseumFact label="ASSET RULE" value={state.key.assetRule.toString()} />
+                <MuseumFact label="MANDATE NONCE" value={state.key.nonce.toString()} />
+                <MuseumFact label="GUARDIAN" value={guardian} />
+                <MuseumFact label="BENEFICIARY" value={beneficiary} />
+              </View>
+            ) : null}
+          </View>
+        ) : null}
+        <Pressable accessibilityRole="button" accessibilityLabel="Back to connect wallet" onPress={onExit}
+          style={({ pressed }) => [s.returnButton, pressed && s.pressed]}>
+          <Text style={s.returnText}>Back to connect wallet</Text><Text style={s.returnText}>↗</Text>
+        </Pressable>
+      </View>
     </ScrollView>
   );
 }
 
 const s = StyleSheet.create({
-  container: { paddingHorizontal: 22, paddingTop: 13, paddingBottom: 50, backgroundColor: c.ivory, gap: 21, flexGrow: 1 },
-  topbar: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", gap: 12 },
-  back: { minHeight: 44, justifyContent: "center", paddingRight: 12 },
-  backText: { fontSize: 15, fontWeight: "700", color: c.ink },
-  network: { fontSize: 10, letterSpacing: 1, fontWeight: "700", color: c.secondaryInk },
-  hero: { paddingTop: 12, gap: 12 },
-  kicker: { color: c.deepBrass, fontWeight: "800", fontSize: 10, letterSpacing: 1.5 },
-  headline: { fontSize: 37, fontFamily: "serif", color: c.ink, lineHeight: 44, letterSpacing: -1.3 },
-  body: { color: c.secondaryInk, fontSize: 15, lineHeight: 23 },
+  screen: { backgroundColor: c.ivory, paddingBottom: 25, flexGrow: 1 },
+  darkHeader: { backgroundColor: "#15211D", paddingHorizontal: 21, paddingTop: 12, paddingBottom: 17, borderBottomLeftRadius: 27, borderBottomRightRadius: 27 },
+  topline: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 10 },
+  back: { minHeight: 45, justifyContent: "center", paddingRight: 14 },
+  backText: { fontSize: 14, color: "#EEE4D5", fontWeight: "800" },
+  topright: { color: "#D1BA92", fontSize: 9, letterSpacing: 1, fontWeight: "700" },
+  portalRow: { flexDirection: "row", alignItems: "center", minHeight: 173 },
+  titleArea: { flex: 1, gap: 8 },
+  eyebrow: { color: "#D6BC8B", fontSize: 10, fontWeight: "800", letterSpacing: 1.3 },
+  heroTitle: { color: "#FCF5E7", fontFamily: "serif", fontSize: 27, lineHeight: 32, letterSpacing: -0.7 },
+  heroCopy: { color: "#CBD1C7", fontSize: 12, lineHeight: 18 },
+  body: { padding: 19, gap: 22 },
+  keyCard: { backgroundColor: c.paper, borderWidth: 1, borderColor: c.border, padding: 21, borderRadius: 23, gap: 19 },
+  keyCardTop: { flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start", gap: 12 },
+  overline: { color: c.deepBrass, fontSize: 10, fontWeight: "800", letterSpacing: 1.1 },
+  keyTitle: { fontFamily: "serif", color: c.ink, fontSize: 27, marginTop: 8 },
+  rpcLabel: { backgroundColor: "#EBECE6", borderRadius: 99, paddingVertical: 7, paddingHorizontal: 8, maxWidth: 99 },
+  rpcText: { color: c.secondaryInk, fontSize: 9, fontWeight: "700", textAlign: "center" },
+  realLimits: { gap: 10 },
+  fieldLabel: { color: c.secondaryInk, fontSize: 10, fontWeight: "800", letterSpacing: 1 },
+  largeAmount: { color: c.ink, fontSize: 29, fontWeight: "800", lineHeight: 37 },
+  mediumAmount: { color: c.ink, fontSize: 19, fontWeight: "800" },
+  divider: { height: 1, backgroundColor: c.border, marginVertical: 6 },
+  truth: { fontSize: 11, lineHeight: 17, color: c.secondaryInk },
+  emptyArea: { minHeight: 105, gap: 10, justifyContent: "center" },
+  emptyTitle: { color: c.ink, fontSize: 17, fontWeight: "700" },
   muted: { color: c.secondaryInk, fontSize: 13, lineHeight: 20 },
-  liveCard: { padding: 18, gap: 17, borderRadius: 22, backgroundColor: c.paper, borderWidth: 1, borderColor: c.border },
-  liveTop: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", gap: 10 },
-  cardKicker: { color: c.deepBrass, fontSize: 10, letterSpacing: 1.4, fontWeight: "800" },
-  source: { color: c.secondaryInk, fontSize: 9, fontWeight: "700", letterSpacing: 0.7 },
-  liveContent: { gap: 10 },
-  resultLabel: { fontSize: 12, color: c.secondaryInk, fontWeight: "600" },
-  heroNumber: { fontSize: 26, fontWeight: "700", letterSpacing: -0.7, color: c.ink },
-  divider: { height: 1, backgroundColor: c.border, marginVertical: 4 },
-  limitRow: { flexDirection: "row", alignItems: "center", gap: 12 },
-  limitCopy: { gap: 5, flex: 1 },
-  limitValue: { fontSize: 18, fontWeight: "700", color: c.ink },
-  finePrint: { fontSize: 11, lineHeight: 17, color: c.secondaryInk },
-  empty: { minHeight: 114, justifyContent: "center", gap: 9 },
-  emptyTitle: { color: c.ink, fontFamily: "serif", fontSize: 24, lineHeight: 30 },
-  unavailableTitle: { color: c.vermilion, fontSize: 16, fontWeight: "700" },
-  timestamp: { fontSize: 10, color: c.secondaryInk },
-  principle: { paddingTop: 5, gap: 10 },
-  principleHead: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", gap: 12 },
-  principleTitle: { fontSize: 22, lineHeight: 28, color: c.ink, fontFamily: "serif", flexShrink: 1 },
-  ruleMark: { width: 24, height: 3, borderRadius: 3, backgroundColor: c.brass },
-  technical: { borderTopWidth: 1, borderColor: c.border, gap: 13 },
-  toggle: { minHeight: 52, flexDirection: "row", justifyContent: "space-between", alignItems: "center", gap: 12 },
-  toggleText: { fontSize: 13, fontWeight: "700", color: c.ink },
-  identifiers: { gap: 11, paddingBottom: 14 },
+  readButton: { minHeight: 54, backgroundColor: c.ink, borderRadius: 16, paddingHorizontal: 17, flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
+  readButtonText: { color: c.white, fontSize: 15, fontWeight: "800" },
+  readArrow: { color: c.white, fontSize: 20 },
+  pressed: { opacity: 0.8 }, disabled: { opacity: 0.44 },
+  timestamp: { color: c.secondaryInk, fontSize: 11 },
+  principle: { gap: 13, paddingHorizontal: 5 },
+  principleEyebrow: { color: c.deepBrass, fontSize: 10, fontWeight: "800", letterSpacing: 1.4 },
+  principleTitle: { fontSize: 32, lineHeight: 38, fontFamily: "serif", color: c.ink, letterSpacing: -0.7 },
+  technical: { gap: 10, borderTopWidth: 1, borderColor: c.border },
+  toggle: { minHeight: 54, flexDirection: "row", justifyContent: "space-between", alignItems: "center", gap: 12 },
+  toggleText: { color: c.ink, fontSize: 13, fontWeight: "700" },
+  identifiers: { gap: 12 },
+  returnButton: { backgroundColor: c.paper, minHeight: 54, borderRadius: 16, borderWidth: 1, borderColor: c.border, paddingHorizontal: 18, flexDirection: "row", justifyContent: "space-between", alignItems: "center" },
+  returnText: { fontSize: 14, fontWeight: "700", color: c.ink },
 });
