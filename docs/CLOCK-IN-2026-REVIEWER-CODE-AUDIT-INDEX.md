@@ -51,11 +51,11 @@ These are **reproduction instructions**, not a claim that this document just exe
 
 ## Exact source CI — what was actually validated
 
-- [Mobile CI](https://github.com/Faadil1/cresco-key/actions/runs/38297714978) — source checks (run IDs should be checked in GitHub against the exact commit).
+- [Mobile CI](https://github.com/Faadil1/cresco-key/actions/runs/38297715004) — source checks, SUCCESS on exact PR build commit.
 - [Real Android emulator smoke](https://github.com/Faadil1/cresco-key/actions/runs/38297714925) — UI and navigation on emulator.
 - [Mobile Wallet Adapter integration on Mock Wallet](https://github.com/Faadil1/cresco-key/actions/runs/38297714919) — decline, authorize, proof message and role navigation. A signed message is **not** a token payment.
 - [Standalone APK evidence](https://github.com/Faadil1/cresco-key/actions/runs/38297714985) — CI build receipt and release candidate binary.
-- [Preflight / G1 configured checks](https://github.com/Faadil1/cresco-key/actions) — discover by workflow name and exact build SHA.
+- [Configured G1 preflight](https://github.com/Faadil1/cresco-key/actions/runs/38297714870) — SUCCESS on the exact PR build commit.
 
 ## Verifiable Solana Devnet consequences
 
