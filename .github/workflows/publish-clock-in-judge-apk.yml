@@ -21,9 +21,10 @@ jobs:
     timeout-minutes: 15
     env:
       GH_TOKEN: ${{ github.token }}
-      SOURCE_COMMIT: 06abe0badbf52ca478e1d7063348fe619900d589
+      SOURCE_COMMIT: a11b090ecded7fe87776e98c0e226af7498409ac
+      PR_HEAD_COMMIT: 06abe0badbf52ca478e1d7063348fe619900d589
       SOURCE_RUN: "38177473369"
-      RELEASE_TAG: clock-in-2026-ci-android-candidate-06abe0ba
+      RELEASE_TAG: clock-in-2026-ci-android-candidate-a11b090e
     steps:
       - uses: actions/checkout@v4
 
@@ -46,7 +47,8 @@ jobs:
           import json, hashlib, os, pathlib
           a = pathlib.Path(os.environ["APK"])
           p = json.loads(pathlib.Path(os.environ["RECEIPT"]).read_text())
-          assert p["commit"] == os.environ["SOURCE_COMMIT"], "source SHA mismatch"
+          # PR workflows compile the synthetic test-merge commit, NOT merely the PR head.
+          assert p["commit"] == os.environ["SOURCE_COMMIT"], "actual PR test-merge SHA mismatch"
           assert p["buildType"] == "release-mode-standalone-test"
           assert p["network"] == "devnet"
           assert p["truthBoundary"]["liveG1TransactionProven"] is False
@@ -56,9 +58,9 @@ jobs:
           assert hashlib.sha256(a.read_bytes()).hexdigest() == p["apkSha256"], "binary SHA mismatch"
           print("PROVENANCE_VERIFIED source=", p["commit"], "sha256=", p["apkSha256"])
           PY
-          cp "$APK" "$RUNNER_TEMP/cresco-key-clock-in-devnet-ci-candidate-06abe0ba.apk"
+          cp "$APK" "$RUNNER_TEMP/cresco-key-clock-in-devnet-ci-candidate-a11b090e.apk"
           cp "$RECEIPT" "$RUNNER_TEMP/cresco-key-apk-build-receipt.json"
-          (cd "$RUNNER_TEMP" && sha256sum cresco-key-clock-in-devnet-ci-candidate-06abe0ba.apk \
+          (cd "$RUNNER_TEMP" && sha256sum cresco-key-clock-in-devnet-ci-candidate-a11b090e.apk \
             > cresco-key-apk-sha256.txt)
 
       - name: Prepare clear prerelease notes with no financial overclaim
@@ -70,7 +72,10 @@ jobs:
           **Devnet-only research prototype. NOT a production-signed/store-listed financial app.**
 
           APK compiled by GitHub Actions from exact source commit
-          `06abe0badbf52ca478e1d7063348fe619900d589`:
+          **GitHub Actions PR test-merge commit**
+          `a11b090ecded7fe87776e98c0e226af7498409ac`, whose parents are
+          main baseline `160de69276d508a88dad7eebe09709e2530345d3` and
+          PR head `06abe0badbf52ca478e1d7063348fe619900d589`:
           [APK build workflow #38177473369](https://github.com/Faadil1/cresco-key/actions/runs/38177473369).
           [Android emulator smoke #38177473382](https://github.com/Faadil1/cresco-key/actions/runs/38177473382)
           and [Mobile CI #38177473447](https://github.com/Faadil1/cresco-key/actions/runs/38177473447)
@@ -102,7 +107,7 @@ jobs:
             exit 1
           fi
           gh release create "$RELEASE_TAG" \
-            "$RUNNER_TEMP/cresco-key-clock-in-devnet-ci-candidate-06abe0ba.apk" \
+            "$RUNNER_TEMP/cresco-key-clock-in-devnet-ci-candidate-a11b090e.apk" \
             "$RUNNER_TEMP/cresco-key-apk-build-receipt.json" \
             "$RUNNER_TEMP/cresco-key-apk-sha256.txt" \
             --repo "$GITHUB_REPOSITORY" \
