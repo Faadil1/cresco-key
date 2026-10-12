@@ -1,0 +1,29 @@
+name: Publish CLOCK IN real-Android proof
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/publish-cresco-physical-proof.yml
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify physical Android source media fingerprint
+        run: |
+          set -euo pipefail
+          printf '%s  %s\n' "1e0e8efc6293cf93c0fee6c848071094ebe1bf6edbba90fe3ac5dc962114e989" "docs/assets/clock-in-2026/cresco-key-physical-android-proof-57s.mp4" | sha256sum -c -
+          file docs/assets/clock-in-2026/cresco-key-physical-android-proof-57s.mp4
+      - name: Publish as public release asset
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          gh release upload clock-in-2026-signature-0bd51d53 \
+            docs/assets/clock-in-2026/cresco-key-physical-android-proof-57s.mp4 \
+            --clobber
