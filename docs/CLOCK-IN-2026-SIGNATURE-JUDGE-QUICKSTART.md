@@ -43,3 +43,9 @@ The optional SKR Charter Atelier uses read-only Solana Mainnet token account ins
 Install the public candidate → Explore live Devnet Key without a wallet → connect a supported Android wallet → inspect the Young/Guardian interfaces → compare visible rule boundaries with public Devnet receipts above → review the open blocker honestly.
 
 **Submission deck and video URLs are supplied separately by the operator; confirm access without sign-in.**
+## Short narrated judge pitch (Explain)
+
+- [CRESCO Key — CLOCK IN Judge Demo, approx. 2m12s narration](https://scrimba.com/explain/guide0cnst87t1?claim=t715okr5ne91r0a0&fullscreen=1).
+- This is a **narrated explanation** with actual emulator screenshots, not a live Android video. It includes observed Mobile Wallet Adapter behavior and separately labels developer-signer Devnet payments.
+- The application's **moving Android demo** remains separate: [public 88-second emulator video](https://github.com/Faadil1/cresco-key/releases/download/clock-in-2026-signature-0bd51d53/cresco-key-signature-demo-88sec.mp4).
+- The Radiants DEMO VIDEO URL field asks for YouTube, Loom or a **public Google Drive link**: do not paste the Scrimba link without checking form acceptance; claim and export this explainer to MP4 then host it on an accepted provider. Scrimba playback length is estimated until the exported MP4 duration is measured. Do not assume submission completed.
