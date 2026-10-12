@@ -89,7 +89,7 @@ export function LivingKeySeal({
         },
       ]} />
       {/* Only this separate dot changes; an exception NEVER widens the ring. */}
-      <View style={[
+      <Animated.View style={[
         styles.marker,
         {
           right: 0,
@@ -99,6 +99,7 @@ export function LivingKeySeal({
           borderRadius: dotSize / 2,
           backgroundColor: markerColor,
           opacity: mood === "standing" ? 0.45 : 1,
+          transform: [{ scale: motion.interpolate({ inputRange: [0, 1], outputRange: [1, 1.22] }) }],
         },
       ]} />
     </View>
