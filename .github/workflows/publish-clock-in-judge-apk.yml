@@ -1,0 +1,114 @@
+name: Publish public CLOCK IN judge APK candidate
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/publish-clock-in-judge-apk.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: cresco-clock-in-judge-apk-release
+  cancel-in-progress: false
+
+jobs:
+  publish-verifiable-apk:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      GH_TOKEN: ${{ github.token }}
+      SOURCE_COMMIT: 06abe0badbf52ca478e1d7063348fe619900d589
+      SOURCE_RUN: "38177473369"
+      RELEASE_TAG: clock-in-2026-ci-android-candidate-06abe0ba
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download exact existing successful APK CI artifact
+        run: |
+          gh run download "$SOURCE_RUN" --repo "$GITHUB_REPOSITORY" \
+            --name cresco-key-standalone-devnet-apk \
+            --dir "$RUNNER_TEMP/ci-apk"
+
+      - name: Verify receipt, exact commit and binary SHA-256
+        shell: bash
+        run: |
+          set -euo pipefail
+          APK="$(find "$RUNNER_TEMP/ci-apk" -type f -name 'app-release.apk' -print -quit)"
+          RECEIPT="$(find "$RUNNER_TEMP/ci-apk" -type f -name 'standalone-devnet-apk-receipt.json' -print -quit)"
+          test -n "$APK" && test -s "$APK"
+          test -n "$RECEIPT" && test -s "$RECEIPT"
+          export APK RECEIPT
+          python3 - <<'PY'
+          import json, hashlib, os, pathlib
+          a = pathlib.Path(os.environ["APK"])
+          p = json.loads(pathlib.Path(os.environ["RECEIPT"]).read_text())
+          assert p["commit"] == os.environ["SOURCE_COMMIT"], "source SHA mismatch"
+          assert p["buildType"] == "release-mode-standalone-test"
+          assert p["network"] == "devnet"
+          assert p["truthBoundary"]["liveG1TransactionProven"] is False
+          assert p["truthBoundary"]["installationOnPhysicalDeviceProven"] is False
+          assert p["truthBoundary"]["storeSigningAndReleaseCertificationProven"] is False
+          assert p["sizeBytes"] == a.stat().st_size
+          assert hashlib.sha256(a.read_bytes()).hexdigest() == p["apkSha256"], "binary SHA mismatch"
+          print("PROVENANCE_VERIFIED source=", p["commit"], "sha256=", p["apkSha256"])
+          PY
+          cp "$APK" "$RUNNER_TEMP/cresco-key-clock-in-devnet-ci-candidate-06abe0ba.apk"
+          cp "$RECEIPT" "$RUNNER_TEMP/cresco-key-apk-build-receipt.json"
+          (cd "$RUNNER_TEMP" && sha256sum cresco-key-clock-in-devnet-ci-candidate-06abe0ba.apk \
+            > cresco-key-apk-sha256.txt)
+
+      - name: Prepare clear prerelease notes with no financial overclaim
+        shell: bash
+        run: |
+          cat > "$RUNNER_TEMP/CLOCK-IN-RELEASE-NOTES.md" <<'NOTES'
+          ## Cresco Key — CLOCK IN 2026 Android CI candidate
+
+          **Devnet-only research prototype. NOT a production-signed/store-listed financial app.**
+
+          APK compiled by GitHub Actions from exact source commit
+          `06abe0badbf52ca478e1d7063348fe619900d589`:
+          [APK build workflow #38177473369](https://github.com/Faadil1/cresco-key/actions/runs/38177473369).
+          [Android emulator smoke #38177473382](https://github.com/Faadil1/cresco-key/actions/runs/38177473382)
+          and [Mobile CI #38177473447](https://github.com/Faadil1/cresco-key/actions/runs/38177473447)
+          passed for this commit. A separate, earlier APK was observed with Solflare on
+          a Samsung; **this exact newer candidate has NOT been physically retested**.
+
+          ### What works vs what's still unproven
+
+          - Public read-only Devnet Key inspection and native judge tour: CI/emulator candidate.
+          - Current CRESCO Key onchain 5 demo-token transfer and 12-unit per-action refusal:
+            proven **separately with developer Devnet signers**, not by this APK.
+          - Guardian grant: independently signed onchain, but **Allow Once exact
+            redemption and replay rejection are BLOCKED** by
+            [issue #76](https://github.com/Faadil1/cresco-key/issues/76).
+          - The APK is **not verified** for final physical two-wallet G1, production wallet
+            identity or Play/dApp Store acceptance. Never use real funds or personal keys.
+
+          This release contains the **actual standalone app-release.apk binary**,
+          its CI build-provenance JSON and SHA-256 checksum. Reproducibility and
+          screenshots: [README](https://github.com/Faadil1/cresco-key).
+          NOTES
+
+      - name: Publish anonymous-access GitHub prerelease APK
+        shell: bash
+        run: |
+          set -euo pipefail
+          if gh release view "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            echo "Release tag already exists; refusing to overwrite potentially reviewed APK."
+            exit 1
+          fi
+          gh release create "$RELEASE_TAG" \
+            "$RUNNER_TEMP/cresco-key-clock-in-devnet-ci-candidate-06abe0ba.apk" \
+            "$RUNNER_TEMP/cresco-key-apk-build-receipt.json" \
+            "$RUNNER_TEMP/cresco-key-apk-sha256.txt" \
+            --repo "$GITHUB_REPOSITORY" \
+            --target "$SOURCE_COMMIT" \
+            --title "CLOCK IN 2026 — CRESCO Key Android CI candidate (Devnet)" \
+            --notes-file "$RUNNER_TEMP/CLOCK-IN-RELEASE-NOTES.md" \
+            --prerelease
+          gh release view "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" \
+            --json url,tagName,assets,isPrerelease
