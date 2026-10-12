@@ -28,6 +28,7 @@ import { MuseumHero, MuseumPlate, MuseumButton, MuseumFact, ProofStrip, museumCo
 import { SkrCharterAtelier } from "./skr/SkrCharterAtelier";
 import { KeyPeriodUsage } from "./KeyPeriodUsage";
 import { LivingKeySeal } from "./design/LivingKeySeal";
+import { KeyPortal } from "./design/KeyPortal";
 import {
   inspectStandingKey,
   assessStandingIntent,
@@ -1424,33 +1425,35 @@ export function BoundaryWorkspace() {
   if (!mode) {
     return (
       <ScrollView contentContainerStyle={styles.section}>
-        <MuseumHero
-          exhibit="TWO ROLES · TWO DISTINCT WALLETS"
-          title="Your Key. Your role."
-          subtitle="Everyday freedom for young people. Thoughtful decisions for Guardians. Each person uses their own wallet."
-          compact
-        />
+        <View style={styles.roleHero}>
+          <View style={styles.roleHeroText}>
+            <Text style={styles.roleHeroKicker}>YOUR KEY · YOUR CHOICE</Text>
+            <Text style={styles.roleHeroTitle}>One family.{"\n"}Two perspectives.</Text>
+            <Text style={styles.roleHeroBody}>Choose how you'll use Cresco Key. Each person connects with their own wallet.</Text>
+          </View>
+          <KeyPortal size={126} />
+        </View>
         <Pressable accessibilityRole="button"
           accessibilityLabel="Continue as young person"
           onPress={() => setMode("YOUNG")}
           style={[styles.roleCard, styles.roleCardPrimary]}>
           <View style={styles.roleHeader}>
-            <Text style={styles.roleEyebrow}>I'M SPENDING</Text>
-            <LivingKeySeal size={45} mood="standing" />
+            <Text style={styles.roleOnDarkEyebrow}>MY MONEY · MY KEY</Text>
+            <KeyPortal size={68} />
           </View>
-          <Text style={styles.roleTitle}>Young person  ↗</Text>
-          <Text style={styles.roleDescription}>Check your limit, scan a payment and ask only if you reach a boundary.</Text>
+          <Text style={styles.roleOnDarkTitle}>Young person  ↗</Text>
+          <Text style={styles.roleOnDarkBody}>Check your rules, scan a real payment, and request help only when necessary.</Text>
         </Pressable>
         <Pressable accessibilityRole="button"
           accessibilityLabel="Continue as guardian"
           onPress={() => setMode("GUARDIAN")}
           style={styles.roleCard}>
           <View style={styles.roleHeader}>
-            <Text style={styles.roleEyebrow}>I'M HELPING</Text>
-            <LivingKeySeal size={45} mood="standing" />
+            <Text style={styles.roleEyebrow}>A THOUGHTFUL DECISION</Text>
+            <KeyPortal size={68} light />
           </View>
           <Text style={styles.roleTitle}>Guardian  ↗</Text>
-          <Text style={styles.roleDescription}>Review an exact request, say no or authorize only that action once.</Text>
+          <Text style={styles.roleDescription}>Review exact terms, decline or authorize a single request.</Text>
         </Pressable>
         <Text style={styles.status}>DEVNET TEST APP · A connected wallet alone does not create a family Key.</Text>
         <Pressable
@@ -1483,8 +1486,14 @@ export function BoundaryWorkspace() {
           onPress={() => setMode(null)} style={styles.backAction}>
           <Text style={styles.backText}>← All roles</Text>
         </Pressable>
-        <MuseumHero exhibit="GUARDIAN / DECISION" title="One request. Your choice."
-          subtitle="Check the exact payment before deciding. Allowing it once never changes the standing Key." compact />
+        <View style={styles.guardianHero}>
+          <View style={styles.guardianHeroCopy}>
+            <Text style={styles.roleHeroKicker}>GUARDIAN · EXACT DECISION</Text>
+            <Text style={styles.guardianHeroTitle}>Your call.{"\n"}Their freedom.</Text>
+            <Text style={styles.guardianHeroSubtitle}>See exactly what's being requested. A one-time decision never changes the permanent Key.</Text>
+          </View>
+          <KeyPortal size={104} mood={relayRequest?.status === "REFUSED" ? "boundary" : relayRequest?.status === "PENDING" ? "request" : "standing"} />
+        </View>
         {relayRequest ? (
           <MuseumPlate exhibit="AN EXACT REQUEST" title={relayRequest.display?.label ?? "Guardian review"}
             tone={relayRequest.status === "REFUSED" ? "boundary" : "pending"}>
@@ -1493,8 +1502,9 @@ export function BoundaryWorkspace() {
             <Text style={styles.roleDescription}>One exact request · standing limits stay unchanged</Text>
           </View>
           <View style={styles.exactAmountBlock}>
-            <Text style={styles.roleEyebrow}>REQUESTED AMOUNT · TOKEN BASE UNITS</Text>
+            <Text style={styles.roleEyebrow}>EXACT AMOUNT / TOKEN BASE UNITS</Text>
             <Text style={styles.exactAmount} selectable>{relayRequest.amountBaseUnits}</Text>
+            <Text style={styles.exactAmountNote}>This figure is in token base units until the mint decimals are independently verified.</Text>
           </View>
           <MuseumFact label="RECIPIENT" value={relayRequest.recipient} />
           <MuseumFact label="TOKEN MINT" value={relayRequest.mint} />
@@ -1621,6 +1631,14 @@ export function BoundaryWorkspace() {
         tone={standingOutcome === "REFUSE" ? "boundary" : "neutral"}
         compact
       />
+      <View style={styles.youngKeyBanner}>
+        <View style={styles.youngKeyText}>
+          <Text style={styles.youngKeyKicker}>STANDING KEY · DEVNET</Text>
+          <Text style={styles.youngKeyTitle}>The rules don't move.</Text>
+          <Text style={styles.youngKeyCaption}>A payment or exception must be verified separately.</Text>
+        </View>
+        <KeyPortal size={112} light mood={standingOutcome === "REFUSE" ? "boundary" : standingOutcome === "UNKNOWN" ? "unknown" : "standing"} />
+      </View>
       <MuseumPlate exhibit="YOUR PAYMENT" title={intent ? "Ready to review" : "Make a payment"}
         tone={standingOutcome === "REFUSE" ? "boundary" : standingOutcome === "ALLOW" ? "verified" : "neutral"}>
         {intent ? (
@@ -1662,9 +1680,16 @@ export function BoundaryWorkspace() {
             <MuseumButton label="View my live standing Key limits" disabled={busy}
               variant="secondary" onPress={inspectYoungCurrentKey} />
             {youngKeyInspection?.state === "READY" && youngDisplayDecimals !== null ? (
-              <MuseumPlate exhibit="LIVE DEVNET KEY" title="Standing authority right now" tone="neutral">
-                <MuseumFact label="PER-ACTION LIMIT" value={displayTokenUnits(youngKeyInspection.key.maxActionAmount, youngDisplayDecimals!)} />
-                <MuseumFact label="PER-PERIOD LIMIT" value={displayTokenUnits(youngKeyInspection.key.maxPeriodAmount, youngDisplayDecimals!)} />
+              <MuseumPlate exhibit="LIVE DEVNET KEY" title="Your actual limits" tone="neutral">
+                <View style={styles.liveRuleTop}>
+                  <View style={styles.liveRuleAmount}>
+                    <Text style={styles.roleEyebrow}>MAXIMUM PER PAYMENT · TEST TOKEN UNITS</Text>
+                    <Text style={styles.liveRuleValue} selectable>{displayTokenUnits(youngKeyInspection.key.maxActionAmount, youngDisplayDecimals!)}</Text>
+                    <Text style={styles.roleEyebrow}>PER PERIOD</Text>
+                    <Text style={styles.liveRulePeriod} selectable>{displayTokenUnits(youngKeyInspection.key.maxPeriodAmount, youngDisplayDecimals!)}</Text>
+                  </View>
+                  <KeyPortal size={86} light />
+                </View>
                 <KeyPeriodUsage spentBaseUnits={youngKeyInspection.key.spentThisPeriod} maxPeriodBaseUnits={youngKeyInspection.key.maxPeriodAmount} />
                 <MuseumFact label="MANDATE NONCE" value={youngKeyInspection.key.nonce.toString()} />
                 <MuseumFact label="AUTHORITY STAGE" value={youngKeyInspection.key.mandateStage.toString()} />
@@ -1913,7 +1938,7 @@ const styles = StyleSheet.create({
   },
   backAction: { minHeight: 44, justifyContent: "center", alignSelf: "flex-start", paddingHorizontal: 2 },
   backText: { color: color.ink, fontWeight: "700", fontSize: 15 },
-  roleCard: { borderWidth: 1, borderColor: color.border, backgroundColor: color.paper, borderRadius: 23, padding: 20, gap: 9, minHeight: 153 },
+  roleCard: { borderWidth: 1, borderColor: color.border, backgroundColor: color.paper, borderRadius: 23, padding: 19, gap: 8, minHeight: 154 },
   roleHeader: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", gap: 12 },
   exactChoiceHeader: { flexDirection: "row", alignItems: "center", gap: 10 },
   purchaseAmountRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 14 },
@@ -1921,8 +1946,30 @@ const styles = StyleSheet.create({
   purchaseAmount: { color: color.ink, fontSize: 38, fontWeight: "700", lineHeight: 45 },
   exactAmountBlock: { gap: 6, paddingVertical: 8 },
   exactAmount: { color: color.ink, fontSize: 31, fontWeight: "700", lineHeight: 38 },
-  roleCardPrimary: { borderColor: "#D5E5D8", backgroundColor: "#E8EFE9" },
+  roleCardPrimary: { borderColor: "#233B2E", backgroundColor: "#17271F" },
   roleEyebrow: { color: color.deepBrass, fontSize: 10, fontWeight: "700", letterSpacing: 1.5 },
+  roleHero: { backgroundColor: "#17251F", borderRadius: 24, minHeight: 193, paddingLeft: 20, paddingVertical: 17, flexDirection: "row", alignItems: "center", overflow: "hidden" },
+  roleHeroText: { flex: 1, gap: 9 },
+  roleHeroKicker: { color: "#D7BD8E", fontSize: 9, fontWeight: "800", letterSpacing: 1.3 },
+  roleHeroTitle: { color: "#FCF4E7", fontSize: 28, fontFamily: "serif", lineHeight: 33, letterSpacing: -1 },
+  roleHeroBody: { color: "#D1D8CF", fontSize: 12, lineHeight: 17 },
+  roleOnDarkEyebrow: { color: "#D8BD89", fontSize: 10, fontWeight: "800", letterSpacing: 1.4 },
+  roleOnDarkTitle: { color: "#FAF3E5", fontSize: 27, fontFamily: "serif", lineHeight: 33 },
+  roleOnDarkBody: { color: "#D2D9D0", fontSize: 13, lineHeight: 20 },
+  guardianHero: { backgroundColor: "#17251F", borderRadius: 22, minHeight: 165, flexDirection: "row", alignItems: "center", paddingLeft: 19, paddingVertical: 16, overflow: "hidden" },
+  guardianHeroCopy: { flex: 1, gap: 8 },
+  guardianHeroTitle: { color: "#FCF4E7", fontSize: 28, lineHeight: 32, fontFamily: "serif" },
+  guardianHeroSubtitle: { color: "#CFD7CC", fontSize: 12, lineHeight: 18 },
+  exactAmountNote: { color: color.secondaryInk, fontSize: 11, lineHeight: 17 },
+  youngKeyBanner: { borderRadius: 22, backgroundColor: "#E9E8DB", minHeight: 134, flexDirection: "row", alignItems: "center", paddingLeft: 19, overflow: "hidden" },
+  youngKeyText: { flex: 1, gap: 7 },
+  youngKeyKicker: { color: color.deepBrass, letterSpacing: 1.3, fontSize: 10, fontWeight: "800" },
+  youngKeyTitle: { color: color.ink, fontSize: 23, lineHeight: 28, fontFamily: "serif" },
+  youngKeyCaption: { color: color.secondaryInk, fontSize: 12, lineHeight: 17 },
+  liveRuleTop: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 12 },
+  liveRuleAmount: { flex: 1, gap: 8 },
+  liveRuleValue: { color: color.ink, fontSize: 30, lineHeight: 35, fontWeight: "800" },
+  liveRulePeriod: { color: color.ink, fontSize: 18, fontWeight: "800" },
   roleTitle: { color: color.ink, fontSize: 27, fontFamily: "serif", lineHeight: 34, letterSpacing: -0.8 },
   roleDescription: { color: color.secondaryInk, fontSize: 14, lineHeight: 21 },
   disclosure: { borderTopWidth: 1, borderBottomWidth: 1, borderColor: color.border, paddingVertical: 13, minHeight: 48, flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 12 },
