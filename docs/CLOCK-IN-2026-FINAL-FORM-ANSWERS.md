@@ -20,7 +20,10 @@ https://github.com/Faadil1/cresco-key
 ## Android APK URL — permanent and public
 https://github.com/Faadil1/cresco-key/releases/download/clock-in-2026-signature-0bd51d53/cresco-key-signature-clock-in-0bd51d53-devnet.apk
 
-## Deck URL — exists but MUST be made public in Drive
+## Deck URL — confirmed PUBLIC PDF on GitHub Release
+https://github.com/Faadil1/cresco-key/releases/download/clock-in-2026-signature-0bd51d53/cresco-key-signature-jury-deck-18-slides.pdf
+
+## Original Drive deck (private until shared)
 https://drive.google.com/file/d/1Ggoz9-ZGc5IqMnl_4s_F8-b24SYTXIvS/view?usp=drivesdk
 
 ## Demo video URL — exists but MUST be made public in Drive
