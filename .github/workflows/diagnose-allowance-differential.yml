@@ -1,0 +1,39 @@
+name: Diagnose live allowance mismatch (read-only)
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "tools/devnet/diagnose-allowance-differential.cjs"
+      - ".github/workflows/diagnose-allowance-differential.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  diagnostic:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    defaults:
+      run:
+        working-directory: tools/devnet
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22.13.0"
+      - name: Install public Devnet decoder dependencies
+        run: npm install --ignore-scripts
+      - name: Source syntax
+        run: node --check diagnose-allowance-differential.cjs
+      - name: Inspect live public allowance and simulate both candidate recipients
+        run: node diagnose-allowance-differential.cjs
+      - name: Publish read-only forensic evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cresco-key-allowance-public-rpc-differential
+          path: evidence/devnet-distinct-program/allowance-differential-simulation.json
+          if-no-files-found: warn
+          retention-days: 30
