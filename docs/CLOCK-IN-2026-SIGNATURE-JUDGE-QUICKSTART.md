@@ -6,6 +6,20 @@
 
 **Freedom with Boundaries.** A new Android-first Solana Mobile app for financial autonomy with a standing, onchain spending Key. Rather than broadening that permission permanently, a Guardian can review one exact amount, token mint and recipient. **The exception moves. The boundary does not.**
 
+## Physical Android evidence — NEW, 2026-10-12
+
+**[Watch the real-phone 57-second recording](https://github.com/Faadil1/cresco-key/blob/main/docs/assets/clock-in-2026/cresco-key-physical-android-proof-57s.mp4)** · [Read the observed-vs-blocked evidence table](CLOCK-IN-2026-PHYSICAL-ANDROID-EVIDENCE.md).
+
+Proof labels:
+
+- **PHYSICAL ANDROID / OBSERVED:** genuine installed UI, live onchain read, 10-unit action cap / 100-unit period cap / 5% usage; Solflare-connected Young Person screen.
+- **PHYSICAL / PRECHECK_BLOCKED:** the app detects the configured beneficiary mismatch and stops before any financial transaction. Receipt `transactionSubmitted:false` / `financialAuthorityDecision:false`. This is a **local setup protection**, not a Solana program refusal.
+- **PHYSICAL / LIVE_RPC_OBSERVED:** independent wallet check finds `NOT_PROVISIONED`; the friend's 10 Devnet SOL is not an enrolled Key.
+- **LIVE DEVNET / DEVELOPER_SIGNER_VERIFIED:** distinct 5-unit successful transfer, 12-unit refusal and one-time grant (see below), not executed from this phone.
+- **BLOCKED:** exact Guardian allowance redemption/replay, issue #76. Physical full financial G1 is not claimed.
+
+The 57-second clip is an **edited selection of real phone recordings and one authentic in-app screenshot**, not a single-take live transaction. PIN and WhatsApp screens were removed.
+
 ## Downloads and source
 
 - [Latest Signature standalone Android APK](https://github.com/Faadil1/cresco-key/releases/download/clock-in-2026-signature-0bd51d53/cresco-key-signature-clock-in-0bd51d53-devnet.apk)
