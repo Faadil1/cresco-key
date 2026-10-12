@@ -282,7 +282,8 @@ adb shell input swipe 540 600 540 1780 400 || true
 sleep 1
 tap_text "Continue as guardian" 12
 sleep 2
-wait_text "One exact request" 8 || wait_text "Nothing to review yet" 8
+wait_text "GUARDIAN · EXACT DECISION" 15
+wait_text "Back to role selection" 15
 dump_ui "09-cresco-guardian-entry"
 tap_text "Back to role selection" 10
 sleep 1
