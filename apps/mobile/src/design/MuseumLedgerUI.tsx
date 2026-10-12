@@ -103,7 +103,7 @@ export function MuseumButton({
     <Pressable
       accessibilityRole="button"
       accessibilityLabel={label}
-      accessibilityState={{ disabled, busy: disabled }}
+      accessibilityState={{ disabled }}
       disabled={disabled}
       onPress={onPress}
       style={({ pressed }) => [
@@ -114,8 +114,8 @@ export function MuseumButton({
         disabled && styles.buttonDisabled,
       ]}
     >
-      <Text style={[styles.buttonText, variant === "secondary" && styles.buttonTextSecondary]}>{label}</Text>
-      <Text style={[styles.buttonArrow, variant === "secondary" && styles.buttonTextSecondary]}>→</Text>
+      <Text style={[styles.buttonText, variant === "secondary" && styles.buttonTextSecondary, variant === "boundary" && styles.buttonTextBoundary]}>{label}</Text>
+      <Text style={[styles.buttonArrow, variant === "secondary" && styles.buttonTextSecondary, variant === "boundary" && styles.buttonTextBoundary]}>→</Text>
     </Pressable>
   );
 }
@@ -201,6 +201,7 @@ const styles = StyleSheet.create({
   buttonDisabled: { opacity: 0.44 },
   buttonText: { fontSize: 16, fontWeight: "700", lineHeight: 22, color: t.color.ink, flexShrink: 1 },
   buttonTextSecondary: { color: t.color.ink },
+  buttonTextBoundary: { color: t.color.white },
   buttonArrow: { fontSize: 23, color: t.color.ink },
   fact: { borderTopWidth: 1, borderColor: t.color.border, paddingTop: 8, gap: 3 },
   factLabel: { color: t.color.deepBrass, fontWeight: "700", letterSpacing: 1.1, fontSize: 11 },
