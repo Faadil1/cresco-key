@@ -1,7 +1,7 @@
 import { address } from "@solana/kit";
 import { useMobileWallet } from "@wallet-ui/react-native-kit";
 import { useState } from "react";
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 
 import {
   MuseumHero,
@@ -26,6 +26,7 @@ export function JudgeReadOnlyTour({ onExit }: { onExit: () => void }) {
   const [state, setState] = useState<KeyInspection | null>(null);
   const [decimals, setDecimals] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
+  const [showAddresses, setShowAddresses] = useState(false);
   const [checkedAt, setCheckedAt] = useState<string | null>(null);
   const beneficiary = process.env.EXPO_PUBLIC_DEMO_BENEFICIARY_WALLET?.trim() ?? "";
   const guardian = process.env.EXPO_PUBLIC_DEMO_GUARDIAN_WALLET?.trim() ?? "";
@@ -85,46 +86,50 @@ export function JudgeReadOnlyTour({ onExit }: { onExit: () => void }) {
   return (
     <ScrollView contentContainerStyle={s.container}>
       <MuseumHero
-        exhibit="JUDGE ENTRY / REAL DEVNET"
-        title="Inspect the Key. No wallet required."
-        subtitle="See the standing limits of the project's already-provisioned developer-controlled Devnet family. Read-only, from actual program accounts — not a simulated payment."
+        exhibit="READ-ONLY / SOLANA DEVNET"
+        title="See what a Key allows."
+        subtitle="Explore a sample family's real spending limits without connecting a wallet. No payment or approval happens here."
         compact
       />
-      <MuseumPlate exhibit="01 / OBSERVE" title="Published demo family">
-        <Text style={s.body}>This sample family was provisioned separately using developer-controlled wallets. It does not belong to your wallet or to our Samsung tester. No signing, wallet connection, transfer, or Guardian consent occurs here.</Text>
-        <MuseumFact label="CLUSTER" value="Solana Devnet" />
-        <MuseumFact label="SAMPLE BENEFICIARY" value={beneficiary || "Not configured"} />
-        <MuseumFact label="SAMPLE GUARDIAN" value={guardian || "Not configured"} />
-        <MuseumFact label="PROGRAM" value={process.env.EXPO_PUBLIC_CRESCO_KEY_PROGRAM_ID ?? "Not configured"} />
-        <MuseumButton label={loading ? "Reading actual Devnet accounts…" : "Read live sample Key from Devnet"} disabled={loading} onPress={queryPublishedKey} />
+      <MuseumPlate exhibit="01 / LIVE LIMITS" title="How much freedom does this Key give?">
+        <Text style={s.body}>These numbers belong to a separately provisioned developer test family, not to your wallet. They are read from Devnet, never invented by the app.</Text>
+        <MuseumButton label={loading ? "Checking real Devnet accounts…" : "Check sample Key limits"} disabled={loading} onPress={queryPublishedKey} />
         {state?.state === "READY" ? (
           <View style={s.evidence}>
-            <Text style={s.good}>RPC VERIFIED · Live standing Key account identities and status</Text>
-            <MuseumFact label="CHARTER" value={state.key.charter.toString()} />
-            <MuseumFact label="MANDATE" value={state.key.mandate.toString()} />
-            <MuseumFact label="ASSET RULE" value={state.key.assetRule.toString()} />
-            <MuseumFact label="MANDATE NONCE" value={state.key.nonce.toString()} />
-            <MuseumFact label="MAX / ACTION" value={decimals !== null ? displayTokenUnits(state.key.maxActionAmount, decimals) : state.key.maxActionAmount.toString() + " base units"} />
-            <MuseumFact label="MAX / PERIOD" value={decimals !== null ? displayTokenUnits(state.key.maxPeriodAmount, decimals) : state.key.maxPeriodAmount.toString() + " base units"} />
-            <MuseumFact label="USED / PERIOD" value={decimals !== null ? displayTokenUnits(state.key.spentThisPeriod, decimals) : state.key.spentThisPeriod.toString() + " base units"} />
-            <Text style={s.note}>These are the sample family's onchain limits, not the connected judge's permissions, spendable vault balance, or proof of a mobile transfer.</Text>
+            <Text style={s.good} accessibilityLiveRegion="polite">Devnet accounts read successfully</Text>
+            <MuseumFact label="MAXIMUM PER PURCHASE" value={decimals !== null ? displayTokenUnits(state.key.maxActionAmount, decimals) + " test token units" : state.key.maxActionAmount.toString() + " base units"} />
+            <MuseumFact label="MAXIMUM PER PERIOD" value={decimals !== null ? displayTokenUnits(state.key.maxPeriodAmount, decimals) + " test token units" : state.key.maxPeriodAmount.toString() + " base units"} />
+            <MuseumFact label="RECORDED AS SPENT" value={decimals !== null ? displayTokenUnits(state.key.spentThisPeriod, decimals) + " test token units" : state.key.spentThisPeriod.toString() + " base units"} />
+            <Text style={s.note}>These are authorization limits, not a spendable balance and not evidence of a mobile payment.</Text>
+            <Pressable accessibilityRole="button"
+              accessibilityState={{ expanded: showAddresses }}
+              onPress={() => setShowAddresses(v => !v)} style={s.detailToggle}>
+              <Text style={s.detailText}>Inspect onchain account identifiers</Text>
+              <Text style={s.detailText}>{showAddresses ? "−" : "+"}</Text>
+            </Pressable>
+            {showAddresses ? (
+              <View style={s.details}>
+                <MuseumFact label="CHARTER" value={state.key.charter.toString()} />
+                <MuseumFact label="MANDATE" value={state.key.mandate.toString()} />
+                <MuseumFact label="ASSET RULE" value={state.key.assetRule.toString()} />
+                <MuseumFact label="MANDATE NONCE" value={state.key.nonce.toString()} />
+                <MuseumFact label="GUARDIAN" value={guardian} />
+                <MuseumFact label="BENEFICIARY" value={beneficiary} />
+              </View>
+            ) : null}
           </View>
         ) : state ? (
-          <Text style={s.note} accessibilityLiveRegion="polite">Live query: {state.state} · {state.reason}. No result is fabricated or promoted to a success.</Text>
+          <Text style={s.note} accessibilityLiveRegion="polite">We couldn't verify the sample Key right now ({state.state}: {state.reason}). No spending permission was assumed. You can retry.</Text>
         ) : (
           <Text style={s.note}>Tap to inspect; no chain verification is claimed before a successful read.</Text>
         )}
         {checkedAt ? <Text style={s.note}>Inspected: {checkedAt}</Text> : null}
       </MuseumPlate>
-      <MuseumPlate exhibit="02 / WHY THIS MATTERS" title="An exception is not a new rule">
-        <Text style={s.body}>A beneficiary spends independently within a standing Key. When a request exceeds its boundary, the intended Guardian workflow binds an exact one-time approval to the asset, recipient, amount and nonce. Mutated and repeated attempts must not inherit this approval.</Text>
-        <Text style={s.note}>The full physical Guardian → allowance → payment → replay flow is NOT verified. This tour does not portray it as complete.</Text>
+      <MuseumPlate exhibit="02 / WHY IT MATTERS" title="One exception is not a new rule">
+        <Text style={s.body}>A young person should be free to make ordinary purchases within clear limits. For a purchase outside them, a Guardian should be able to decide on that exact request instead of permanently raising the limit.</Text>
+        <Text style={s.note}>The complete mobile Guardian payment and replay sequence is still being validated. This read-only tour does not grant an exception.</Text>
       </MuseumPlate>
-      <MuseumPlate exhibit="03 / WHAT IS VERIFIED" title="Proof before prizes">
-        <Text style={s.body}>Physical Samsung + Solflare wallet connection and message-sign response observed. A wallet-to-demo-beneficiary mismatch stopped a payment attempt safely. Cloudflare Boundary Relay deployed and passed public health and Durable Object readiness probes. No physical end-to-end G1 transaction has been proven.</Text>
-        <Text style={s.note}>SKR optional Charter Atelier is source/CI work in progress. Holding Devnet SOL is not holding Mainnet SKR.</Text>
-        <MuseumButton label="Back to wallet connection" variant="secondary" onPress={onExit} />
-      </MuseumPlate>
+      <MuseumButton label="Connect your own wallet" variant="secondary" onPress={onExit} />
     </ScrollView>
   );
 }
@@ -134,4 +139,7 @@ const s = StyleSheet.create({
   note: { color: c.secondaryInk, fontSize: 12, lineHeight: 18 },
   good: { color: c.verified, fontSize: 12, fontWeight: "700" },
   evidence: { gap: 8, paddingTop: 12, borderTopWidth: 1, borderTopColor: c.border },
+  detailToggle: { minHeight: 46, borderTopWidth: 1, borderBottomWidth: 1, borderColor: c.border, flexDirection: "row", justifyContent: "space-between", alignItems: "center", gap: 9, paddingVertical: 12 },
+  detailText: { fontSize: 13, fontWeight: "700", color: c.deepBrass },
+  details: { gap: 8 },
 });
