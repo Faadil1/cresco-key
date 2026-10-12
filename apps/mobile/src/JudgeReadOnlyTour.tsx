@@ -18,6 +18,7 @@ import {
 } from "./solana/standingKey";
 import { paymentProgramConfigFromEnv } from "./solana/programClient";
 import { parseSolanaPayTransferRequest } from "./payment/solanaPay";
+import { KeyPeriodUsage } from "./KeyPeriodUsage";
 
 // A REAL read-only inspection of the *published developer test family*.
 // No wallet, keys, tx signing, artificial balance, custody or financial claim.
@@ -100,6 +101,7 @@ export function JudgeReadOnlyTour({ onExit }: { onExit: () => void }) {
             <MuseumFact label="MAXIMUM PER PURCHASE" value={decimals !== null ? displayTokenUnits(state.key.maxActionAmount, decimals) + " test token units" : state.key.maxActionAmount.toString() + " base units"} />
             <MuseumFact label="MAXIMUM PER PERIOD" value={decimals !== null ? displayTokenUnits(state.key.maxPeriodAmount, decimals) + " test token units" : state.key.maxPeriodAmount.toString() + " base units"} />
             <MuseumFact label="RECORDED AS SPENT" value={decimals !== null ? displayTokenUnits(state.key.spentThisPeriod, decimals) + " test token units" : state.key.spentThisPeriod.toString() + " base units"} />
+            <KeyPeriodUsage spentBaseUnits={state.key.spentThisPeriod} maxPeriodBaseUnits={state.key.maxPeriodAmount} />
             <Text style={s.note}>These are authorization limits, not a spendable balance and not evidence of a mobile payment.</Text>
             <Pressable accessibilityRole="button"
               accessibilityState={{ expanded: showAddresses }}
