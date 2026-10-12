@@ -1,0 +1,47 @@
+name: Publish CLOCK IN Signature verified APK
+on:
+  push:
+    branches:
+      - design/cresco-key-signature-mobile-20261012
+    paths:
+      - .github/workflows/publish-cresco-clockin-signature.yml
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Download already-verified APK build artifact
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          mkdir -p release
+          gh run download 38297714985 --name cresco-key-standalone-devnet-apk --dir release
+          test -f release/apps/mobile/android/app/build/outputs/apk/release/app-release.apk
+          test -f release/evidence/apk/standalone-devnet-apk-receipt.json
+      - name: Confirm immutable APK hash and build truth
+        run: |
+          APK="release/apps/mobile/android/app/build/outputs/apk/release/app-release.apk"
+          printf '%s  %s\n' "878e11e1b55ce97817bcf7a852651606ade3a219be0e75866c739b5137b329b8" "$APK" | sha256sum -c -
+          grep -F '"requiresMetro": false' release/evidence/apk/standalone-devnet-apk-receipt.json
+          grep -F '"network": "devnet"' release/evidence/apk/standalone-devnet-apk-receipt.json
+          cp "$APK" release/cresco-key-signature-clock-in-0bd51d53-devnet.apk
+          printf '%s  %s\n' "878e11e1b55ce97817bcf7a852651606ade3a219be0e75866c739b5137b329b8" "cresco-key-signature-clock-in-0bd51d53-devnet.apk" > release/cresco-key-signature-sha256.txt
+      - name: Publish download as public prerelease
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          gh release create "clock-in-2026-signature-0bd51d53" \
+            "release/cresco-key-signature-clock-in-0bd51d53-devnet.apk" \
+            "release/cresco-key-signature-sha256.txt" \
+            "release/evidence/apk/standalone-devnet-apk-receipt.json" \
+            --target "0bd51d532da85fd890efc9dd6208de8b5d837dd7" \
+            --title "CRESCO Key Signature — CLOCK IN 2026 Android Devnet candidate" \
+            --prerelease \
+            --notes "Standalone Android Devnet candidate from PR #85 verified in CI: Mobile CI, G1 preflight, emulator smoke, mock-wallet MWA session and standalone APK build. SHA-256 checked against recorded CI build. Not production-ready. Android physical Solflare payment is not validated on this exact APK. Onchain Guardian exact one-time redemption and replay remain blocked by #76. App identity verification is not configured. No real-world funds; Devnet only."
