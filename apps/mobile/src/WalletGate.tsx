@@ -1,120 +1,146 @@
 import { useMobileWallet } from "@wallet-ui/react-native-kit";
 import { useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
-import { MuseumHero, MuseumPlate, MuseumButton, ProofStrip, museumColors as color } from "./design/MuseumLedgerUI";
+
+import { MuseumHero, MuseumButton, ProofStrip, museumColors as c } from "./design/MuseumLedgerUI";
 import { JudgeReadOnlyTour } from "./JudgeReadOnlyTour";
 
-type WalletProofState =
-  | "IDLE"
-  | "CONNECTING"
-  | "CONNECTED"
-  | "SIGNING"
-  | "SIGNED"
-  | "REFUSED"
-  | "UNKNOWN";
+type ConnectState = "IDLE" | "CONNECTING" | "REFUSED";
 
+/**
+ * Consumer entry. The first choice is a real wallet connection; the alternate
+ * is a read-only sample account inspection, NEVER a staged payment or consent.
+ * Keep technical evidence out of the primary purchase path.
+ */
 export function WalletGate() {
-  const { account, chain, connect, disconnect, signMessage } = useMobileWallet();
-  const [proofState, setProofState] = useState<WalletProofState>("IDLE");
-  const [showJudgeTour, setShowJudgeTour] = useState(false);
-  const [detail, setDetail] = useState("No wallet proof attempted yet.");
+  const { connect } = useMobileWallet();
+  const [state, setState] = useState<ConnectState>("IDLE");
+  const [errorDetail, setErrorDetail] = useState("");
+  const [showSample, setShowSample] = useState(false);
+  const [showTechnical, setShowTechnical] = useState(false);
 
   const handleConnect = async () => {
+    if (state === "CONNECTING") return;
+    setState("CONNECTING");
+    setErrorDetail("");
     try {
-      setProofState("CONNECTING");
-      setDetail("Waiting for the wallet approval surface.");
       await connect();
-      setProofState("CONNECTED");
-      setDetail("Wallet session established through Mobile Wallet Adapter.");
+      setState("IDLE");
     } catch (error) {
-      setProofState("REFUSED");
-      setDetail(error instanceof Error ? error.message : "Wallet connection was not completed.");
+      setState("REFUSED");
+      setErrorDetail(error instanceof Error ? error.message : "The wallet did not finish connecting.");
     }
   };
 
-  const handleDisconnect = async () => {
-    try {
-      await disconnect();
-    } finally {
-      setProofState("IDLE");
-      setDetail("Wallet disconnected.");
-    }
-  };
-
-  const handleSignProof = async () => {
-    if (!account) return;
-
-    try {
-      setProofState("SIGNING");
-      const payload = new TextEncoder().encode(
-        `CRESCO Key TRC-01 wallet proof | ${account.address.toString()} | ${chain}`,
-      );
-      const signature = await signMessage(payload);
-      setProofState("SIGNED");
-      setDetail(`Message signed. Signature bytes: ${signature.length}.`);
-    } catch (error) {
-      setProofState("REFUSED");
-      setDetail(error instanceof Error ? error.message : "Message signing was not completed.");
-    }
-  };
-
-  if (showJudgeTour) return <JudgeReadOnlyTour onExit={() => setShowJudgeTour(false)} />;
+  if (showSample) return <JudgeReadOnlyTour onExit={() => setShowSample(false)} />;
 
   return (
-    <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
+    <ScrollView
+      contentContainerStyle={styles.container}
+      keyboardShouldPersistTaps="handled"
+      accessibilityLabel="CRESCO Key welcome"
+    >
       <View style={styles.brandRow}>
         <Text style={styles.wordmark}>CRESCO <Text style={styles.italic}>Key</Text></Text>
-        <Text style={styles.edition}>SOLANA / DEVNET</Text>
+        <View style={styles.networkPill}><View style={styles.networkDot} /><Text style={styles.networkText}>SOLANA DEVNET</Text></View>
       </View>
+
       <MuseumHero
-        exhibit="AN INSTRUMENT FOR GROWING INDEPENDENCE"
-        title="Freedom with Boundaries."
-        subtitle="Your money, within rules that grow with you. Ask only when you reach a real boundary."
-        showKey
+        compact
+        exhibit="YOUR MONEY. YOUR NEXT STEP."
+        title="More freedom. Clear limits."
+        subtitle="Everyday purchases within your Key. Ask your Guardian only when a purchase crosses your limit."
       />
-      <MuseumPlate exhibit="SELF-SERVE JUDGE ENTRY" title="See a real Key before connecting">
-        <Text style={styles.explanation}>No wallet? Inspect the published sample family\u2019s actual Solana Devnet limits in read-only mode. It cannot sign, pay, or authorize anything.</Text>
-        <MuseumButton label="Explore live Devnet Key (no wallet required)" variant="secondary" onPress={() => setShowJudgeTour(true)} />
-      </MuseumPlate>
-      <MuseumButton
-        disabled={proofState === "CONNECTING"}
-        onPress={account ? handleDisconnect : handleConnect}
-        label={account ? "Disconnect wallet" : "Connect wallet"}
-      />
-      {proofState === "REFUSED" ? <Text style={styles.quickStatus} accessibilityLiveRegion="polite">REFUSED · Wallet approval was not completed.</Text> : null}
-      <MuseumPlate exhibit="EXHIBIT 00 / YOUR WALLET" title={account ? "Wallet connected" : "Connect your Key"}>
-        <Text style={styles.explanation}>
-          Your wallet approves protected actions. CRESCO never handles your secret key or widens your spending rules on its own.
-        </Text>
-        <View style={styles.walletDetails}>
-          <Text style={styles.detailLabel}>NETWORK</Text><Text style={styles.detailValue}>{chain}</Text>
-          <Text style={styles.detailLabel}>WALLET</Text><Text style={styles.detailValue} numberOfLines={1}>{account?.address?.toString() ?? "Not connected"}</Text>
-          <Text style={styles.detailLabel}>SESSION</Text><Text style={styles.detailValue}>{proofState}</Text>
-          <Text style={styles.explanation}>{detail}</Text>
+
+      <View style={styles.primaryAction}>
+        <Text style={styles.actionEyebrow}>GET STARTED</Text>
+        <Text style={styles.actionTitle}>Connect your wallet</Text>
+        <Text style={styles.body}>Your wallet stays yours. CRESCO checks the rules on Solana before an action can go through.</Text>
+        <MuseumButton
+          label={state === "CONNECTING" ? "Waiting for wallet…" : "Connect wallet"}
+          disabled={state === "CONNECTING"}
+          onPress={() => { void handleConnect(); }}
+        />
+        {state === "REFUSED" ? (
+          <View style={styles.errorPanel} accessibilityLiveRegion="polite">
+            <Text style={styles.errorTitle}>Connection not completed</Text>
+            <Text style={styles.body}>Nothing was signed or sent. Open your Devnet wallet and try again.</Text>
+            {errorDetail ? <Text style={styles.errorDetail} selectable>{errorDetail}</Text> : null}
+          </View>
+        ) : null}
+      </View>
+
+      <View style={styles.sampleAction}>
+        <View style={styles.sampleIcon}><Text style={styles.sampleIconText}>↗</Text></View>
+        <View style={styles.sampleCopy}>
+          <Text style={styles.sampleTitle}>Just looking around?</Text>
+          <Text style={styles.body}>Explore a real sample Key on Devnet without connecting or paying.</Text>
         </View>
-        {account ? <MuseumButton
-          disabled={proofState === "SIGNING"}
-          onPress={handleSignProof}
-          label="Sign TRC-01 proof message"
+        <MuseumButton
+          label="Explore live Devnet Key — no wallet"
           variant="secondary"
-        /> : null}
-      </MuseumPlate>
-      <ProofStrip />
-      <Text style={styles.truth}>A Devnet build with genuine program-deployment evidence. Mobile G1 and physical-device transaction proof remain pending. No mainnet custody, brokerage or production payment claim.</Text>
+          onPress={() => setShowSample(true)}
+        />
+      </View>
+
+      <View style={styles.steps}>
+        <Text style={styles.actionEyebrow}>HOW CRESCO WORKS</Text>
+        <View style={styles.step}><Text style={styles.stepNumber}>01</Text><View style={styles.stepText}><Text style={styles.stepTitle}>Spend within your Key</Text><Text style={styles.body}>Your standing limits make room for everyday independence.</Text></View></View>
+        <View style={styles.step}><Text style={styles.stepNumber}>02</Text><View style={styles.stepText}><Text style={styles.stepTitle}>Reach a boundary</Text><Text style={styles.body}>A higher or different payment needs a specific decision.</Text></View></View>
+        <View style={styles.step}><Text style={styles.stepNumber}>03</Text><View style={styles.stepText}><Text style={styles.stepTitle}>One exception, not a new limit</Text><Text style={styles.body}>A Guardian may approve one exact action. That is different from permanently changing your Key.</Text></View></View>
+      </View>
+
+      <Pressable
+        accessibilityRole="button"
+        accessibilityState={{ expanded: showTechnical }}
+        onPress={() => setShowTechnical(v => !v)}
+        style={styles.technicalToggle}
+      >
+        <Text style={styles.technicalTitle}>Build status and verification</Text>
+        <Text style={styles.technicalTitle}>{showTechnical ? "−" : "+"}</Text>
+      </Pressable>
+      {showTechnical ? (
+        <View style={styles.technicalDetails}>
+          <ProofStrip />
+          <Text style={styles.disclaimer}>
+            Devnet research build. Wallet connection and a previous physical Android
+            message-signing test were observed, but this exact APK has not been
+            physically retested. The full Guardian Allow Once → payment → replay path
+            is not verified. No mainnet custody or production payment is offered.
+          </Text>
+        </View>
+      ) : null}
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { padding: 22, paddingBottom: 52, backgroundColor: color.ivory, gap: 18, flexGrow: 1 },
-  brandRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingBottom: 5 },
-  wordmark: { color: color.ink, fontFamily: "serif", fontSize: 25, letterSpacing: 1.1 },
+  container: { paddingHorizontal: 20, paddingTop: 10, paddingBottom: 48, backgroundColor: c.ivory, gap: 16, flexGrow: 1 },
+  brandRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", gap: 8 },
+  wordmark: { color: c.ink, fontFamily: "serif", fontSize: 26, letterSpacing: 0.8, flexShrink: 1 },
   italic: { fontStyle: "italic" },
-  edition: { color: color.deepBrass, fontSize: 9, fontWeight: "700", letterSpacing: 1.1 },
-  explanation: { color: color.secondaryInk, fontSize: 13, lineHeight: 19 },
-  walletDetails: { gap: 5, borderTopWidth: 1, borderTopColor: color.border, paddingTop: 10 },
-  detailLabel: { color: color.deepBrass, fontSize: 10, fontWeight: "700", letterSpacing: 1.4 },
-  detailValue: { color: color.ink, fontSize: 13, lineHeight: 18 },
-  truth: { color: color.secondaryInk, fontSize: 11, lineHeight: 17, marginTop: 4 },
-  quickStatus: { color: color.vermilion, fontWeight: "700", fontSize: 12, lineHeight: 18 },
+  networkPill: { flexDirection: "row", alignItems: "center", gap: 6, borderWidth: 1, borderColor: c.border, borderRadius: 20, paddingHorizontal: 9, paddingVertical: 7 },
+  networkDot: { height: 6, width: 6, borderRadius: 3, backgroundColor: c.verified },
+  networkText: { color: c.deepBrass, fontWeight: "700", fontSize: 9, letterSpacing: 0.6 },
+  primaryAction: { padding: 16, backgroundColor: c.paper, borderWidth: 1, borderColor: c.border, borderRadius: 16, gap: 10 },
+  actionEyebrow: { fontSize: 10, fontWeight: "700", letterSpacing: 1.7, color: c.deepBrass },
+  actionTitle: { fontSize: 24, fontFamily: "serif", color: c.ink, lineHeight: 28 },
+  body: { fontSize: 14, lineHeight: 20, color: c.secondaryInk },
+  errorPanel: { backgroundColor: c.vermilionWash, borderRadius: 10, padding: 12, gap: 6 },
+  errorTitle: { fontSize: 15, fontWeight: "700", color: c.vermilion },
+  errorDetail: { color: c.secondaryInk, fontSize: 12, lineHeight: 17 },
+  sampleAction: { gap: 10, paddingVertical: 8 },
+  sampleIcon: { display: "none" },
+  sampleIconText: { color: c.deepBrass, fontSize: 18 },
+  sampleCopy: { gap: 4 },
+  sampleTitle: { fontSize: 18, fontWeight: "700", color: c.ink },
+  steps: { gap: 14, paddingTop: 12, borderTopWidth: 1, borderTopColor: c.border },
+  step: { flexDirection: "row", alignItems: "flex-start", gap: 13 },
+  stepNumber: { minWidth: 27, fontWeight: "700", fontSize: 13, color: c.deepBrass },
+  stepText: { flex: 1, gap: 3 },
+  stepTitle: { fontSize: 15, color: c.ink, fontWeight: "700" },
+  technicalToggle: { borderTopWidth: 1, borderBottomWidth: 1, borderColor: c.border, paddingVertical: 15, flexDirection: "row", justifyContent: "space-between" },
+  technicalTitle: { color: c.deepBrass, fontWeight: "700", fontSize: 13 },
+  technicalDetails: { gap: 12 },
+  disclaimer: { color: c.secondaryInk, fontSize: 12, lineHeight: 18 },
 });
