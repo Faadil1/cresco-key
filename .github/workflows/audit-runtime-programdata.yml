@@ -1,0 +1,39 @@
+name: Audit live Cresco Key Devnet BPF fingerprint (read-only)
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/audit-runtime-programdata.yml"
+      - "tools/devnet/audit-deployed-program-binary.cjs"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  read-fingerprint:
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    defaults:
+      run:
+        working-directory: tools/devnet
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22.13.0"
+      - name: Install public RPC dependencies
+        run: npm install --ignore-scripts
+      - name: Check read-only auditor syntax
+        run: node --check audit-deployed-program-binary.cjs
+      - name: Compare current Devnet BPF program bytes and original build receipt
+        run: node audit-deployed-program-binary.cjs
+      - name: Preserve public fingerprint receipt
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cresco-key-public-devnet-runtime-fingerprint
+          path: evidence/devnet-distinct-program/runtime-binary-fingerprint.json
+          if-no-files-found: warn
+          retention-days: 30
