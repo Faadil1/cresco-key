@@ -1,4 +1,6 @@
 # CRESCO Key
+
+> **Source-code rights:** Original CRESCO material is not offered under an open-source license. See [LICENSE](LICENSE). Third-party licenses and existing permissions remain applicable.
 ### Freedom with Boundaries.
 
 ### CLOCK IN coach / security review — source-indexed evidence
